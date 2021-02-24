@@ -1,2 +1,0 @@
-Info,  T4496: Assimp is also working!
-Error, T4496: Test
