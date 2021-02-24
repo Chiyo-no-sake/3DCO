@@ -5,3 +5,4 @@ bin-int/
 cmake-build-debug/
 *.xml
 *.iml
+lib/
