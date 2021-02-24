@@ -10,7 +10,7 @@ build:
   #   - apt update && apt -y install make autoconf
   script:
     - cmake .
-    - make -j 2
+    - make
   artifacts:
     paths:
       - bin/*
