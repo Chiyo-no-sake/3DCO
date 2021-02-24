@@ -26,6 +26,4 @@ build:
 test:
   stage: test
   script:
-    - ls
-    - ./Boosts_Tests_run
     - bin/Boosts_Tests_run
