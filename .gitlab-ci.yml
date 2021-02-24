@@ -21,6 +21,7 @@ build:
        - "bin/*.o"
        - "bin-int/*.o"
        - "cmake-build-debug"
+       - "CMakeFiles"
 
 # run tests using the binary built before
 test:
