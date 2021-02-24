@@ -18,10 +18,11 @@ build:
       - bin/*
       - bin-int/*
       # depending on your build setup it's most likely a good idea to cache outputs to reduce the build time
-      cache:
-         paths:
-           - "bin/*.o"
-           - "bin-int/*.o"
+  cache:
+     paths:
+       - "bin/*.o"
+       - "bin-int/*.o"
+       - "cmake-build-debug"
 
 # run tests using the binary built before
 test:
