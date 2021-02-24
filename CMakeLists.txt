@@ -22,15 +22,28 @@ target_include_directories(3DCO PUBLIC
 
 target_link_libraries(3DCO assimp)
 
+if (WIN32)
+	add_custom_command(TARGET 3DCO POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E 
+		copy_if_different ${CMAKE_BINARY_DIR}/vendor/assimp/bin/$<CONFIG>/assimp-vc142-mtd.dll $<TARGET_FILE_DIR:3DCO>)
+endif()
+
 # TEST CONFIGURATION
 
 find_package(Boost)
 
-add_executable(Boost_Tests_run tests/boost_test.cpp)
+if(Boost_FOUND)
+	
+	message("Building Tests in tests folder")
+	add_executable(Boost_Tests_run tests/boost_test.cpp)
 
-set_target_properties(Boost_Tests_run PROPERTIES LINKER_LANGUAGE CXX)
-target_include_directories(Boost_Tests_run PUBLIC ${Boost_INCLUDE_DIRS})
-target_link_libraries(Boost_Tests_run ${Boost_LIBRARIES})
+	set_target_properties(Boost_Tests_run PROPERTIES LINKER_LANGUAGE CXX)
+	target_include_directories(Boost_Tests_run PUBLIC ${Boost_INCLUDE_DIRS})
+	target_link_libraries(Boost_Tests_run ${Boost_LIBRARIES})
+else()
+	message("Boost not installed, not building tests")
+
+endif()
 
 
 
