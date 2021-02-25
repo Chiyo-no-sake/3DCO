@@ -7,21 +7,21 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_HOME_DIRECTORY}/bin)
 # DEFAULT PROJECT CONFIGURATION
 
 project(3DCO LANGUAGES CXX VERSION 0.1 )
-add_executable(3DCO src/main.cpp src/lib.cpp)
+
+include_directories(
+		vendor/spdlog/include
+		vendor/assimp/include
+		${CMAKE_BINARY_DIR}/vendor/assimp/include
+)
+
+link_libraries(assimp)
+
+add_executable(3DCO src/main.cpp src/lib.h)
 
 set(ASSIMP_BUILD_DRACO OFF CACHE BOOL "..." FORCE)
 
 add_subdirectory(vendor/spdlog)
 add_subdirectory(vendor/assimp)
-
-include_directories(
-        vendor/spdlog/include
-        vendor/assimp/include
-        ${CMAKE_BINARY_DIR}/vendor/assimp/include
-)
-
-
-link_libraries(assimp)
 
 if (WIN32)
 	add_custom_command(TARGET 3DCO POST_BUILD
