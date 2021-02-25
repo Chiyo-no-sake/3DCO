@@ -8,20 +8,30 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_HOME_DIRECTORY}/bin)
 
 project(3DCO LANGUAGES CXX VERSION 0.1 )
 
+# BUILDING VENDOR LIBRARIES
+
+add_subdirectory(vendor/assimp)
+add_subdirectory(vendor/spdlog)
+
+# INCLUDING VENDOR DIRECTORIES
+
 include_directories(
 		vendor/spdlog/include
 		vendor/assimp/include
 		${CMAKE_BINARY_DIR}/vendor/assimp/include
 )
 
+# LINK ASSIMP LIBRARY (DYNAMIC)
+
 link_libraries(assimp)
+
+# DEFINE DEFAULT PROJECT EXECUTABLE
 
 add_executable(3DCO src/main.cpp src/lib.h)
 
-set(ASSIMP_BUILD_DRACO OFF CACHE BOOL "..." FORCE)
+# FIX FOR DRACO MESH COMPRESSION ALGORITHM
 
-add_subdirectory(vendor/spdlog)
-add_subdirectory(vendor/assimp)
+set(ASSIMP_BUILD_DRACO OFF CACHE BOOL "..." FORCE)
 
 if (WIN32)
 	add_custom_command(TARGET 3DCO POST_BUILD
