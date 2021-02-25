@@ -13,6 +13,10 @@ project(3DCO LANGUAGES CXX VERSION 0.1 )
 add_subdirectory(vendor/assimp)
 add_subdirectory(vendor/spdlog)
 
+# FIX FOR DRACO MESH COMPRESSION ALGORITHM
+
+set(ASSIMP_BUILD_DRACO OFF CACHE BOOL "..." FORCE)
+
 # INCLUDING VENDOR DIRECTORIES
 
 include_directories(
@@ -28,10 +32,6 @@ link_libraries(assimp)
 # DEFINE DEFAULT PROJECT EXECUTABLE
 
 add_executable(3DCO src/main.cpp src/lib.h)
-
-# FIX FOR DRACO MESH COMPRESSION ALGORITHM
-
-set(ASSIMP_BUILD_DRACO OFF CACHE BOOL "..." FORCE)
 
 if (WIN32)
 	add_custom_command(TARGET 3DCO POST_BUILD
