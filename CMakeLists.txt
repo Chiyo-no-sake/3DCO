@@ -7,20 +7,21 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_HOME_DIRECTORY}/bin)
 # DEFAULT PROJECT CONFIGURATION
 
 project(3DCO LANGUAGES CXX VERSION 0.1 )
-add_executable(3DCO src/main.cpp)
+add_executable(3DCO src/main.cpp src/lib.cpp)
 
 set(ASSIMP_BUILD_DRACO OFF CACHE BOOL "..." FORCE)
 
 add_subdirectory(vendor/spdlog)
 add_subdirectory(vendor/assimp)
 
-target_include_directories(3DCO PUBLIC
+include_directories(
         vendor/spdlog/include
         vendor/assimp/include
-        ${CMAKE_BINARY_DIR}/vendor/assimp/include)
+        ${CMAKE_BINARY_DIR}/vendor/assimp/include
+)
 
 
-target_link_libraries(3DCO assimp)
+link_libraries(assimp)
 
 if (WIN32)
 	add_custom_command(TARGET 3DCO POST_BUILD
@@ -38,7 +39,7 @@ if(Boost_FOUND)
 	add_executable(Boost_Tests_run tests/boost_test.cpp)
 
 	set_target_properties(Boost_Tests_run PROPERTIES LINKER_LANGUAGE CXX)
-	target_include_directories(Boost_Tests_run PUBLIC ${Boost_INCLUDE_DIRS})
+	target_include_directories(Boost_Tests_run PUBLIC ${Boost_INCLUDE_DIRS} src)
 	target_link_libraries(Boost_Tests_run ${Boost_LIBRARIES})
 else()
 	message("Boost not installed, not building tests")

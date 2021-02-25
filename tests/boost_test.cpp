@@ -4,6 +4,7 @@
 
 #define BOOST_TEST_MODULE default_test_module
 #include <boost/test/included/unit_test.hpp>
+#include "lib.cpp"
 
 BOOST_AUTO_TEST_CASE( default_test_case ){
 
@@ -12,4 +13,5 @@ BOOST_AUTO_TEST_CASE( default_test_case ){
 
     BOOST_TEST( a == b);
 
+    test();
 }

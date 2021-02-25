@@ -15,6 +15,7 @@ On linux, move to the folder where you want the program to be downloaded, then e
 ''' 
 git clone https://gitlab.com/KatonKalu/3d-converter-and-mesh-optimizer
 cd 3d-converter-and-mesh-optimizer
+git submodule --init --recursive
 cmake .
 make
 '''
