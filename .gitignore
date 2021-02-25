@@ -7,6 +7,9 @@ x64/
 .vs/
 cmake-build-debug/
 lib/
+draco/
+Makefile
+draco.pc
 *.sln
 *.user
 *.vcxproj
