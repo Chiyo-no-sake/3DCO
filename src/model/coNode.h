@@ -9,10 +9,12 @@
 #include <string>
 #include <vector>
 #include "coMesh.h"
+#include "coLight.h"
 
 class coNode {
 private:
     std::vector<coMesh *> m_meshes;
+    std::vector<coLight *> m_lights;
 
     coNode *m_parent;
     std::vector<coNode *> m_children;
@@ -30,6 +32,9 @@ public:
     unsigned int m_numLods;
 
     unsigned int m_numChildren;
+
+    bool hasLights();
+    std::vector<coLight *> getLights();
 
 };
 

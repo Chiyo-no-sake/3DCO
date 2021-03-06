@@ -3,3 +3,11 @@
 //
 
 #include "coNode.h"
+
+bool coNode::hasLights() {
+    return !m_lights.empty();
+}
+
+std::vector<coLight *> coNode::getLights() {
+    return m_lights;
+}
