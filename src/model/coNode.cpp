@@ -4,15 +4,15 @@
 
 #include "coNode.h"
 
-<<<<<<< HEAD
 bool coNode::hasLights() {
     return !m_lights.empty();
 }
 
 std::vector<coLight *> coNode::getLights() {
     return m_lights;
-=======
-const std::vector<coMesh *> &coNode::getMMeshes() const {
+}
+
+std::vector<coMesh *> &coNode::getMMeshes() {
     return m_meshes;
 }
 
@@ -38,5 +38,15 @@ void coNode::setMChildren(const std::vector<coNode *> &mChildren) {
 
 void coNode::addChild(coNode *child) {
     m_children.push_back(child);
->>>>>>> model-mesh
+}
+
+coNode *coNode::findInChildren(std::string nodeName) {
+    if(this->m_name == nodeName) return this;
+
+    for(auto& node: m_children){
+        coNode* found = node->findInChildren(nodeName);
+        if(found != nullptr) return found;
+    }
+
+    return nullptr;
 }

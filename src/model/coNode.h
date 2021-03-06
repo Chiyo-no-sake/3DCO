@@ -28,26 +28,24 @@ public:
 
     unsigned int m_numChildren;
 
-<<<<<<< HEAD
     bool hasLights();
     std::vector<coLight *> getLights();
 
-};
-=======
-    const std::vector<coMesh *> &getMMeshes() const;
+    std::vector<coMesh *> &getMMeshes();
 
     void setMMeshes(const std::vector<coMesh *> &mMeshes);
 
     coNode *getMParent() const;
 
     void setMParent(coNode *mParent);
->>>>>>> model-mesh
 
     const std::vector<coNode *> &getMChildren() const;
 
     void setMChildren(const std::vector<coNode *> &mChildren);
 
     void addChild(coNode *child);
+
+    coNode* findInChildren(std::string nodeName);
 
 };
 

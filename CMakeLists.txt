@@ -21,6 +21,7 @@ add_subdirectory(vendor/spdlog)
 # INCLUDING VENDOR DIRECTORIES
 
 include_directories(
+		src
 		vendor/spdlog/include
 		vendor/assimp/include
 		vendor/glm
@@ -35,7 +36,6 @@ link_libraries(assimp)
 
 add_executable(3DCO
 		src/main.cpp
-		src/lib.h
 		src/model/coNode.cpp
 		src/model/coNode.h
 		src/model/coMesh.cpp
@@ -48,12 +48,14 @@ add_executable(3DCO
 		src/parsing/ParsingStrategy.cpp
 		src/parsing/FileParser.cpp
 		src/parsing/FileParser.h
-		src/common/IStrategy.h)
+		src/common/IStrategy.h
+		src/log/Log.h
+		src/log/Log.cpp)
 
 if (WIN32)
 	add_custom_command(TARGET 3DCO POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E 
-		copy_if_different ${CMAKE_BINARY_DIR}/vendor/assimp/bin/$<CONFIG>/assimp-vc142-mtd.dll $<TARGET_FILE_DIR:3DCO>)
+		copy_if_different ${CMAKE_BINARY_DIR}/vendor/assimp/bin/$<CONFIG>/assimp-vc142-mt.dll $<TARGET_FILE_DIR:3DCO>/assimp-vc142-mt.dll)
 endif()
 
 # TEST CONFIGURATION
@@ -63,7 +65,7 @@ find_package(Boost)
 if(Boost_FOUND)
 	
 	message("Building Tests in tests folder")
-	add_executable(Boost_Tests_run tests/boost_test.cpp)
+	add_executable(Boost_Tests_run tests/parsing_test.cpp)
 
 	set_target_properties(Boost_Tests_run PROPERTIES LINKER_LANGUAGE CXX)
 	target_include_directories(Boost_Tests_run PUBLIC ${Boost_INCLUDE_DIRS} src)
