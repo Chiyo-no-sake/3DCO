@@ -23,6 +23,7 @@ add_subdirectory(vendor/spdlog)
 include_directories(
 		vendor/spdlog/include
 		vendor/assimp/include
+		vendor/glm
 		${CMAKE_BINARY_DIR}/vendor/assimp/include
 )
 
@@ -32,7 +33,7 @@ link_libraries(assimp)
 
 # DEFINE DEFAULT PROJECT EXECUTABLE
 
-add_executable(3DCO src/main.cpp src/lib.h)
+add_executable(3DCO src/main.cpp src/lib.h src/model/coObject.cpp src/model/coObject.h src/model/coNode.cpp src/model/coNode.h src/model/coMesh.cpp src/model/coMesh.h)
 
 if (WIN32)
 	add_custom_command(TARGET 3DCO POST_BUILD
