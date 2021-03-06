@@ -8,11 +8,11 @@
 
 class coNode {
 private:
-    std::vector<coMesh *> m_meshes;
-    std::vector<coLight *> m_lights;
+    std::vector<coMesh *> m_meshes{};
+    std::vector<coLight *> m_lights{};
 
     coNode *m_parent;
-    std::vector<coNode *> m_children;
+    std::vector<coNode *> m_children{};
 public:
 
     std::string m_name;
@@ -29,17 +29,17 @@ public:
     unsigned int m_numChildren;
 
     bool hasLights();
-    std::vector<coLight *> getLights();
+    std::vector<coLight *>& getMLights();
 
     std::vector<coMesh *> &getMMeshes();
 
     void setMMeshes(const std::vector<coMesh *> &mMeshes);
 
-    coNode *getMParent() const;
+    [[nodiscard]] coNode *getMParent() const;
 
     void setMParent(coNode *mParent);
 
-    const std::vector<coNode *> &getMChildren() const;
+    [[nodiscard]] const std::vector<coNode *> &getMChildren() const;
 
     void setMChildren(const std::vector<coNode *> &mChildren);
 

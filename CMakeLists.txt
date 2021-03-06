@@ -66,11 +66,27 @@ find_package(Boost)
 if(Boost_FOUND)
 	
 	message("Building Tests in tests folder")
-	add_executable(Boost_Tests_run tests/parsing_test.cpp)
+	add_executable(3DCO_tests
+			src/model/coNode.cpp
+			src/model/coNode.h
+			src/model/coMesh.cpp
+			src/model/coMesh.h
+			src/model/coLight.cpp
+			src/model/coLight.h
+			src/parsing/AssimpStrategy.cpp
+			src/parsing/AssimpStrategy.h
+			src/parsing/ParsingStrategy.h
+			src/parsing/ParsingStrategy.cpp
+			src/parsing/FileParser.cpp
+			src/parsing/FileParser.h
+			src/common/IStrategy.h
+			src/log/Log.h
+			src/log/Log.cpp
+			tests/parsing_test.cpp)
 
-	set_target_properties(Boost_Tests_run PROPERTIES LINKER_LANGUAGE CXX)
-	target_include_directories(Boost_Tests_run PUBLIC ${Boost_INCLUDE_DIRS} src)
-	target_link_libraries(Boost_Tests_run ${Boost_LIBRARIES})
+	set_target_properties(3DCO_tests PROPERTIES LINKER_LANGUAGE CXX)
+	target_include_directories(3DCO_tests PUBLIC ${Boost_INCLUDE_DIRS} src)
+	target_link_libraries(3DCO_tests ${Boost_LIBRARIES})
 else()
 	message("Boost not installed, not building tests")
 

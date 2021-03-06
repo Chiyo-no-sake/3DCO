@@ -8,7 +8,7 @@ bool coNode::hasLights() {
     return !m_lights.empty();
 }
 
-std::vector<coLight *> coNode::getLights() {
+std::vector<coLight *>& coNode::getMLights() {
     return m_lights;
 }
 
