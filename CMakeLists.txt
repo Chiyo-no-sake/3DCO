@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_HOME_DIRECTORY}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_HOME_DIRECTORY}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_HOME_DIRECTORY}/bin)
@@ -55,7 +56,7 @@ add_executable(3DCO
 if (WIN32)
 	add_custom_command(TARGET 3DCO POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E 
-		copy_if_different ${CMAKE_BINARY_DIR}/vendor/assimp/bin/$<CONFIG>/assimp-vc142-mt.dll $<TARGET_FILE_DIR:3DCO>/assimp-vc142-mt.dll)
+		copy_if_different ${CMAKE_BINARY_DIR}/vendor/assimp/bin/$<CONFIG>/assimp-vc142-mt.dll $<TARGET_FILE_DIR:3DCO>)
 endif()
 
 # TEST CONFIGURATION

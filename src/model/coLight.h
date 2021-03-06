@@ -24,4 +24,19 @@ public:
 
     float m_innerConeAngle;
     float m_outerConeAngle;
+
+    static std::string typeToString(lightType l){
+        switch(l){
+            case DIRECTIONAL:
+                return std::string{"DIRECTIONAL"};
+            case SPOT:
+                return std::string{"SPOT"};
+            case OMNI:
+                return std::string{"OMNI"};
+            case UNDEF:
+                return std::string{"UNDEF"};
+            default:
+                return std::string{""};
+        }
+    }
 };

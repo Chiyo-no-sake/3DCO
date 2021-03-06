@@ -1,7 +1,3 @@
-//
-// Created by ubuntu on 24/02/21.
-//
-
 #define BOOST_TEST_MODULE parsing_test_module
 #include <boost/test/included/unit_test.hpp>
 

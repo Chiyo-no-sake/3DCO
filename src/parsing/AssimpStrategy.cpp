@@ -16,7 +16,7 @@ const aiScene *parsingScene;
 
 coNode *parseNode(aiNode *aiNode);
 
-void parseLights(const aiScene *aiScene, coNode* targetScene);
+void parseLights(const aiScene *aiScene, coNode *targetScene);
 
 glm::mat4 convertMatrix(const aiMatrix4x4 &aiMat);
 
@@ -56,19 +56,27 @@ void AssimpStrategy::execute() {
 
 void parseLights(const aiScene *aiScene, coNode *targetScene) {
     for (int i = 0; i < aiScene->mNumLights; i++) {
-
         coLight *ourLight = new coLight{};
         aiLight *theirLight = aiScene->mLights[i];
+
+        CO_LOG_INFO("Converting light {}", std::string(theirLight->mName.C_Str()));
+
 
         switch (theirLight->mType) {
             case aiLightSourceType::aiLightSource_DIRECTIONAL:
                 ourLight->m_direction = convertVec3(theirLight->mDirection);
                 ourLight->m_lightType = lightType::DIRECTIONAL;
+                CO_LOG_TRACE("light type {}", coLight::typeToString(ourLight->m_lightType));
+                CO_LOG_TRACE("light direction {}, {}, {}", ourLight->m_direction.x, ourLight->m_direction.y,
+                             ourLight->m_direction.z);
                 break;
 
             case aiLightSourceType::aiLightSource_POINT:
                 ourLight->m_position = convertVec3(theirLight->mPosition);
                 ourLight->m_lightType = lightType::OMNI;
+                CO_LOG_TRACE("light type {}", coLight::typeToString(ourLight->m_lightType));
+                CO_LOG_TRACE("light position {}, {}, {}", ourLight->m_position.x, ourLight->m_position.y,
+                             ourLight->m_position.z);
                 break;
 
             case aiLightSourceType::aiLightSource_SPOT:
@@ -77,6 +85,15 @@ void parseLights(const aiScene *aiScene, coNode *targetScene) {
                 ourLight->m_direction = convertVec3(theirLight->mDirection);
                 ourLight->m_position = convertVec3(theirLight->mPosition);
                 ourLight->m_lightType = lightType::SPOT;
+
+                CO_LOG_TRACE("light type {}", coLight::typeToString(ourLight->m_lightType));
+                CO_LOG_TRACE("light position {}, {}, {}", ourLight->m_position.x, ourLight->m_position.y,
+                             ourLight->m_position.z);
+                CO_LOG_TRACE("light direction {}, {}, {}", ourLight->m_direction.x, ourLight->m_direction.y,
+                             ourLight->m_direction.z);
+                CO_LOG_TRACE("light innerCone {}", ourLight->m_innerConeAngle);
+                CO_LOG_TRACE("light outerCone {}", ourLight->m_innerConeAngle);
+
                 break;
             default:
                 ourLight->m_lightType = lightType::UNDEF;
@@ -91,10 +108,10 @@ void parseLights(const aiScene *aiScene, coNode *targetScene) {
         ourLight->m_diffuse = convertColor(theirLight->mColorDiffuse);
         ourLight->m_specular = convertColor(theirLight->mColorSpecular);
 
-        coNode* owner = targetScene->findInChildren(theirLight->mName.C_Str());
-        if(owner == nullptr){
+        coNode *owner = targetScene->findInChildren(theirLight->mName.C_Str());
+        if (owner == nullptr) {
             CO_LOG_WARN("Light {} has no owner node", theirLight->mName.C_Str());
-        }else{
+        } else {
             owner->getLights().push_back(ourLight);
         }
     }
