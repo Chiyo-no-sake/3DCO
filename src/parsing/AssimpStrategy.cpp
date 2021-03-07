@@ -53,6 +53,12 @@ void AssimpStrategy::execute() {
     parsingScene = scene;
     CO_LOG_INFO("Finished parsing");
 
+    if(scene->HasMaterials()) {
+        CO_LOG_INFO("Starting materials conversion");
+        parseMaterials(scene, m_parsed);
+        CO_LOG_INFO("Finished materials conversion");
+    }
+
     CO_LOG_INFO("Starting nodes conversion");
     m_parsed->m_rootNode = parseNode(scene->mRootNode);
     CO_LOG_INFO("Finished converting nodes");
@@ -62,12 +68,6 @@ void AssimpStrategy::execute() {
         parseLights(scene, m_parsed);
         CO_LOG_INFO("Finished lights conversion");
 
-    }
-
-    if(scene->HasMaterials()) {
-        CO_LOG_INFO("Starting materials conversion");
-        parseMaterials(scene, m_parsed);
-        CO_LOG_INFO("Finished materials conversion");
     }
 }
 
@@ -139,7 +139,18 @@ void parseLights(const aiScene *srcScene, coScene *targetScene) {
 void parseMaterials(const aiScene* srcScene, coScene* targetScene) {
     for(int i=0;i<srcScene->mNumMaterials; i++){
         auto material = new coMaterial();
+        auto srcMaterial = srcScene->mMaterials[i];
 
+        material->m_name = srcMaterial->GetName().C_Str();
+
+        aiColor3D srcAmbient;
+
+        // get material albedo
+        if(AI_SUCCESS == srcMaterial->Get(AI_MATKEY_COLOR_AMBIENT, srcAmbient)) {
+            material->m_albedo = convertColor(srcAmbient) / 0.2f;
+        }else{
+            CO_LOG_WARN("Material {} has no ambient color", material->m_name);
+        }
 
     }
 }
@@ -163,6 +174,11 @@ coNode *parseNode(aiNode *aiNode) {
         }
     }
 
+    // TODO:
+    //  1) search for maps
+    //  2) handle pbr data that is inaccessible from assimp
+    //  3) add material to scene
+
     node->m_numChildren = aiNode->mNumChildren;
     CO_LOG_INFO("found {}", node->m_numChildren);
 
@@ -176,7 +192,10 @@ coNode *parseNode(aiNode *aiNode) {
 }
 
 coMesh *parseMesh(uint meshIndex) {
-    // TODO look for bones, materials
+    // TODO
+    //  1) look for bones
+    //  2) look for material, find in scene and set id
+
     CO_LOG_INFO("converting mesh");
 
     aiMesh *mesh = parsingScene->mMeshes[meshIndex];
