@@ -76,13 +76,5 @@ void coMesh::addTextureCoordinate(glm::vec3 coordinate) {
     m_textureCoordinates.push_back(coordinate);
 }
 
-const std::vector<std::vector<glm::vec4>> &coMesh::getMColorSets() const {
-    return m_colorSets;
-}
-
-void coMesh::setMColorSets(const std::vector<std::vector<glm::vec4>> &mColorSets) {
-    m_colorSets = mColorSets;
-}
-
 
 

@@ -14,7 +14,7 @@ void FileParser::setStrategy(ParsingStrategy* strategy) {
     this->m_strategy = strategy;
 }
 
-coNode* FileParser::loadFromFile(const std::string& fileName) {
+coScene* FileParser::loadFromFile(const std::string& fileName) {
     std::string fullPath =  (std::filesystem::current_path() / fileName).string();
     CO_LOG_INFO("trying to open file {}", fullPath);
     FILE* in = fopen(fileName.c_str(), "rb");

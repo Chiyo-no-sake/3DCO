@@ -14,6 +14,6 @@ public:
 
     void setStrategy(ParsingStrategy *strategy);
 
-    coNode *loadFromFile(const std::string &fileName);
+    coScene *loadFromFile(const std::string &fileName);
 
 };

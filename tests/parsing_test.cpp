@@ -4,22 +4,31 @@
 #include "parsing/FileParser.h"
 #include "parsing/AssimpStrategy.h"
 
+#define FILENAME "cube_sphere_light.fbx"
+#ifdef _WINDOWS
+#define ASSETSDIR "..\\..\\tests\\assets\\"
+#else
+#define ASSETSDIR "../tests/assets/"
+#endif
+
+
 BOOST_AUTO_TEST_SUITE(parsing_test_suite);
 
 FileParser fp;
-coNode* scene;
+coScene* scene;
 
 BOOST_AUTO_TEST_CASE ( setup ) {
     fp.setStrategy(new AssimpStrategy());
-    scene = fp.loadFromFile("..\\..\\tests\\assets\\cube_sphere_light.fbx");
+    scene = fp.loadFromFile(std::string(ASSETSDIR) + FILENAME);
 }
 
-BOOST_AUTO_TEST_CASE( test_parse_mesh ){
+BOOST_AUTO_TEST_CASE( test_parse_mesh_lights ){
 
-    BOOST_TEST(scene->m_name == "RootNode");
+    coNode* rootNode = scene->m_rootNode;
+    BOOST_TEST(rootNode->m_name == "RootNode");
 
-    coNode* cube = scene->getMChildren()[0];
-    coNode* light = scene->getMChildren()[1];
+    coNode* cube = rootNode->getMChildren()[0];
+    coNode* light = rootNode->getMChildren()[1];
 
     BOOST_TEST(cube->m_name == "Cube");
     BOOST_TEST(cube->m_numChildren == 2);
@@ -39,14 +48,6 @@ BOOST_AUTO_TEST_CASE( test_parse_mesh ){
 
     BOOST_TEST(cube2->m_name == "Cube.001");
     BOOST_TEST(sphere->m_name == "Sphere");
-}
-
-BOOST_AUTO_TEST_CASE( test_parse_light ){
-
-    std::vector<int> a{1, 2};
-    std::vector<int> b{1, 2};
-
-    BOOST_TEST( a == b);
 }
 
 BOOST_AUTO_TEST_SUITE_END();

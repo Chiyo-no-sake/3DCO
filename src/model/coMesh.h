@@ -20,7 +20,6 @@ private:
     std::vector<glm::vec3> m_tangents;
     std::vector<glm::vec3> m_bitangents;
     std::vector<glm::vec3> m_textureCoordinates;
-    std::vector<std::vector<glm::vec4>> m_colorSets;
     //    std::vector<coBone *> m_bones;
     //    std::vector<coMaterial *> m_material;
 

@@ -9,6 +9,12 @@
 class coNode {
 private:
     std::vector<coMesh *> m_meshes{};
+
+    // PAY ATTENTION:
+    //  if this node contains a light that is a spotlight,
+    //  and has a child, that child is the object pointed by the spotlight.
+    //  but beware that the transforms necessaries to look to that
+    //  object are already applied to this node
     std::vector<coLight *> m_lights{};
 
     coNode *m_parent;

@@ -51,7 +51,7 @@ add_executable(3DCO
 		src/parsing/FileParser.h
 		src/common/IStrategy.h
 		src/log/Log.h
-		src/log/Log.cpp)
+		src/log/Log.cpp src/model/coScene.cpp src/model/coScene.h src/model/coMaterial.cpp src/model/coMaterial.h)
 
 if (WIN32)
 	add_custom_command(TARGET 3DCO POST_BUILD
@@ -82,7 +82,7 @@ if(Boost_FOUND)
 			src/common/IStrategy.h
 			src/log/Log.h
 			src/log/Log.cpp
-			tests/parsing_test.cpp)
+			tests/parsing_test.cpp src/model/coScene.cpp src/model/coScene.h)
 
 	set_target_properties(3DCO_tests PROPERTIES LINKER_LANGUAGE CXX)
 	target_include_directories(3DCO_tests PUBLIC ${Boost_INCLUDE_DIRS} src)

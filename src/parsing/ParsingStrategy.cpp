@@ -16,7 +16,7 @@ void ParsingStrategy::setInputFilePath(const char* path)
     this->m_filepath = path;
 }
 
-coNode* ParsingStrategy::getResult() const {
+coScene* ParsingStrategy::getResult() const {
     return this->m_parsed;
 }
 
