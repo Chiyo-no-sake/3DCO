@@ -19,7 +19,7 @@
  *          * metalness map file name
  *          * height map file name
  *
- *      Blinn-Phong to PBR conversion:
+ *      PBR to Blinn-Phong conversion:
  *          ambient = albedo * 0.2
  *          specular = albedo * 0.4
  *          diffuse = albedo * 0.7

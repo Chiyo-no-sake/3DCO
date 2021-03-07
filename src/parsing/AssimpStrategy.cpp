@@ -67,7 +67,6 @@ void AssimpStrategy::execute() {
         CO_LOG_INFO("Starting lights conversion");
         parseLights(scene, m_parsed);
         CO_LOG_INFO("Finished lights conversion");
-
     }
 }
 
@@ -143,6 +142,11 @@ void parseMaterials(const aiScene* srcScene, coScene* targetScene) {
 
         material->m_name = srcMaterial->GetName().C_Str();
 
+        // TODO:
+        //  1) search for maps
+        //  2) handle pbr data that is inaccessible from assimp
+        //  3) add material to scene
+
         aiColor3D srcAmbient;
 
         // get material albedo
@@ -174,10 +178,6 @@ coNode *parseNode(aiNode *aiNode) {
         }
     }
 
-    // TODO:
-    //  1) search for maps
-    //  2) handle pbr data that is inaccessible from assimp
-    //  3) add material to scene
 
     node->m_numChildren = aiNode->mNumChildren;
     CO_LOG_INFO("found {}", node->m_numChildren);

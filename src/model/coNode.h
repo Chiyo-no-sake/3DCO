@@ -12,7 +12,8 @@ private:
 
     // PAY ATTENTION:
     //  if this node contains a light that is a spotlight,
-    //  and has a child, that child is the object pointed by the spotlight.
+    //  and has a child with name <thisname>.TARGET,
+    //  that child is the object pointed by the spotlight.
     //  but beware that the transforms necessaries to look to that
     //  object are already applied to this node
     std::vector<coLight *> m_lights{};
