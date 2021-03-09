@@ -23,6 +23,11 @@ private:
     //    std::vector<coBone *> m_bones;
     //    std::vector<coMaterial *> m_material;
 
+    // TODO Mesh radius size
+    // TODO Mesh bounding box minimum corner as a vector of three float components.
+    // TODO Mesh bounding box maximum corner as a vector of three float components.
+
+
 public:
 
     std::string m_name;
@@ -35,35 +40,31 @@ public:
     //unsigned int m_numBones;
 
     //TODO materials
-    //unsigned int m_numMaterials;
+    std::string  m_materialName;
 
-    const std::vector<glm::vec3> &getMVertices() const;
+    [[nodiscard]] const std::vector<glm::vec3> &getMVertices() const;
 
     void setMVertices(const std::vector<glm::vec3> &mVertices);
 
-    const std::vector<unsigned int> &getMIndices() const;
+    [[nodiscard]] const std::vector<unsigned int> &getMIndices() const;
 
     void setMIndices(const std::vector<unsigned int> &mIndices);
 
-    const std::vector<glm::vec3> &getMNormals() const;
+    [[nodiscard]] const std::vector<glm::vec3> &getMNormals() const;
 
     void setMNormals(const std::vector<glm::vec3> &mNormals);
 
-    const std::vector<glm::vec3> &getMTangents() const;
+    [[nodiscard]] const std::vector<glm::vec3> &getMTangents() const;
 
     void setMTangents(const std::vector<glm::vec3> &mTangents);
 
-    const std::vector<glm::vec3> &getMBitangents() const;
+    [[nodiscard]] const std::vector<glm::vec3> &getMBitangents() const;
 
     void setMBitangents(const std::vector<glm::vec3> &mBitangents);
 
-    const std::vector<glm::vec3> &getMTextureCoordinates() const;
+    [[nodiscard]] const std::vector<glm::vec3> &getMTextureCoordinates() const;
 
     void setMTextureCoordinates(const std::vector<glm::vec3> &mTextureCoordinates);
-
-    const std::vector<std::vector<glm::vec4>> &getMColorSets() const;
-
-    void setMColorSets(const std::vector<std::vector<glm::vec4>> &mColorSets);
 
     void addVertex(glm::vec3 vertex);
 
