@@ -20,7 +20,6 @@ SET(ASSIMP_BUILD_TESTS OFF)
 SET(ASSIMP_INSTALL OFF)
 SET(ASSIMP_INJECT_DEBUG_POSTFIX OFF)
 
-
 add_subdirectory(vendor/assimp  EXCLUDE_FROM_ALL)
 add_subdirectory(vendor/spdlog EXCLUDE_FROM_ALL)
 
