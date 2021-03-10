@@ -45,8 +45,8 @@ add_executable(3DCO
 		src/main.cpp
 		src/model/coNode.cpp
 		src/model/coNode.h
-		src/model/coMesh.cpp
-		src/model/coMesh.h
+		src/model/coMeshData.cpp
+		src/model/coMeshData.h
 		src/model/coLight.cpp
 		src/model/coLight.h
 		src/parsing/AssimpStrategy.cpp
@@ -64,7 +64,10 @@ add_executable(3DCO
 		src/model/coMaterial.h
 		src/utils/files.h
 		src/ovosdk/OVOExporter.h
-		src/ovosdk/OVOExporter.cpp)
+		src/ovosdk/OVOExporter.cpp
+		src/model/coMesh.cpp
+		src/model/coMesh.h
+		src/common/IChunkable.h)
 
 if (WIN32)
 	add_custom_command(TARGET 3DCO POST_BUILD
@@ -82,8 +85,8 @@ if(Boost_FOUND)
 	add_executable(3DCO_tests
 			src/model/coNode.cpp
 			src/model/coNode.h
-			src/model/coMesh.cpp
-			src/model/coMesh.h
+			src/model/coMeshData.cpp
+			src/model/coMeshData.h
 			src/model/coLight.cpp
 			src/model/coLight.h
 			src/parsing/AssimpStrategy.cpp

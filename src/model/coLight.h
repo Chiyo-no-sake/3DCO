@@ -1,22 +1,24 @@
 #pragma once
 
 #include <string>
-#include "coColored.h"
 #include "glm/glm.hpp"
+#include "coNode.h"
+
 
 enum lightType{
-    DIRECTIONAL = 0,
-    SPOT,
-    OMNI,
-    UNDEF
+    OMNI = 0, DIRECTIONAL, SPOT, UNDEF
 };
 
-class coLight : public coColored {
+class coLight : public coNode {
 public:
     lightType m_type;
     glm::vec3 m_position;
     glm::vec3 m_direction;
     std::string m_name;
+
+    glm::vec3 m_ambient;
+    glm::vec3 m_diffuse;
+    glm::vec3 m_specular;
 
     float m_linearAttenuation;
     float m_constantAttenuation;
@@ -30,6 +32,7 @@ public:
     char m_volumetricLighting;
     char m_shadowCasting;
 
+    chunk_type getType() override;
 
     static std::string typeToString(lightType l){
         switch(l){
@@ -45,4 +48,7 @@ public:
                 return std::string{""};
         }
     }
+
+private:
+    char *toChunk(unsigned int *outSize) override;
 };

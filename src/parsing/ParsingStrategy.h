@@ -2,8 +2,9 @@
 
 #include <iostream>
 #include <model/coScene.h>
+#include <model/coNode.h>
+#include <model/coMesh.h>
 #include "../common/IStrategy.h"
-#include "../model/coNode.h"
 
 class ParsingStrategy : public IStrategy {
 protected:

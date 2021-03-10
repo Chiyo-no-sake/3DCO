@@ -1,41 +1,24 @@
 #include <log/Log.h>
 #include "OVOExporter.h"
 #include "utils/files.h"
-#include "string.h"
+#include "model/coLight.h"
 
-struct ovoMaterial {
-    //TODO
-};
+void writeVersion(FILE* file) {
+    int currentVersion = 8;
+    fwrite(&currentVersion, sizeof(int), 1, file);
+}
 
-struct ovoMesh {
-    //TODO
-};
+void exportNodeRecursive(coNode* node, FILE* file) {
+    CO_LOG_TRACE("Exporting node {}", node->m_name);
+    unsigned int chunkSize;
+    char * chunk = node->toChunk(&chunkSize);
+    fwrite(chunk, chunkSize, 1, file);
 
-struct ovoLight {
-    //TODO
-};
+    CO_LOG_TRACE("Exported node {}", node->m_name);
 
-struct ovoNode {
-    //TODO
-};
-
-struct ovoBone {
-    //TODO
-};
-
-struct fileVersion {
-    unsigned int version;
-};
-
-struct chunkHeader {
-    unsigned int chunkType;
-    unsigned int size;
-};
-
-void recursiveExport(coNode* node, FILE* file){
-    auto* nodeBuffer = (char*)malloc(node->m_name.size()+1);
-    strcpy(nodeBuffer, node->m_name.c_str());
-
+    for(auto& n: node->getMChildren()){
+        exportNodeRecursive(n, file);
+    }
 }
 
 bool OVOExporter::exportTo(coScene *scene, char *path) {
@@ -43,18 +26,22 @@ bool OVOExporter::exportTo(coScene *scene, char *path) {
     GetCurrentDir(buffer, FILENAME_MAX);
     auto finalPath = std::string(buffer) + SEPARATOR + path;
 
-    FILE * file = fopen(finalPath.c_str(), "wb");
+    FILE *file = fopen(finalPath.c_str(), "wb");
 
-    if(file == nullptr){
+    if (file == nullptr) {
         CO_LOG_ERR("Cannot open file {}", finalPath);
         return false;
     }
 
+    CO_LOG_INFO("Exporting scene to {}", finalPath);
+
+    writeVersion(file);
+
     //export materials
 
-
     //export nodes
-    recursiveExport(scene->m_rootNode, file);
+    exportNodeRecursive(scene->m_rootNode, file);
+    CO_LOG_INFO("Exported scene to {}", finalPath);
 }
 
 

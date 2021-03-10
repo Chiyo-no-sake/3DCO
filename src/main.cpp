@@ -8,7 +8,7 @@
 #ifdef _WINDOWS
 #define ASSETSDIR "..\\..\\tests\\assets\\"
 #else
-#define ASSETSDIR "../tests/assets/"
+#define ASSETSDIR "../../tests/assets/"
 #endif
 
 
