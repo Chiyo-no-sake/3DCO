@@ -18,5 +18,7 @@ draco.pc
 *.xml
 *.iml
 *.cbp
-Testing
+release-build/
+debug-build/
+Testing/
 CMakeCache.txt

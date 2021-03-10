@@ -85,7 +85,7 @@ add_executable(3DCO
 if (WIN32)
 	add_custom_command(TARGET 3DCO POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E
-		copy_if_different $<TARGET_FILE_DIR:assimp>/assimp-vc142-mt.dll $<TARGET_FILE_DIR:3DCO>)
+		copy_if_different $<TARGET_FILE:assimp> $<TARGET_FILE_DIR:3DCO>)
 endif()
 
 # TEST CONFIGURATION
