@@ -22,8 +22,9 @@ SET(ASSIMP_INSTALL OFF)
 SET(ASSIMP_INJECT_DEBUG_POSTFIX OFF)
 
 
-add_subdirectory(vendor/assimp  EXCLUDE_FROM_ALL)
+add_subdirectory(vendor/assimp EXCLUDE_FROM_ALL)
 add_subdirectory(vendor/spdlog EXCLUDE_FROM_ALL)
+add_subdirectory(vendor/meshopt EXCLUDE_FROM_ALL)
 
 # INCLUDING VENDOR DIRECTORIES
 
@@ -32,12 +33,14 @@ include_directories(
 		vendor/spdlog/include
 		vendor/assimp/include
 		vendor/glm
+		vendor/meshopt/src
 		${CMAKE_BINARY_DIR}/vendor/assimp/include
 )
 
 # LINK ASSIMP LIBRARY (DYNAMIC)
 
 link_libraries(assimp)
+link_libraries(meshoptimizer)
 
 # DEFINE DEFAULT PROJECT EXECUTABLE
 

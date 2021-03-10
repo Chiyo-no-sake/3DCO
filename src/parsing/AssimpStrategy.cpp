@@ -213,19 +213,19 @@ coMesh *parseMesh(uint meshIndex) {
 
     aiMesh *mesh = parsingScene->mMeshes[meshIndex];
 
-    std::vector<uint> triangles;
-    std::vector<glm::vec3> vertices;
-    std::vector<glm::vec3> normals;
-    std::vector<glm::vec3> mapping;
-    std::vector<glm::vec3> tangents;
-    std::vector<glm::vec3> bitangents;
+    uint *triangles;
+    glm::vec3 *vertices;
+    glm::vec3 *normals;
+    glm::vec3 *mapping;
+    glm::vec3 *tangents;
+    glm::vec3 *bitangents;
 
-    triangles.reserve(mesh->mNumFaces * 3);
-    vertices.reserve(mesh->mNumVertices);
-    normals.reserve(mesh->mNumVertices);
-    mapping.reserve(mesh->mNumVertices);
-    tangents.reserve(mesh->mNumVertices);
-    bitangents.reserve(mesh->mNumVertices);
+    triangles = static_cast<unsigned int *>(malloc(mesh->mNumFaces * 3 * sizeof(uint)));
+    vertices = static_cast<glm::vec3 *>(malloc(mesh->mNumVertices * sizeof(glm::vec3)));
+    normals = static_cast<glm::vec3 *>(malloc(mesh->mNumVertices * sizeof(glm::vec3)));
+    mapping = static_cast<glm::vec3 *>(malloc(mesh->mNumVertices * sizeof(glm::vec3)));
+    tangents = static_cast<glm::vec3 *>(malloc(mesh->mNumVertices * sizeof(glm::vec3)));
+    bitangents = static_cast<glm::vec3 *>(malloc(mesh->mNumVertices * sizeof(glm::vec3)));
 
     CO_LOG_INFO("num triangles: {}", mesh->mNumFaces);
     CO_LOG_INFO("num vertices: {}", mesh->mNumVertices);
@@ -238,11 +238,14 @@ coMesh *parseMesh(uint meshIndex) {
         CO_LOG_WARN("Mesh has no vertices");
     }
 
+    unsigned int totalIndices = 0;
+
     for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
         aiFace face = mesh->mFaces[i];
 
         for (uint j = 0; j < face.mNumIndices; j++) {
             triangles[i * 3 + j] = face.mIndices[j];
+            totalIndices++;
             CO_LOG_TRACE("parsed index: {}", triangles[i * 3 + j]);
         }
     }
@@ -275,6 +278,7 @@ coMesh *parseMesh(uint meshIndex) {
 
     newMesh->m_materialName = parsingScene->mMaterials[mesh->mMaterialIndex]->GetName().C_Str();
     newMesh->m_numVertices = mesh->mNumVertices;
+    newMesh->m_numIndices = totalIndices;
     newMesh->setMVertices(vertices);
     newMesh->setMIndices(triangles);
     newMesh->setMNormals(normals);

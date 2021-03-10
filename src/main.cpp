@@ -2,6 +2,10 @@
 #include <optimization/OptimizationPipeline.h>
 #include <optimization/IndexingStep.h>
 #include <optimization/CacheOptimizationStep.h>
+#include <optimization/OverdrawOptimizationStep.h>
+#include <optimization/VertexFetchOptimizationStep.h>
+#include <optimization/VertexQuantizationStep.h>
+#include <optimization/BufferCompressionStep.h>
 #include "parsing/FileParser.h"
 #include "parsing/AssimpStrategy.h"
 
@@ -27,6 +31,12 @@ int main(int argc, char* argv[]){
     //OPTIMIZATION
 
     OptimizationPipeline pipeline{scene};
+    pipeline.append(new IndexingStep());
+    pipeline.append(new CacheOptimizationStep());
+    pipeline.append(new OverdrawOptimizationStep());
+    pipeline.append(new VertexFetchOptimizationStep());
+    pipeline.append(new VertexQuantizationStep());
+    pipeline.append(new BufferCompressionStep());
     pipeline.execute();
 
     scene = pipeline.getResult();

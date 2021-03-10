@@ -11,15 +11,15 @@
 
 class coMesh {
 private:
-    std::vector<glm::vec3> m_vertices;
-    std::vector<unsigned int> m_indices;
+    glm::vec3 *m_vertices;
+    unsigned int *m_indices;
 
     //TODO figure out how normals work for points and lines
-    std::vector<glm::vec3> m_normals;
+    glm::vec3 *m_normals;
 
-    std::vector<glm::vec3> m_tangents;
-    std::vector<glm::vec3> m_bitangents;
-    std::vector<glm::vec3> m_textureCoordinates;
+    glm::vec3 *m_tangents;
+    glm::vec3 *m_bitangents;
+    glm::vec3 *m_textureCoordinates;
     //    std::vector<coBone *> m_bones;
     //    std::vector<coMaterial *> m_material;
 
@@ -36,48 +36,37 @@ public:
      */
     unsigned int m_numVertices;
 
+    unsigned int m_numIndices;
+
     //TODO bones
     //unsigned int m_numBones;
 
     //TODO materials
     std::string  m_materialName;
 
-    [[nodiscard]] const std::vector<glm::vec3> &getMVertices() const;
+    [[nodiscard]] glm::vec3 *getMVertices() const;
 
-    void setMVertices(const std::vector<glm::vec3> &mVertices);
+    void setMVertices(glm::vec3 *mVertices);
 
-    [[nodiscard]] const std::vector<unsigned int> &getMIndices() const;
+    [[nodiscard]] unsigned int *getMIndices() const;
 
-    void setMIndices(const std::vector<unsigned int> &mIndices);
+    void setMIndices(unsigned int *mIndices);
 
-    [[nodiscard]] const std::vector<glm::vec3> &getMNormals() const;
+    [[nodiscard]] glm::vec3 *getMNormals() const;
 
-    void setMNormals(const std::vector<glm::vec3> &mNormals);
+    void setMNormals(glm::vec3 *mNormals);
 
-    [[nodiscard]] const std::vector<glm::vec3> &getMTangents() const;
+    [[nodiscard]] glm::vec3 *getMTangents() const;
 
-    void setMTangents(const std::vector<glm::vec3> &mTangents);
+    void setMTangents(glm::vec3 *mTangents);
 
-    [[nodiscard]] const std::vector<glm::vec3> &getMBitangents() const;
+    [[nodiscard]] glm::vec3 *getMBitangents() const;
 
-    void setMBitangents(const std::vector<glm::vec3> &mBitangents);
+    void setMBitangents(glm::vec3 *mBitangents);
 
-    [[nodiscard]] const std::vector<glm::vec3> &getMTextureCoordinates() const;
+    [[nodiscard]] glm::vec3 *getMTextureCoordinates() const;
 
-    void setMTextureCoordinates(const std::vector<glm::vec3> &mTextureCoordinates);
-
-    void addVertex(glm::vec3 vertex);
-
-    void addFace(unsigned int faceVertex);
-
-    void addNormal(glm::vec3 normal);
-
-    void addTangent(glm::vec3 tangent);
-
-    void addBitangent(glm::vec3 bitangent);
-
-    void addTextureCoordinate(glm::vec3 coordinate);
-
+    void setMTextureCoordinates(glm::vec3 *mTextureCoordinates);
 
 
 };
