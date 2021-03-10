@@ -1,6 +1,7 @@
 #include <log/Log.h>
 #include "parsing/FileParser.h"
 #include "parsing/AssimpStrategy.h"
+#include "ovosdk/OVOExporter.h"
 
 #define FILENAME "cube_sphere_light.fbx"
 
@@ -30,4 +31,5 @@ int main(int argc, char* argv[]){
     //      |     return scene;
     // outwriter(p.getResult());
 
+    OVOExporter::exportTo(scene, "testOut.OVO");
 }

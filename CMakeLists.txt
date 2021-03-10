@@ -16,10 +16,11 @@ set(ASSIMP_BUILD_TESTS OFF)
 set(ASSIMP_BUILD_DRACO OFF CACHE BOOL "..." FORCE)
 
 # BUILDING VENDOR LIBRARIES
-SET(ASSIMP_BUILD_ASSIMP_TOOLS OFF)
-SET(ASSIMP_BUILD_TESTS OFF)
-SET(ASSIMP_INSTALL OFF)
-SET(ASSIMP_INJECT_DEBUG_POSTFIX OFF)
+
+SET(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "Assimp not builds tools" FORCE)
+SET(ASSIMP_BUILD_TESTS OFF CACHE BOOL "Assimp not build tests" FORCE)
+SET(ASSIMP_INSTALL OFF CACHE BOOL "Assimp not installs" FORCE)
+SET(ASSIMP_INJECT_DEBUG_POSTFIX OFF CACHE BOOL "Assimp no inject debug postfix" FORCE)
 
 add_subdirectory(vendor/assimp  EXCLUDE_FROM_ALL)
 add_subdirectory(vendor/spdlog EXCLUDE_FROM_ALL)
@@ -60,12 +61,15 @@ add_executable(3DCO
 		src/model/coScene.cpp
 		src/model/coScene.h
 		src/model/coMaterial.cpp
-		src/model/coMaterial.h)
+		src/model/coMaterial.h
+		src/utils/files.h
+		src/ovosdk/OVOExporter.h
+		src/ovosdk/OVOExporter.cpp)
 
 if (WIN32)
 	add_custom_command(TARGET 3DCO POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E
-		copy_if_different $<TARGET_FILE_DIR:assimp>/assimp-vc142-mt.dll $<TARGET_FILE_DIR:3DCO>)
+		copy_if_different $<TARGET_FILE:assimp> $<TARGET_FILE_DIR:3DCO>)
 endif()
 
 # TEST CONFIGURATION
