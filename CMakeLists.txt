@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_HOME_DIRECTORY}/lib/$<CONFIG>)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_HOME_DIRECTORY}/lib/$<CONFIG>)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_HOME_DIRECTORY}/bin/$<CONFIG>)
@@ -55,7 +56,12 @@ add_executable(3DCO
 		src/parsing/FileParser.h
 		src/common/IStrategy.h
 		src/log/Log.h
-		src/log/Log.cpp src/model/coScene.cpp src/model/coScene.h src/model/coMaterial.cpp src/model/coMaterial.h)
+		src/log/Log.cpp
+		src/model/coScene.cpp
+		src/model/coScene.h
+		src/model/coMaterial.cpp
+		src/model/coMaterial.h)
+
 if (WIN32)
 	add_custom_command(TARGET 3DCO POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E

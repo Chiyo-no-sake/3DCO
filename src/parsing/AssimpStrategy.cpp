@@ -15,7 +15,8 @@ const aiScene *parsingScene;
 coNode *parseNode(aiNode *aiNode);
 
 void parseLights(const aiScene *srcScene, coScene *targetScene);
-void parseMaterials(const aiScene *srcScene, coScene* targetScene);
+
+void parseMaterials(const aiScene *srcScene, coScene *targetScene);
 
 glm::mat4 convertMatrix(const aiMatrix4x4 &aiMat);
 
@@ -53,7 +54,7 @@ void AssimpStrategy::execute() {
     parsingScene = scene;
     CO_LOG_INFO("Finished parsing");
 
-    if(scene->HasMaterials()) {
+    if (scene->HasMaterials()) {
         CO_LOG_INFO("Starting materials conversion");
         parseMaterials(scene, m_parsed);
         CO_LOG_INFO("Finished materials conversion");
@@ -71,7 +72,7 @@ void AssimpStrategy::execute() {
 }
 
 void parseLights(const aiScene *srcScene, coScene *targetScene) {
-    for (int i = 0; i < srcScene->mNumLights; i++) {
+    for (unsigned int i = 0; i < srcScene->mNumLights; i++) {
         auto ourLight = new coLight{};
         aiLight *theirLight = srcScene->mLights[i];
 
@@ -84,32 +85,33 @@ void parseLights(const aiScene *srcScene, coScene *targetScene) {
                 ourLight->m_direction = convertVec3(theirLight->mDirection);
                 ourLight->m_type = lightType::DIRECTIONAL;
                 CO_LOG_TRACE("light type {}", coLight::typeToString(ourLight->m_type));
-                CO_LOG_TRACE("light direction {}, {}, {}", ourLight->m_direction.x, ourLight->m_direction.y,
-                             ourLight->m_direction.z);
+                CO_LOG_TRACE("light direction {}, {}, {}", ourLight->m_direction.x, ourLight->m_direction.y, ourLight->m_direction.z);
                 break;
 
             case aiLightSourceType::aiLightSource_POINT:
                 ourLight->m_position = convertVec3(theirLight->mPosition);
                 ourLight->m_type = lightType::OMNI;
                 CO_LOG_TRACE("light type {}", coLight::typeToString(ourLight->m_type));
-                CO_LOG_TRACE("light position {}, {}, {}", ourLight->m_position.x, ourLight->m_position.y,
-                             ourLight->m_position.z);
+                CO_LOG_TRACE("light position {}, {}, {}", ourLight->m_position.x, ourLight->m_position.y, ourLight->m_position.z);
                 break;
 
             case aiLightSourceType::aiLightSource_SPOT:
-                ourLight->m_innerConeAngle = theirLight->mAngleInnerCone;
-                ourLight->m_outerConeAngle = theirLight->mAngleOuterCone;
+                //TODO cutoff should beb mAngleInnerCone
+                ourLight->m_cutoff = theirLight->mAngleOuterCone;
                 ourLight->m_direction = convertVec3(theirLight->mDirection);
                 ourLight->m_position = convertVec3(theirLight->mPosition);
                 ourLight->m_type = lightType::SPOT;
+                ourLight->m_spotExponent = 128 * (1 - theirLight->mAngleInnerCone / theirLight->mAngleOuterCone);
 
                 CO_LOG_TRACE("light type {}", coLight::typeToString(ourLight->m_type));
-                CO_LOG_TRACE("light position {}, {}, {}", ourLight->m_position.x, ourLight->m_position.y,
-                             ourLight->m_position.z);
-                CO_LOG_TRACE("light direction {}, {}, {}", ourLight->m_direction.x, ourLight->m_direction.y,
-                             ourLight->m_direction.z);
-                CO_LOG_TRACE("light innerCone {}", ourLight->m_innerConeAngle);
-                CO_LOG_TRACE("light outerCone {}", ourLight->m_innerConeAngle);
+                CO_LOG_TRACE("light position {}, {}, {}", ourLight->m_position.x, ourLight->m_position.y, ourLight->m_position.z);
+                CO_LOG_TRACE("light direction {}, {}, {}", ourLight->m_direction.x, ourLight->m_direction.y, ourLight->m_direction.z);
+
+                CO_LOG_TRACE("light cutoff {}", ourLight->m_cutoff);
+                if (ourLight->m_cutoff > 90.0 || ourLight->m_cutoff < 0.0)
+                    CO_LOG_WARN("light cutoff value outside OpenGL-defined bounds");
+
+                CO_LOG_TRACE("light exponent {}", ourLight->m_spotExponent);
 
                 break;
             default:
@@ -121,9 +123,24 @@ void parseLights(const aiScene *srcScene, coScene *targetScene) {
         ourLight->m_constantAttenuation = theirLight->mAttenuationConstant;
         ourLight->m_quadraticAttenuation = theirLight->mAttenuationQuadratic;
 
+        CO_LOG_TRACE("light constant, linear, quadratic attenuation {}, {}, {}",
+                ourLight->m_constantAttenuation,
+                ourLight->m_linearAttenuation,
+                ourLight->m_quadraticAttenuation);
+
         ourLight->m_ambient = convertColor(theirLight->mColorAmbient);
         ourLight->m_diffuse = convertColor(theirLight->mColorDiffuse);
         ourLight->m_specular = convertColor(theirLight->mColorSpecular);
+
+        CO_LOG_TRACE("light ambient component {} {} {}", ourLight->m_ambient.r, ourLight->m_ambient.g, ourLight->m_ambient.b);
+        CO_LOG_TRACE("light diffuse component {} {} {}", ourLight->m_diffuse.r, ourLight->m_diffuse.g , ourLight->m_diffuse.b);
+        CO_LOG_TRACE("light specular component {} {} {}", ourLight->m_specular.r, ourLight->m_specular.g, ourLight->m_specular.b);
+
+        ourLight->m_shadowCasting = 1;
+        ourLight->m_volumetricLighting = 0;
+
+        CO_LOG_TRACE("light shadow casting set to 1");
+        CO_LOG_TRACE("light volumetric lighting set to 0");
 
         coNode *owner = targetScene->m_rootNode->findInChildren(theirLight->mName.C_Str());
         if (owner == nullptr) {
@@ -135,8 +152,8 @@ void parseLights(const aiScene *srcScene, coScene *targetScene) {
     }
 }
 
-void parseMaterials(const aiScene* srcScene, coScene* targetScene) {
-    for(int i=0;i<srcScene->mNumMaterials; i++){
+void parseMaterials(const aiScene *srcScene, coScene *targetScene) {
+    for (unsigned int i = 0; i < srcScene->mNumMaterials; i++) {
         auto material = new coMaterial();
         auto srcMaterial = srcScene->mMaterials[i];
 
@@ -150,9 +167,9 @@ void parseMaterials(const aiScene* srcScene, coScene* targetScene) {
         aiColor3D srcAmbient;
 
         // get material albedo
-        if(AI_SUCCESS == srcMaterial->Get(AI_MATKEY_COLOR_AMBIENT, srcAmbient)) {
+        if (AI_SUCCESS == srcMaterial->Get(AI_MATKEY_COLOR_AMBIENT, srcAmbient)) {
             material->m_albedo = convertColor(srcAmbient) / 0.2f;
-        }else{
+        } else {
             CO_LOG_WARN("Material {} has no ambient color", material->m_name);
         }
 
@@ -173,7 +190,7 @@ coNode *parseNode(aiNode *aiNode) {
     if (aiNode->mNumMeshes != 0) {
         CO_LOG_INFO("found {} LODs", aiNode->mNumMeshes);
 
-        for (int i = 0; i < aiNode->mNumMeshes; i++) {
+        for (unsigned int i = 0; i < aiNode->mNumMeshes; i++) {
             node->getMMeshes().push_back(parseMesh(aiNode->mMeshes[i]));
         }
     }
@@ -182,7 +199,7 @@ coNode *parseNode(aiNode *aiNode) {
     node->m_numChildren = aiNode->mNumChildren;
     CO_LOG_INFO("found {}", node->m_numChildren);
 
-    for (int i = 0; i < aiNode->mNumChildren; i++) {
+    for (unsigned int i = 0; i < aiNode->mNumChildren; i++) {
         CO_LOG_INFO("parsing child #{} of {}", i, node->m_name);
 
         node->addChild(parseNode(aiNode->mChildren[i]));
@@ -225,7 +242,7 @@ coMesh *parseMesh(uint meshIndex) {
         CO_LOG_WARN("Mesh has no vertices");
     }
 
-    for (int i = 0; i < mesh->mNumFaces; i++) {
+    for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
         aiFace face = mesh->mFaces[i];
 
         for (uint j = 0; j < face.mNumIndices; j++) {
@@ -234,7 +251,7 @@ coMesh *parseMesh(uint meshIndex) {
         }
     }
 
-    for (int i = 0; i < mesh->mNumVertices; i++) {
+    for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
         // parse vertex
         vertices[i] = convertVec3(mesh->mVertices[i]);
         CO_LOG_TRACE("parsed vertex: {}, {}, {}", vertices[i].x, vertices[i].y, vertices[i].z);
@@ -260,6 +277,7 @@ coMesh *parseMesh(uint meshIndex) {
 
     auto newMesh = new coMesh();
 
+    newMesh->m_materialName = parsingScene->mMaterials[mesh->mMaterialIndex]->GetName().C_Str();
     newMesh->m_numVertices = mesh->mNumVertices;
     newMesh->setMVertices(vertices);
     newMesh->setMIndices(triangles);

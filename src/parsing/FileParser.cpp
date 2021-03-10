@@ -1,6 +1,15 @@
 #include <log/Log.h>
-#include <filesystem>
 #include "FileParser.h"
+
+#ifdef _WINDOWS
+#include <direct.h>
+#define GetCurrentDir _getcwd
+#define SEPARATOR "\\"
+#else
+#include <unistd.h>
+#define GetCurrentDir getcwd
+#define SEPARATOR "/"
+#endif
 
 FileParser::FileParser(ParsingStrategy* strategy) : m_strategy(strategy) {
 }
@@ -15,12 +24,16 @@ void FileParser::setStrategy(ParsingStrategy* strategy) {
 }
 
 coScene* FileParser::loadFromFile(const std::string& fileName) {
-    std::string fullPath =  (std::filesystem::current_path() / fileName).string();
-    CO_LOG_INFO("trying to open file {}", fullPath);
-    FILE* in = fopen(fileName.c_str(), "rb");
+    char buffer[FILENAME_MAX];
+    GetCurrentDir(buffer, FILENAME_MAX);
+    std::string current_dir{buffer};
+    current_dir = current_dir + SEPARATOR + fileName;
+
+    CO_LOG_INFO("trying to open file {}", current_dir);
+    FILE* in = fopen(current_dir.c_str(), "rb");
 
     if(in == nullptr){
-        CO_LOG_ERR("File not found: {}", fullPath);
+        CO_LOG_ERR("File not found: {}", current_dir);
         return nullptr;
     }
 

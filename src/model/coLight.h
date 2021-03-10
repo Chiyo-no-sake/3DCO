@@ -22,8 +22,14 @@ public:
     float m_constantAttenuation;
     float m_quadraticAttenuation;
 
-    float m_innerConeAngle;
-    float m_outerConeAngle;
+    // TODO calculate the light's influence radius
+
+    float m_cutoff;
+    float m_spotExponent;
+
+    char m_volumetricLighting;
+    char m_shadowCasting;
+
 
     static std::string typeToString(lightType l){
         switch(l){
