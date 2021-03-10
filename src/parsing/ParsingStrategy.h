@@ -2,10 +2,10 @@
 
 #include <iostream>
 #include <model/coScene.h>
-#include "../common/IStrategy.h"
+#include "common/IExecutable.h"
 #include "../model/coNode.h"
 
-class ParsingStrategy : public IStrategy {
+class ParsingStrategy : public IExecutable {
 protected:
     FILE* m_fp;
     const char* m_filepath;

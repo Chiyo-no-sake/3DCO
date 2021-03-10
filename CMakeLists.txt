@@ -55,13 +55,29 @@ add_executable(3DCO
 		src/parsing/ParsingStrategy.cpp
 		src/parsing/FileParser.cpp
 		src/parsing/FileParser.h
-		src/common/IStrategy.h
+		src/common/IExecutable.h
 		src/log/Log.h
 		src/log/Log.cpp
 		src/model/coScene.cpp
 		src/model/coScene.h
 		src/model/coMaterial.cpp
-		src/model/coMaterial.h)
+		src/model/coMaterial.h
+		src/optimization/OptimizationPipeline.cpp
+		src/optimization/OptimizationPipeline.h
+		src/optimization/OptimizationStep.cpp
+		src/optimization/OptimizationStep.h
+		src/optimization/IndexingStep.cpp
+		src/optimization/IndexingStep.h
+		src/optimization/CacheOptimizationStep.cpp
+		src/optimization/CacheOptimizationStep.h
+		src/optimization/OverdrawOptimizationStep.cpp
+		src/optimization/OverdrawOptimizationStep.h
+		src/optimization/VertexFetchOptimizationStep.cpp
+		src/optimization/VertexFetchOptimizationStep.h
+		src/optimization/VertexQuantizationStep.cpp
+		src/optimization/VertexQuantizationStep.h
+		src/optimization/BufferCompressionStep.cpp
+		src/optimization/BufferCompressionStep.h)
 
 if (WIN32)
 	add_custom_command(TARGET 3DCO POST_BUILD
@@ -89,14 +105,28 @@ if(Boost_FOUND)
 			src/parsing/ParsingStrategy.cpp
 			src/parsing/FileParser.cpp
 			src/parsing/FileParser.h
-			src/common/IStrategy.h
+			src/common/IExecutable.h
 			src/log/Log.h
 			src/log/Log.cpp
 			tests/parsing_test.cpp
 			src/model/coScene.cpp
 			src/model/coScene.h
 			src/ovosdk/OVOExporter.cpp
-			src/ovosdk/OVOExporter.h)
+			src/ovosdk/OVOExporter.h
+			src/optimization/OptimizationPipeline.cpp
+			src/optimization/OptimizationPipeline.h
+			src/optimization/IndexingStep.cpp
+			src/optimization/IndexingStep.h
+			src/optimization/CacheOptimizationStep.cpp
+			src/optimization/CacheOptimizationStep.h
+			src/optimization/OverdrawOptimizationStep.cpp
+			src/optimization/OverdrawOptimizationStep.h
+			src/optimization/VertexFetchOptimizationStep.cpp
+			src/optimization/VertexFetchOptimizationStep.h
+			src/optimization/VertexQuantizationStep.cpp
+			src/optimization/VertexQuantizationStep.h
+			src/optimization/BufferCompressionStep.cpp
+			src/optimization/BufferCompressionStep.h)
 
 	set_target_properties(3DCO_tests PROPERTIES LINKER_LANGUAGE CXX)
 	target_include_directories(3DCO_tests PUBLIC ${Boost_INCLUDE_DIRS} src)

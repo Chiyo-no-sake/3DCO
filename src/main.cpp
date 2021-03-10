@@ -1,4 +1,7 @@
 #include <log/Log.h>
+#include <optimization/OptimizationPipeline.h>
+#include <optimization/IndexingStep.h>
+#include <optimization/CacheOptimizationStep.h>
 #include "parsing/FileParser.h"
 #include "parsing/AssimpStrategy.h"
 
@@ -14,8 +17,20 @@
 int main(int argc, char* argv[]){
     Log::getInstance()->setLevel(spdlog::level::info);
 
+    //IMPORTING
+
     FileParser fp{};
     coScene* scene;
     fp.setStrategy(new AssimpStrategy());
     scene = fp.loadFromFile(std::string(ASSETSDIR) + std::string(FILENAME));
+
+    //OPTIMIZATION
+
+    OptimizationPipeline pipeline{scene};
+    pipeline.execute();
+
+    scene = pipeline.getResult();
+
+    CO_LOG_INFO("coScene name {}", scene->m_rootNode->m_name);
+
 }

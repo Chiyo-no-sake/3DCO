@@ -1,6 +1,3 @@
-//TODO: mesh will be a field inside the aiNode
-//TODO: update scene node to use composition with mesh instead of inheritance
-
 #include "AssimpStrategy.h"
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
@@ -96,8 +93,7 @@ void parseLights(const aiScene *srcScene, coScene *targetScene) {
                 break;
 
             case aiLightSourceType::aiLightSource_SPOT:
-                //TODO cutoff should beb mAngleInnerCone
-                ourLight->m_cutoff = theirLight->mAngleOuterCone;
+                ourLight->m_cutoff = theirLight->mAngleInnerCone / 2;
                 ourLight->m_direction = convertVec3(theirLight->mDirection);
                 ourLight->m_position = convertVec3(theirLight->mPosition);
                 ourLight->m_type = lightType::SPOT;
