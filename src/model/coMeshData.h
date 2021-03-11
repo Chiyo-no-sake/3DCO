@@ -25,7 +25,6 @@ private:
 
 public:
 
-    std::string m_name;
     /**
      * The following field gives the length of the vertex, normals, tangents, bitangents and texture coordinates arrays
      */

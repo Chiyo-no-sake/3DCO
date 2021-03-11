@@ -13,11 +13,11 @@ class OptimizationStep : public IExecutable{
 
 protected:
 
-    coScene *m_scene;
+    coMesh *m_mesh;
 
 public:
 
-    void injectScene(coScene *scene);
+    void injectMesh(coMesh *mesh);
 
 };
 

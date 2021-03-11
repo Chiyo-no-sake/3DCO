@@ -3,7 +3,9 @@
 
 class AssimpStrategy : public ParsingStrategy
 {
+
 public:
+
     AssimpStrategy() = default;
 
     void execute() override;

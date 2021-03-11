@@ -12,7 +12,7 @@ class coMesh: public coNode {
 private:
     std::vector<coMeshData *> m_LODs{};
 public:
-    int m_numLods;
+    unsigned int m_numLods;
 
     [[nodiscard]] std::vector<coMeshData *> &getLODs();
 

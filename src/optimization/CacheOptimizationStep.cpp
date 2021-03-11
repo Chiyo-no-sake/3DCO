@@ -9,8 +9,8 @@
 void CacheOptimizationStep::execute() {
 
 //    coMesh *mesh;
-//    for(unsigned int i = 0; i < m_scene->m_rootNode->m_numLods; i++)
-//        mesh = m_scene->m_rootNode->getMMeshes()[i];
+//    for(unsigned int i = 0; i < m_mesh->m_rootNode->m_numLods; i++)
+//        mesh = m_mesh->m_rootNode->getMMeshes()[i];
 
     CO_LOG_INFO("Initiating cache optimization step...");
 
