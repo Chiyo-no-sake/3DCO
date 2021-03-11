@@ -5,7 +5,6 @@
 #ifndef INC_3DCO_COMESH_H
 #define INC_3DCO_COMESH_H
 
-
 #include "coNode.h"
 #include "coMeshData.h"
 

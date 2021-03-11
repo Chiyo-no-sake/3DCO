@@ -1,4 +1,11 @@
 #include <log/Log.h>
+#include <optimization/OptimizationPipeline.h>
+#include <optimization/IndexingStep.h>
+#include <optimization/CacheOptimizationStep.h>
+#include <optimization/OverdrawOptimizationStep.h>
+#include <optimization/VertexFetchOptimizationStep.h>
+#include <optimization/VertexQuantizationStep.h>
+#include <optimization/BufferCompressionStep.h>
 #include "parsing/FileParser.h"
 #include "parsing/AssimpStrategy.h"
 #include "ovosdk/OVOExporter.h"
@@ -15,21 +22,27 @@
 int main(int argc, char* argv[]){
     Log::getInstance()->setLevel(spdlog::level::trace);
 
+    //IMPORTING
+
     FileParser fp{};
     coScene* scene;
     fp.setStrategy(new AssimpStrategy());
     scene = fp.loadFromFile(std::string(ASSETSDIR) + std::string(FILENAME));
 
-    // auto p = new Pipeline();
-    // p.addStep(new IPipeElement());
-    // ....
-    // p.execute();
-    //      | class
-    //      | --> for(auto& element: pipeElements){
-    //      |             scene = element.execute(scene);
-    //      |     }
-    //      |     return scene;
-    // outwriter(p.getResult());
+    //OPTIMIZATION
 
-    OVOExporter::exportTo(scene, "testOut.OVO");
+    OptimizationPipeline pipeline{scene};
+    pipeline.append(new IndexingStep());
+    pipeline.append(new CacheOptimizationStep());
+    pipeline.append(new OverdrawOptimizationStep());
+    pipeline.append(new VertexFetchOptimizationStep());
+    pipeline.append(new VertexQuantizationStep());
+    pipeline.append(new BufferCompressionStep());
+    pipeline.execute();
+
+    scene = pipeline.getResult();
+
+    CO_LOG_INFO("coScene name {}", scene->m_rootNode->m_name);
+
+    //OVOExporter::exportTo(scene, "testOut.OVO");
 }

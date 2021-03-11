@@ -1,9 +1,9 @@
 #pragma once
 
 
-class IStrategy {
+class IExecutable {
 public:
     virtual void execute() = 0;
 
-    virtual ~IStrategy() {}
+    virtual ~IExecutable() {}
 };
