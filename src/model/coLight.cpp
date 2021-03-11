@@ -2,7 +2,7 @@
 #include "memory.h"
 
 typedef struct light_data_t {
-     lightType type;
+     char type;
      glm::vec3 color;
      float influence;
      glm::vec3 direction;

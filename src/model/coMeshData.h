@@ -3,8 +3,9 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include <string>
+#include <common/IChunkable.h>
 
-class coMeshData {
+class coMeshData: public IChunkable {
 private:
     glm::vec3 *m_vertices;
     unsigned int *m_indices;
@@ -22,7 +23,7 @@ private:
     // TODO Mesh bounding box minimum corner as a vector of three float components.
     // TODO Mesh bounding box maximum corner as a vector of three float components.
 
-
+    char * getVerticesDataBuffer(unsigned int* outSize);
 public:
 
     std::string m_name;
@@ -62,4 +63,6 @@ public:
     [[nodiscard]] glm::vec3 *&getMTextureCoordinates();
 
     void setMTextureCoordinates(glm::vec3 *&mTextureCoordinates);
+
+    char * toChunk(unsigned int *outSize) override;
 };
