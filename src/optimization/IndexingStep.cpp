@@ -10,6 +10,8 @@ void IndexingStep::execute() {
 
     CO_LOG_INFO("Initiating indexing step...");
 
+    //TODO CHECK COHERENCE OF FINAL VALUES
+
     for (unsigned int i = 0; i < m_mesh->m_numLods; i++) {
 
         coMeshData *currentLod = m_mesh->getLODs()[i];
@@ -17,7 +19,7 @@ void IndexingStep::execute() {
 
         size_t vertexCount = meshopt_generateVertexRemap(&remap[0],
                                                          currentLod->getMIndices(),
-                                                         currentLod->m_numVertices,
+                                                         currentLod->m_numIndices,
                                                          &currentLod->getMVertices(),
                                                          currentLod->m_numIndices,
                                                          sizeof(currentLod->getMVertices()[0]));
@@ -35,12 +37,12 @@ void IndexingStep::execute() {
                                   &remap[0]);
 
         meshopt_remapIndexBuffer(newIndices,
-                                 nullptr,
+                                 currentLod->getMIndices(),
                                  currentLod->m_numIndices,
                                  &remap[0]);
 
         delete[] currentLod->getMVertices();
-        delete[] currentLod->getMVertices();
+        delete[] currentLod->getMIndices();
 
         currentLod->setMVertices(newVertices);
         currentLod->setMIndices(newIndices);
