@@ -3,30 +3,7 @@
 //
 
 #include "coNode.h"
-
-bool coNode::hasLights() {
-    return !m_lights.empty();
-}
-
-std::vector<coLight *>& coNode::getMLights() {
-    return m_lights;
-}
-
-std::vector<coMesh *> &coNode::getMMeshes() {
-    return m_meshes;
-}
-
-void coNode::setMMeshes(const std::vector<coMesh *> &mMeshes) {
-    m_meshes = mMeshes;
-}
-
-coNode *coNode::getMParent() const {
-    return m_parent;
-}
-
-void coNode::setMParent(coNode *mParent) {
-    m_parent = mParent;
-}
+#include "memory.h"
 
 const std::vector<coNode *> &coNode::getMChildren() const {
     return m_children;
@@ -49,4 +26,54 @@ coNode *coNode::findInChildren(std::string nodeName) {
     }
 
     return nullptr;
+}
+
+chunk_type coNode::getType() {
+    return NODE;
+}
+
+char *coNode::toChunk(unsigned int *outSize) {
+    chunk_header header;
+    header.type = this->getType();
+
+    unsigned int nodeDataSize;
+    char* nodeBuffer = getNodeChunkData(&nodeDataSize);
+    header.size = nodeDataSize;
+
+    char* chunk = (char*) malloc(sizeof(chunk_header)+nodeDataSize);
+    memcpy(chunk, (void*)&header, sizeof(header));
+    memcpy(chunk+sizeof(header), nodeBuffer, nodeDataSize);
+
+    delete[] nodeBuffer;
+
+    *outSize = sizeof(header) + sizeof(nodeDataSize);
+    return chunk;
+}
+
+char *coNode::getNodeChunkData(unsigned int * outSize) {
+    // search for target node
+    std::string targetName = m_name + ".TARGET";
+    coNode* targetNode = findInChildren(targetName);
+    if(targetNode == nullptr) targetName = "[node]";
+
+    // header + name + terminator + transform + numChilds + target + terminator
+    unsigned int bytes = m_name.size() + 1 + 64 + 4 + targetName.size() + 1;
+    char *outBuff = (char *) malloc(bytes);
+
+    unsigned int offset = 0;
+
+    strcpy(outBuff + offset, m_name.c_str());
+    offset += m_name.size() + 1;
+
+    memcpy(outBuff + offset, (void *) &(m_transform), 64);
+    offset += 64;
+
+    *(outBuff+offset) = m_numChildren;
+    offset+=sizeof(unsigned int);
+
+    strcpy(outBuff+offset, targetName.c_str());
+
+    // set out size
+    *outSize = bytes;
+    return outBuff;
 }

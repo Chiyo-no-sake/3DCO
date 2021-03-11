@@ -1,10 +1,3 @@
-//
-// Created by kalu on 12/25/20.
-//
-
-#ifndef CGLIB_PARSINGSTRATEGY_CPP
-#define CGLIB_PARSINGSTRATEGY_CPP
-
 #include "ParsingStrategy.h"
 
 void ParsingStrategy::setInputFile(FILE* fp) {
@@ -20,4 +13,3 @@ coScene* ParsingStrategy::getResult() const {
     return this->m_parsed;
 }
 
-#endif //CGLIB_PARSINGSTRATEGY_CPP

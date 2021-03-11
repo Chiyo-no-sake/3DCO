@@ -2,8 +2,9 @@
 
 #include <iostream>
 #include <model/coScene.h>
-#include "common/IExecutable.h"
-#include "../model/coNode.h"
+#include <model/coNode.h>
+#include <model/coMesh.h>
+#include <common/IExecutable.h>
 
 class ParsingStrategy : public IExecutable {
 protected:
@@ -16,5 +17,5 @@ public:
     void setInputFile(FILE* fp);
     void setInputFilePath(const char* path);
 
-    coScene* getResult() const;
+    [[nodiscard]] coScene* getResult() const;
 };

@@ -8,18 +8,19 @@
 #include <optimization/BufferCompressionStep.h>
 #include "parsing/FileParser.h"
 #include "parsing/AssimpStrategy.h"
+#include "ovosdk/OVOExporter.h"
 
 #define FILENAME "cube_sphere_light.fbx"
 
 #ifdef _WINDOWS
 #define ASSETSDIR "..\\..\\tests\\assets\\"
 #else
-#define ASSETSDIR "../tests/assets/"
+#define ASSETSDIR "../../tests/assets/"
 #endif
 
 
 int main(int argc, char* argv[]){
-    Log::getInstance()->setLevel(spdlog::level::info);
+    Log::getInstance()->setLevel(spdlog::level::trace);
 
     //IMPORTING
 
@@ -43,4 +44,5 @@ int main(int argc, char* argv[]){
 
     CO_LOG_INFO("coScene name {}", scene->m_rootNode->m_name);
 
+    //OVOExporter::exportTo(scene, "testOut.OVO");
 }

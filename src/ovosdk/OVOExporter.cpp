@@ -1,26 +1,48 @@
+#include <log/Log.h>
 #include "OVOExporter.h"
+#include "utils/files.h"
+#include "model/coLight.h"
 
+void writeVersion(FILE* file) {
+    int currentVersion = 8;
+    fwrite(&currentVersion, sizeof(int), 1, file);
+}
 
-struct ovoMaterial {
-    //TODO
-};
+void exportNodeRecursive(coNode* node, FILE* file) {
+    CO_LOG_TRACE("Exporting node {}", node->m_name);
+    unsigned int chunkSize;
+    char * chunk = node->toChunk(&chunkSize);
+    fwrite(chunk, chunkSize, 1, file);
 
-struct ovoMesh {
-    //TODO
-};
+    CO_LOG_TRACE("Exported node {}", node->m_name);
 
-struct ovoLight {
-    //TODO
-};
-
-struct ovoNode {
-    //TODO
-};
-
-struct ovoBone {
-    //TODO
-};
+    for(auto& n: node->getMChildren()){
+        exportNodeRecursive(n, file);
+    }
+}
 
 bool OVOExporter::exportTo(coScene *scene, char *path) {
-    return false;
+    char buffer[FILENAME_MAX];
+    GetCurrentDir(buffer, FILENAME_MAX);
+    auto finalPath = std::string(buffer) + SEPARATOR + path;
+
+    FILE *file = fopen(finalPath.c_str(), "wb");
+
+    if (file == nullptr) {
+        CO_LOG_ERR("Cannot open file {}", finalPath);
+        return false;
+    }
+
+    CO_LOG_INFO("Exporting scene to {}", finalPath);
+
+    writeVersion(file);
+
+    //export materials
+
+    //export nodes
+    exportNodeRecursive(scene->m_rootNode, file);
+    CO_LOG_INFO("Exported scene to {}", finalPath);
 }
+
+
+

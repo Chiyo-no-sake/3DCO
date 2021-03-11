@@ -16,11 +16,11 @@ set(ASSIMP_BUILD_TESTS OFF)
 set(ASSIMP_BUILD_DRACO OFF CACHE BOOL "..." FORCE)
 
 # BUILDING VENDOR LIBRARIES
-SET(ASSIMP_BUILD_ASSIMP_TOOLS OFF)
-SET(ASSIMP_BUILD_TESTS OFF)
-SET(ASSIMP_INSTALL OFF)
-SET(ASSIMP_INJECT_DEBUG_POSTFIX OFF)
 
+SET(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "Assimp not builds tools" FORCE)
+SET(ASSIMP_BUILD_TESTS OFF CACHE BOOL "Assimp not build tests" FORCE)
+SET(ASSIMP_INSTALL OFF CACHE BOOL "Assimp not installs" FORCE)
+SET(ASSIMP_INJECT_DEBUG_POSTFIX OFF CACHE BOOL "Assimp no inject debug postfix" FORCE)
 
 add_subdirectory(vendor/assimp EXCLUDE_FROM_ALL)
 add_subdirectory(vendor/spdlog EXCLUDE_FROM_ALL)
@@ -48,8 +48,8 @@ add_executable(3DCO
 		src/main.cpp
 		src/model/coNode.cpp
 		src/model/coNode.h
-		src/model/coMesh.cpp
-		src/model/coMesh.h
+		src/model/coMeshData.cpp
+		src/model/coMeshData.h
 		src/model/coLight.cpp
 		src/model/coLight.h
 		src/parsing/AssimpStrategy.cpp
@@ -80,7 +80,13 @@ add_executable(3DCO
 		src/optimization/VertexQuantizationStep.cpp
 		src/optimization/VertexQuantizationStep.h
 		src/optimization/BufferCompressionStep.cpp
-		src/optimization/BufferCompressionStep.h)
+		src/optimization/BufferCompressionStep.h
+		src/utils/files.h
+		src/ovosdk/OVOExporter.h
+		src/ovosdk/OVOExporter.cpp
+		src/model/coMesh.cpp
+		src/model/coMesh.h
+		src/common/IChunkable.h)
 
 if (WIN32)
 	add_custom_command(TARGET 3DCO POST_BUILD
@@ -98,8 +104,8 @@ if(Boost_FOUND)
 	add_executable(3DCO_tests
 			src/model/coNode.cpp
 			src/model/coNode.h
-			src/model/coMesh.cpp
-			src/model/coMesh.h
+			src/model/coMeshData.cpp
+			src/model/coMeshData.h
 			src/model/coLight.cpp
 			src/model/coLight.h
 			src/parsing/AssimpStrategy.cpp
