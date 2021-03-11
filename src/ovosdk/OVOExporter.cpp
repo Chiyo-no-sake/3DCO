@@ -8,12 +8,15 @@ void writeVersion(FILE* file) {
     fwrite(&currentVersion, sizeof(int), 1, file);
 }
 
+void exportChunk(IChunkable* chunkable, FILE* file){
+    unsigned int chunkSize;
+    char * chunk = chunkable->toChunk(&chunkSize);
+    fwrite(chunk, chunkSize, 1, file);
+}
+
 void exportNodeRecursive(coNode* node, FILE* file) {
     CO_LOG_TRACE("Exporting node {}", node->m_name);
-    unsigned int chunkSize;
-    char * chunk = node->toChunk(&chunkSize);
-    fwrite(chunk, chunkSize, 1, file);
-
+    exportChunk(node, file);
     CO_LOG_TRACE("Exported node {}", node->m_name);
 
     for(auto& n: node->getMChildren()){

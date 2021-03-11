@@ -17,5 +17,11 @@ chunk_type coMesh::getType() {
 }
 
 char *coMesh::toChunk(unsigned int *outSize) {
-    return nullptr;
+    chunk_header header;
+    header.type = getType();
+
+    unsigned int nodeDataSize;
+    char* nodeDataBuffer = getNodeChunkData(&nodeDataSize);
+
+
 }

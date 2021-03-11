@@ -16,6 +16,7 @@ typedef struct chunk_header_t {
 } chunk_header;
 
 class IChunkable {
+public:
     /**
      * generate the chunk corresponding to this element
      * @param outSize will be filled with the written size
