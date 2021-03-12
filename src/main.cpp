@@ -64,6 +64,7 @@ user_flags *parseArguments(int argc, char* argv[]){
     }
     catch (args::Help&){
         std::cout << parser;
+        flags->_abort = 1;
     }
     catch (args::ValidationError &e){
         std::cerr << e.what() << std::endl;
