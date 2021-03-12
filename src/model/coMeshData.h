@@ -10,7 +10,6 @@ private:
     glm::vec3 *m_vertices;
     unsigned int *m_indices;
 
-    //TODO figure out how normals work for points and lines
     glm::vec3 *m_normals;
 
     glm::vec3 *m_tangents;
@@ -18,10 +17,6 @@ private:
     glm::vec3 *m_textureCoordinates;
     //    std::vector<coBone *> m_bones;
     //    std::vector<coMaterial *> m_material;
-
-    // TODO Mesh radius size
-    // TODO Mesh bounding box minimum corner as a vector of three float components.
-    // TODO Mesh bounding box maximum corner as a vector of three float components.
 
     char * getVerticesDataBuffer(unsigned int* outSize);
 public:
