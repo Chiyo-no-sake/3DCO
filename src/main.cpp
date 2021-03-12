@@ -29,6 +29,8 @@ int main(int argc, char* argv[]){
     fp.setStrategy(new AssimpStrategy());
     scene = fp.loadFromFile(std::string(ASSETSDIR) + std::string(FILENAME));
 
+    if(scene== nullptr)
+        return 1;
     //OPTIMIZATION
 
     OptimizationPipeline pipeline{scene};

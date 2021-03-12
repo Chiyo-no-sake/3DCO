@@ -4,5 +4,5 @@
 
 class OVOExporter {
 public:
-    static bool exportTo(coScene* scene, char* path);
+    static bool exportTo(coScene* scene,const char* path);
 };

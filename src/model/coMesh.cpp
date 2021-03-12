@@ -17,13 +17,13 @@ chunk_type coMesh::getType() {
     return MESH;
 }
 
-char* coMesh::getPhysicsDataBuff(unsigned int* outSize){
+char *coMesh::getPhysicsDataBuff(unsigned int *outSize) {
     //TODO
     *outSize = 0;
     return nullptr;
 }
 
-char* coMesh::getSkinningDataBuff(unsigned int* outSize){
+char *coMesh::getSkinningDataBuff(unsigned int *outSize) {
     //TODO
     *outSize = 0;
     return nullptr;
@@ -34,7 +34,7 @@ char *coMesh::toChunk(unsigned int *outSize) {
     header.type = getType();
 
     unsigned int nodeDataSize;
-    char* nodeDataBuffer = getNodeChunkData(&nodeDataSize);
+    char *nodeDataBuffer = getNodeChunkData(&nodeDataSize);
 
     // ----------------- mesh data calculation --------------------------
     // TODO maybe change
@@ -43,92 +43,99 @@ char *coMesh::toChunk(unsigned int *outSize) {
     std::string matName = "[none]";
 
     // TODO change this values
-    float meshRadius = 0;
-    float meshBBoxMax = 0;
-    float meshBBoxMin = 0;
-    bool physicsIncluded = 0;
+    float meshRadius = 30;
+    glm::vec3 meshBBoxMin{1.0f, 0.0f, 1.0f};
+    glm::vec3 meshBBoxMax{0.0f, 0.0f, 1.0f};
+    unsigned char physicsIncluded = 0;
 
     //physics properties
     unsigned int physicsDataSize;
-    char* physicsDataBuf = getPhysicsDataBuff(&physicsDataSize);
+    char *physicsDataBuf = getPhysicsDataBuff(&physicsDataSize);
 
     unsigned int lodsNum = m_numLods;
 
     // array of chunks
-    char* lodsChunks[lodsNum];
+    char *lodsChunks[lodsNum];
     unsigned int lodsChunkSizes[lodsNum];
-    for(int i=0; i<lodsNum; i++){
+    for (int i = 0; i < lodsNum; i++) {
         lodsChunks[i] = m_LODs[i]->toChunk(&(lodsChunkSizes[i]));
     }
 
     // skinning properties
     unsigned int skinDataSize;
-    char * skinDataBuff = getSkinningDataBuff(&skinDataSize);
+    char *skinDataBuff = getSkinningDataBuff(&skinDataSize);
     // ------------------------------------------------------------------
 
     // -------------------- size calculations ---------------------------
 
-    // header + node data + mesh type + matname + terminator + mehsrad + meshbboxmin
+    // node data + mesh type + matname + terminator + mehsrad + meshbboxmin
     // meshbboxmax + physics flag + physics data + lodsNum
     header.size = nodeDataSize + sizeof(meshType) +
-                  matName.size()+1 + sizeof(float)*3 +1 + physicsDataSize +
+                  matName.size() + 1 + sizeof(meshRadius) + sizeof(meshBBoxMax) + sizeof(meshBBoxMin) +
+                  sizeof(physicsIncluded) + physicsDataSize +
                   sizeof(unsigned int);
 
     // + lods data for each lod
-    for(int i=0; i<lodsNum;i++){
+    for (int i = 0; i < lodsNum; i++) {
         header.size += lodsChunkSizes[i];
     }
 
     // + skinning props
     header.size += skinDataSize;
 
-    int totalSize = header.size + sizeof(chunk_header);
+    unsigned int totalSize = header.size + sizeof(chunk_header);
     *outSize = totalSize;
-    char *chunk = (char*)malloc(totalSize);
+    char *chunk = (char *) malloc(totalSize);
     // ------------------------------------------------------------------
 
     // ------------------- mesh data writing ----------------------------
 
     unsigned int offset = 0;
-    memcpy(chunk, (void*)&header, sizeof(header));
-    offset+=sizeof(header);
+    memcpy(chunk, (void *) &header, sizeof(header));
+    offset += sizeof(header);
 
-    memcpy(chunk+offset, nodeDataBuffer, nodeDataSize);
-    offset+=nodeDataSize;
+    memcpy(chunk + offset, nodeDataBuffer, nodeDataSize);
+    offset += nodeDataSize;
 
-    memcpy(chunk+offset, &meshType, sizeof(meshType));
-    offset+=sizeof(meshType);
+    memcpy(chunk + offset, &meshType, sizeof(meshType));
+    offset += sizeof(meshType);
 
-    strcpy(chunk+offset, matName.c_str());
-    offset+=sizeof(matName.size()+1);
+    strcpy(chunk + offset, matName.c_str());
+    offset += matName.size()+1;
 
-    *(chunk+offset) = meshRadius;
-    offset+=sizeof(float);
+    memcpy(chunk + offset, &meshRadius, sizeof(meshRadius));
+    offset += sizeof(meshRadius);
 
-    *(chunk+offset) = meshBBoxMin;
-    offset+=sizeof(float);
+    memcpy(chunk + offset, &meshBBoxMin, sizeof(meshBBoxMin));
+    offset += sizeof(meshBBoxMin);
 
-    *(chunk+offset) = meshBBoxMax;
-    offset+=sizeof(float);
+    memcpy(chunk + offset, &meshBBoxMax, sizeof(meshBBoxMax));
+    offset += sizeof(meshBBoxMax);
 
-    *(chunk+offset) = physicsIncluded;
-    offset+=sizeof(physicsIncluded);
+    memcpy(chunk + offset, &physicsIncluded, sizeof(physicsIncluded));
+    offset += sizeof(physicsIncluded);
 
-    memcpy(chunk+offset, physicsDataBuf, physicsDataSize);
-    offset+=physicsDataSize;
+    memcpy(chunk + offset, physicsDataBuf, physicsDataSize);
+    offset += physicsDataSize;
 
-    *(chunk+offset) = lodsNum;
-    offset+=sizeof(lodsNum);
+    memcpy(chunk + offset, &lodsNum, sizeof(lodsNum));
+    offset += sizeof(lodsNum);
 
-    for(int i=0; i<lodsNum; i++){
-        memcpy(chunk+offset, lodsChunks[i], lodsChunkSizes[i]);
-        offset+=lodsChunkSizes[i];
+    for (int i = 0; i < lodsNum; i++) {
+        memcpy(chunk + offset, lodsChunks[i], lodsChunkSizes[i]);
+        offset += lodsChunkSizes[i];
     }
 
-    memcpy(chunk+offset, skinDataBuff, skinDataSize);
-    offset+=skinDataSize;
+    memcpy(chunk + offset, skinDataBuff, skinDataSize);
+    offset += skinDataSize;
 
     // ------------------------------------------------------------------
+
+    for (int i = 0; i < lodsNum; i++)
+        delete[] lodsChunks[i];
+    delete[] physicsDataBuf;
+    delete[] skinDataBuff;
+    delete[] nodeDataBuffer;
 
     return chunk;
 }

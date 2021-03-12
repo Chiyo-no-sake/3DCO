@@ -46,7 +46,7 @@ char *coNode::toChunk(unsigned int *outSize) {
 
     delete[] nodeBuffer;
 
-    *outSize = sizeof(header) + sizeof(nodeDataSize);
+    *outSize = sizeof(header) + nodeDataSize;
     return chunk;
 }
 
@@ -54,9 +54,9 @@ char *coNode::getNodeChunkData(unsigned int * outSize) {
     // search for target node
     std::string targetName = m_name + ".TARGET";
     coNode* targetNode = findInChildren(targetName);
-    if(targetNode == nullptr) targetName = "[node]";
+    if(targetNode == nullptr) targetName = "[none]";
 
-    // header + name + terminator + transform + numChilds + target + terminator
+    // name + terminator + transform + numChilds + target + terminator
     unsigned int bytes = m_name.size() + 1 + 64 + 4 + targetName.size() + 1;
     char *outBuff = (char *) malloc(bytes);
 
@@ -68,7 +68,7 @@ char *coNode::getNodeChunkData(unsigned int * outSize) {
     memcpy(outBuff + offset, (void *) &(m_transform), 64);
     offset += 64;
 
-    *(outBuff+offset) = m_numChildren;
+    memcpy(outBuff+offset, &m_numChildren, sizeof(unsigned int));
     offset+=sizeof(unsigned int);
 
     strcpy(outBuff+offset, targetName.c_str());

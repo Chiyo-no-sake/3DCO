@@ -303,6 +303,8 @@ coMeshData *parseMesh(uint meshIndex) {
     newMesh->m_materialName = parsingScene->mMaterials[mesh->mMaterialIndex]->GetName().C_Str();
     newMesh->m_numVertices = mesh->mNumVertices;
     newMesh->m_numIndices = totalIndices;
+    newMesh->setMBitangents(bitangents);
+    newMesh->setMTangents(tangents);
     newMesh->setMVertices(vertices);
     newMesh->setMIndices(triangles);
     newMesh->setMNormals(normals);

@@ -3,6 +3,8 @@
 //
 
 #include "coMeshData.h"
+#include "glm/gtc/packing.hpp"
+#include <memory.h>
 
 glm::vec3 *&coMeshData::getMVertices() {
     return m_vertices;
@@ -52,29 +54,66 @@ void coMeshData::setMTextureCoordinates(glm::vec3 *&mTextureCoordinates) {
     m_textureCoordinates = mTextureCoordinates;
 }
 
-char * coMeshData::getVerticesDataBuffer(unsigned int* outSize) {
+char *coMeshData::getVerticesDataBuffer(unsigned int *outSize) {
     //TODO
     // for each vertex:
     //  vec3 with vertex
     //  normal packed as uint
-    //  uv texture coords as 2 half float
+    //  uv texture coords as uint
     //  tan as unsigned vec4 with sign in w as packed uint
     unsigned int totalSize =
+            sizeof(m_numVertices) +
+            sizeof(m_numIndices) +
             m_numVertices * (
-                    sizeof(float)*3
-                    + sizeof(unsigned int) +
-                    sizeof(float) +
+                    sizeof(glm::vec3) +
+                    sizeof(unsigned int) +
+                    sizeof(unsigned int) +
                     sizeof(unsigned int));
 
-    for(int i=0; i<m_numVertices; i++){
+    char *chunk = (char *) malloc(totalSize);
 
+    unsigned int offset = 0;
+
+    memcpy(chunk+offset, &m_numVertices, sizeof(m_numVertices));
+    offset += sizeof(m_numVertices);
+
+    unsigned int facesNum = m_numIndices/3;
+    memcpy(chunk+offset, &facesNum, sizeof(facesNum));
+    offset+=sizeof(facesNum);
+
+    for (int i = 0; i < m_numVertices; i++) {
+        memcpy(chunk + offset, (void *) &m_vertices[i], sizeof(glm::vec3));
+        offset += sizeof(glm::vec3);
+
+        unsigned int packedNormal = glm::packSnorm3x10_1x2(glm::vec4{m_normals[i], 0});
+        memcpy(chunk + offset, (void *) &packedNormal, sizeof(unsigned int));
+        offset += sizeof(unsigned int);
+
+        unsigned int packedUV = glm::packHalf2x16(m_textureCoordinates[i]);
+        memcpy(chunk + offset, (void *) &packedUV, sizeof(unsigned int));
+        offset += sizeof(unsigned int);
+
+        unsigned int packedTan = glm::packSnorm3x10_1x2(glm::vec4{m_tangents[i], 0});
+        memcpy(chunk + offset, (void *) &packedTan, sizeof(unsigned int));
+        offset += sizeof(unsigned int);
     }
+
+    *outSize = offset;
+    return chunk;
 }
 
 char *coMeshData::toChunk(unsigned int *outSize) {
-    //TODO
-    *outSize = 0;
-    return nullptr;
+    unsigned int lodDataSize;
+    char *lodDataBuffer = getVerticesDataBuffer(&lodDataSize);
+
+    *outSize = lodDataSize + m_numIndices * sizeof(unsigned int);
+    char *chunk = (char *) malloc(*outSize);
+
+    memcpy(chunk, lodDataBuffer, lodDataSize);
+    memcpy(chunk+lodDataSize, m_indices, m_numIndices*sizeof(unsigned int));
+
+    delete[] lodDataBuffer;
+    return chunk;
 }
 
 

@@ -1,17 +1,6 @@
 #include "coLight.h"
 #include "memory.h"
 
-typedef struct light_data_t {
-     char type;
-     glm::vec3 color;
-     float influence;
-     glm::vec3 direction;
-     float cutoff;
-     float spotExponent;
-     char shadowCast;
-     char volumetricLight;
-} light_data;
-
 chunk_type coLight::getType() {
     return LIGHT;
 }
@@ -21,33 +10,49 @@ char *coLight::toChunk(unsigned int *outSize) {
     header.type = getType();
 
     unsigned int nodeDataSize;
-    char* nodeDataBuffer = getNodeChunkData(&nodeDataSize);
+    char *nodeDataBuffer = getNodeChunkData(&nodeDataSize);
 
-    light_data lightData;
-    lightData.volumetricLight = m_volumetricLighting;
-    lightData.shadowCast = m_shadowCasting;
-    lightData.type = m_type;
-    lightData.direction = m_direction;
-    lightData.cutoff = m_cutoff;
-    lightData.color = m_diffuse;
-    lightData.spotExponent = m_spotExponent;
-    //TODO
-    lightData.influence = 0;
+    unsigned int lightDataSize =
+            sizeof(char) + sizeof(glm::vec3) + sizeof(float) + sizeof(glm::vec3) + sizeof(float) * 2 + sizeof(char) * 2;
 
-    int totalSize = sizeof(chunk_header)+nodeDataSize+sizeof(lightData);
-    char* chunk = (char*)malloc(totalSize);
-    header.size = nodeDataSize+sizeof(lightData);
+    unsigned int totalSize = sizeof(chunk_header) + nodeDataSize + lightDataSize;
+    char *chunk = (char *) malloc(totalSize);
+    header.size = nodeDataSize + lightDataSize;
     *outSize = totalSize;
 
     unsigned int offset = 0;
-    memcpy(chunk, (void*)&header, sizeof(header));
-    offset+=sizeof(header);
+    memcpy(chunk, (void *) &header, sizeof(header));
+    offset += sizeof(header);
 
-    memcpy(chunk+offset, nodeDataBuffer,nodeDataSize);
-    offset+=nodeDataSize;
+    memcpy(chunk + offset, nodeDataBuffer, nodeDataSize);
+    offset += nodeDataSize;
 
-    memcpy(chunk+offset, (void*)&lightData, sizeof(lightData));
+    char lightType = m_type;
+    memcpy(chunk+offset, &lightType, 1);
+    offset += 1;
 
-    delete [] nodeDataBuffer;
+    memcpy(chunk+offset, &m_diffuse, sizeof(m_diffuse));
+    offset += sizeof(m_diffuse);
+
+    // TODO calculate influence
+    float influence = 0;
+    memcpy(chunk+offset, &influence, sizeof(influence));
+    offset+=sizeof(influence);
+
+    memcpy(chunk+offset, &m_direction, sizeof(m_direction));
+    offset+=sizeof(m_direction);
+
+    memcpy(chunk+offset, &m_cutoff, sizeof(m_cutoff));
+    offset+=sizeof(m_cutoff);
+
+    memcpy(chunk+offset, &m_spotExponent, sizeof(m_spotExponent));
+    offset+=sizeof(m_spotExponent);
+
+    memcpy(chunk+offset, &m_shadowCasting, sizeof(m_shadowCasting));
+    offset+= sizeof(m_shadowCasting);
+
+    memcpy(chunk+offset, &m_volumetricLighting, sizeof(m_volumetricLighting));
+
+    delete[] nodeDataBuffer;
     return chunk;
 }

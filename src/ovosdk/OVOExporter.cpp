@@ -4,7 +4,11 @@
 #include "model/coLight.h"
 
 void writeVersion(FILE* file) {
+    chunk_header header;
+    header.type = chunk_type::OBJECT;
+    header.size = sizeof(unsigned int);
     int currentVersion = 8;
+    fwrite(&header, sizeof(header), 1, file);
     fwrite(&currentVersion, sizeof(int), 1, file);
 }
 
@@ -24,7 +28,7 @@ void exportNodeRecursive(coNode* node, FILE* file) {
     }
 }
 
-bool OVOExporter::exportTo(coScene *scene, char *path) {
+bool OVOExporter::exportTo(coScene *scene, const char *path) {
     char buffer[FILENAME_MAX];
     GetCurrentDir(buffer, FILENAME_MAX);
     auto finalPath = std::string(buffer) + SEPARATOR + path;
@@ -44,7 +48,9 @@ bool OVOExporter::exportTo(coScene *scene, char *path) {
 
     //export nodes
     exportNodeRecursive(scene->m_rootNode, file);
+    fclose(file);
     CO_LOG_INFO("Exported scene to {}", finalPath);
+    return true;
 }
 
 

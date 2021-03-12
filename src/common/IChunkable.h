@@ -22,5 +22,5 @@ public:
      * @param outSize will be filled with the written size
      * @return the chunk as char buffer
      */
-    virtual char* toChunk(unsigned int* outSize) = 0;
+    virtual char* toChunk(unsigned int *outSize) = 0;
 };
