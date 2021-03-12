@@ -55,12 +55,6 @@ void coMeshData::setMTextureCoordinates(glm::vec3 *&mTextureCoordinates) {
 }
 
 char *coMeshData::getVerticesDataBuffer(unsigned int *outSize) {
-    //TODO
-    // for each vertex:
-    //  vec3 with vertex
-    //  normal packed as uint
-    //  uv texture coords as uint
-    //  tan as unsigned vec4 with sign in w as packed uint
     unsigned int totalSize =
             sizeof(m_numVertices) +
             sizeof(m_numIndices) +

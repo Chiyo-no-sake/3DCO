@@ -17,13 +17,13 @@ chunk_type coMesh::getType() {
     return MESH;
 }
 
-char *coMesh::getPhysicsDataBuff(unsigned int *outSize) {
+char *coMesh::getPhysicsDataBuff(unsigned int *outSize) const {
     //TODO
     *outSize = 0;
     return nullptr;
 }
 
-char *coMesh::getSkinningDataBuff(unsigned int *outSize) {
+char *coMesh::getSkinningDataBuff(unsigned int *outSize) const {
     //TODO
     *outSize = 0;
     return nullptr;
@@ -42,10 +42,9 @@ char *coMesh::toChunk(unsigned int *outSize) {
     // TODO include material name
     std::string matName = "[none]";
 
-    // TODO change this values
-    float meshRadius = 30;
-    glm::vec3 meshBBoxMin{1.0f, 0.0f, 1.0f};
-    glm::vec3 meshBBoxMax{0.0f, 0.0f, 1.0f};
+    float meshRadius = computeMeshRadius();
+    glm::vec3 meshBBoxMin = findBoundingBoxMin();
+    glm::vec3 meshBBoxMax = findBoundingBoxMax();
     unsigned char physicsIncluded = 0;
 
     //physics properties
@@ -138,4 +137,61 @@ char *coMesh::toChunk(unsigned int *outSize) {
     delete[] nodeDataBuffer;
 
     return chunk;
+}
+
+
+float coMesh::computeMeshRadius() const {
+    float maxDist;
+
+    coMeshData* firstLod = m_LODs[0];
+    maxDist = glm::length(firstLod->getMVertices()[0]);
+
+    for(int i=1; i<firstLod->m_numVertices; i++){
+        float dist = glm::length(firstLod->getMVertices()[i]);
+        if(dist > maxDist){
+            maxDist = dist;
+        }
+    }
+
+    return maxDist;
+}
+
+glm::vec3 coMesh::findBoundingBoxMin() const {
+    float minX;
+    float minY;
+    float minZ;
+
+    glm::vec3* vertices = m_LODs[0]->getMVertices();
+    minX = vertices[0].x;
+    minY = vertices[0].y;
+    minZ = vertices[0].z;
+
+    for(int i=1; i<m_LODs[0]->m_numVertices; i++){
+        glm::vec3& v = vertices[i];
+        if(v.x < minX) minX=v.x;
+        if(v.y < minY) minY=v.y;
+        if(v.z < minZ) minZ=v.z;
+    }
+
+    return {minX, minY, minZ};
+}
+
+glm::vec3 coMesh::findBoundingBoxMax() const {
+    float maxX;
+    float maxY;
+    float maxZ;
+
+    glm::vec3* vertices = m_LODs[0]->getMVertices();
+    maxX = vertices[0].x;
+    maxY = vertices[0].y;
+    maxZ = vertices[0].z;
+
+    for(int i=1; i<m_LODs[0]->m_numVertices; i++){
+        glm::vec3& v = vertices[i];
+        if(v.x>maxX) maxX=v.x;
+        if(v.y>maxY) maxY=v.y;
+        if(v.z>maxZ) maxZ=v.z;
+    }
+
+    return {maxX, maxY, maxZ};
 }

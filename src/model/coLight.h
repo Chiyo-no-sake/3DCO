@@ -23,12 +23,8 @@ public:
     float m_linearAttenuation;
     float m_constantAttenuation;
     float m_quadraticAttenuation;
-
-    // TODO calculate the light's influence radius
-
     float m_cutoff;
     float m_spotExponent;
-
     char m_volumetricLighting;
     char m_shadowCasting;
 

@@ -26,8 +26,11 @@ public:
 private:
     std::vector<coMeshData *> m_LODs{};
 
-    char* getPhysicsDataBuff(unsigned int* outSize);
-    char* getSkinningDataBuff(unsigned int* outSize);
+    [[nodiscard]] glm::vec3 findBoundingBoxMin() const;
+    [[nodiscard]] glm::vec3 findBoundingBoxMax() const;
+    [[nodiscard]] float computeMeshRadius() const;
+    char* getPhysicsDataBuff(unsigned int* outSize) const;
+    char* getSkinningDataBuff(unsigned int* outSize) const;
 };
 
 

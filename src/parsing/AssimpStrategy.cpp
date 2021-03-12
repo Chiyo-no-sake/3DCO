@@ -1,7 +1,4 @@
 
-//TODO: mesh will be a field inside the aiNode
-//TODO: update scene node to use composition with mesh instead of inheritance
-
 #include <model/coLight.h>
 #include "AssimpStrategy.h"
 #include "assimp/Importer.hpp"

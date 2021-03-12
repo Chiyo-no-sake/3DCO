@@ -10,7 +10,7 @@
 #include "parsing/AssimpStrategy.h"
 #include "ovosdk/OVOExporter.h"
 
-#define FILENAME "cube_sphere_light.fbx"
+#define FILENAME "cube.dae"
 
 #ifdef _WINDOWS
 #define ASSETSDIR "..\\..\\tests\\assets\\"
