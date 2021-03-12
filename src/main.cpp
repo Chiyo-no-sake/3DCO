@@ -4,8 +4,6 @@
 #include <optimization/CacheOptimizationStep.h>
 #include <optimization/OverdrawOptimizationStep.h>
 #include <optimization/VertexFetchOptimizationStep.h>
-#include <optimization/VertexQuantizationStep.h>
-#include <optimization/BufferCompressionStep.h>
 #include "parsing/FileParser.h"
 #include "parsing/AssimpStrategy.h"
 #include "ovosdk/OVOExporter.h"
@@ -18,31 +16,28 @@
 #define ASSETSDIR "../../tests/assets/"
 #endif
 
+void parseArguments(int argc, char* argv[]){
+
+
+
+}
 
 int main(int argc, char* argv[]){
-    Log::getInstance()->setLevel(spdlog::level::trace);
 
-    //IMPORTING
+    // HANDLE PROGRAM ARGUMENTS
+
+    parseArguments(argc, argv);
+
+    //IMPORT SCENE
 
     FileParser fp{};
     coScene* scene;
     fp.setStrategy(new AssimpStrategy());
     scene = fp.loadFromFile(std::string(ASSETSDIR) + std::string(FILENAME));
 
-    //OPTIMIZATION
+    //OPTIMIZE MESHES
 
-    OptimizationPipeline pipeline{scene};
-    pipeline.append(new IndexingStep());
-    pipeline.append(new CacheOptimizationStep());
-    pipeline.append(new OverdrawOptimizationStep());
-    pipeline.append(new VertexFetchOptimizationStep());
-    pipeline.append(new VertexQuantizationStep());
-    pipeline.append(new BufferCompressionStep());
-    pipeline.execute();
-
-    scene = pipeline.getResult();
-
-    CO_LOG_INFO("coScene name {}", scene->m_rootNode->m_name);
 
     //OVOExporter::exportTo(scene, "testOut.OVO");
 }
+

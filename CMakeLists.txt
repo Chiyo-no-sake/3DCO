@@ -77,10 +77,6 @@ add_executable(3DCO
 		src/optimization/OverdrawOptimizationStep.h
 		src/optimization/VertexFetchOptimizationStep.cpp
 		src/optimization/VertexFetchOptimizationStep.h
-		src/optimization/VertexQuantizationStep.cpp
-		src/optimization/VertexQuantizationStep.h
-		src/optimization/BufferCompressionStep.cpp
-		src/optimization/BufferCompressionStep.h
 		src/utils/files.h
 		src/ovosdk/OVOExporter.h
 		src/ovosdk/OVOExporter.cpp
@@ -132,10 +128,7 @@ if(Boost_FOUND)
 			src/optimization/OverdrawOptimizationStep.h
 			src/optimization/VertexFetchOptimizationStep.cpp
 			src/optimization/VertexFetchOptimizationStep.h
-			src/optimization/VertexQuantizationStep.cpp
-			src/optimization/VertexQuantizationStep.h
-			src/optimization/BufferCompressionStep.cpp
-			src/optimization/BufferCompressionStep.h)
+			)
 
 	set_target_properties(3DCO_tests PROPERTIES LINKER_LANGUAGE CXX)
 	target_include_directories(3DCO_tests PUBLIC ${Boost_INCLUDE_DIRS} src)

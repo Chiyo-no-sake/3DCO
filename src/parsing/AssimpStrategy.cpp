@@ -91,8 +91,7 @@ void parseLightData(coLight *targetNode, int lightIndex) {
             break;
 
         case aiLightSourceType::aiLightSource_SPOT:
-            //TODO cutoff should beb mAngleInnerCone
-            targetNode->m_cutoff = theirLight->mAngleOuterCone;
+            targetNode->m_cutoff = theirLight->mAngleInnerCone / 2;
             targetNode->m_direction = convertVec3(theirLight->mDirection);
             targetNode->m_position = convertVec3(theirLight->mPosition);
             targetNode->m_type = lightType::SPOT;

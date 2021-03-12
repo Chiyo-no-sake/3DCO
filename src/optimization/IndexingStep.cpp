@@ -10,8 +10,6 @@ void IndexingStep::execute() {
 
     CO_LOG_INFO("Initiating indexing step...");
 
-    //TODO CHECK COHERENCE OF FINAL VALUES
-
     for (unsigned int i = 0; i < m_mesh->m_numLods; i++) {
 
         coMeshData *currentLod = m_mesh->getLODs()[i];
@@ -31,7 +29,7 @@ void IndexingStep::execute() {
             CO_LOG_ERR("Indexing step failed for LoD #{}. Could not generate non-redundant vertex and index buffers", i);
 
         meshopt_remapVertexBuffer(newVertices,
-                                  &currentLod->getMVertices(),
+                                  &currentLod->getMVertices()[0],
                                   currentLod->m_numIndices,
                                   sizeof(currentLod->getMVertices()[0]),
                                   &remap[0]);
@@ -46,6 +44,8 @@ void IndexingStep::execute() {
 
         currentLod->setMVertices(newVertices);
         currentLod->setMIndices(newIndices);
+
+        CO_LOG_INFO("POST INDEXING");
 
     }
 
