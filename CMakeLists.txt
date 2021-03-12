@@ -25,6 +25,7 @@ SET(ASSIMP_INJECT_DEBUG_POSTFIX OFF CACHE BOOL "Assimp no inject debug postfix" 
 add_subdirectory(vendor/assimp EXCLUDE_FROM_ALL)
 add_subdirectory(vendor/spdlog EXCLUDE_FROM_ALL)
 add_subdirectory(vendor/meshopt EXCLUDE_FROM_ALL)
+add_subdirectory(vendor/args EXCLUDE_FROM_ALL)
 
 # INCLUDING VENDOR DIRECTORIES
 
@@ -34,6 +35,7 @@ include_directories(
 		vendor/assimp/include
 		vendor/glm
 		vendor/meshopt/src
+		vendor/args
 		${CMAKE_BINARY_DIR}/vendor/assimp/include
 )
 

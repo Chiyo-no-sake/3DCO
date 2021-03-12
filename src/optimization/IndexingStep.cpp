@@ -45,8 +45,6 @@ void IndexingStep::execute() {
         currentLod->setMVertices(newVertices);
         currentLod->setMIndices(newIndices);
 
-        CO_LOG_INFO("POST INDEXING");
-
     }
 
 

@@ -212,7 +212,7 @@ coNode *parseNode(aiNode *aiNode) {
 
     // if node has not a type it's a dummy node
     if (node == nullptr) {
-        CO_LOG_INFO("node {} is dummy", aiNode->mName.C_Str());
+        CO_LOG_INFO("node {} is a dummy", aiNode->mName.C_Str());
         node = new coNode{};
     }
 
@@ -220,7 +220,7 @@ coNode *parseNode(aiNode *aiNode) {
     node->m_transform = convertMatrix(aiNode->mTransformation);
     node->m_numChildren = aiNode->mNumChildren;
 
-    CO_LOG_INFO("Node {} has {} childs", node->m_name, node->m_numChildren);
+    CO_LOG_INFO("Node {} has {} children", node->m_name, node->m_numChildren);
 
     for (unsigned int i = 0; i < aiNode->mNumChildren; i++) {
         CO_LOG_INFO("parsing child #{} of {}", i, node->m_name);

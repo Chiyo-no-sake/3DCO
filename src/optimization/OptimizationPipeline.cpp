@@ -5,7 +5,7 @@
 #include <log/Log.h>
 #include "OptimizationPipeline.h"
 
-OptimizationPipeline::OptimizationPipeline() {}
+OptimizationPipeline::OptimizationPipeline() = default;
 
 OptimizationPipeline::OptimizationPipeline(coScene *mScene) : m_scene(mScene) {}
 
