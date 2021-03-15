@@ -145,21 +145,62 @@ void parseMaterials(coScene *targetScene) {
         auto srcMaterial = parsingScene->mMaterials[i];
 
         material->m_name = srcMaterial->GetName().C_Str();
+        CO_LOG_TRACE("Parsing material {}", material->m_name);
 
         // TODO:
         //  1) search for maps
         //  2) handle pbr data that is inaccessible from assimp
         //  3) add material to scene
 
-        aiColor3D srcAmbient;
+        aiColor3D srcAmbient = aiColor3D(.1, .1, .1);
+        aiColor3D srcSpecular = aiColor3D(1, 1, 1);
+        aiColor3D srcDiffuse = aiColor3D(.3, .3, .3);
+        aiColor3D srcEmission = aiColor3D(0, 0, 0);
+
+        float shininess;
+        float transparency;
+        float metalness;
 
         // get material albedo
-        if (AI_SUCCESS == srcMaterial->Get(AI_MATKEY_COLOR_AMBIENT, srcAmbient)) {
-            material->m_albedo = convertColor(srcAmbient) / 0.2f;
-        } else {
+        if (AI_SUCCESS != srcMaterial->Get(AI_MATKEY_COLOR_AMBIENT, srcAmbient)) {
             CO_LOG_WARN("Material {} has no ambient color", material->m_name);
         }
 
+        if (AI_SUCCESS != srcMaterial->Get(AI_MATKEY_COLOR_SPECULAR, srcSpecular)) {
+            CO_LOG_WARN("Material {} has no specular color", material->m_name);
+        }
+
+        if (AI_SUCCESS != srcMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, srcDiffuse)) {
+            CO_LOG_WARN("Material {} has no diffuse color", material->m_name);
+        }
+
+        if (AI_SUCCESS != srcMaterial->Get(AI_MATKEY_COLOR_EMISSIVE, srcEmission)) {
+            CO_LOG_WARN("Material {} has no emissive color", material->m_name);
+        }
+
+        if (AI_SUCCESS != srcMaterial->Get(AI_MATKEY_SHININESS, shininess)) {
+            CO_LOG_WARN("Material {} has no shininess value, setting default .5", material->m_name);
+            shininess = 0.5;
+        }
+
+        if (AI_SUCCESS != srcMaterial->Get(AI_MATKEY_TRANSPARENCYFACTOR, transparency)) {
+            CO_LOG_WARN("Material {} has no transparency value, setting default 0", material->m_name);
+            transparency = 0;
+        }
+        
+        auto ambient = convertColor(srcAmbient);
+        auto diffuse = convertColor(srcDiffuse);
+        auto specular = convertColor(srcSpecular);
+        auto emission = convertColor(srcEmission);
+
+        auto albedo = 0.2f * ambient + 0.5f * diffuse + 0.3f * specular;
+        material->m_albedo = albedo;
+        material->m_emission = emission;
+        material->m_roughness = glm::pow(-shininess/128 -1,2);
+        material->m_transparency = transparency;
+        material->m_metalness = (specular.x/255 + specular.y/255 + specular.z/255)/3;
+
+        // TODO look for textures
     }
 }
 
@@ -227,8 +268,7 @@ coNode *parseNode(aiNode *aiNode) {
 
 coMeshData *parseMesh(uint meshIndex) {
     // TODO
-    //  1) look for bones
-    //  2) look for material, find in scene and set id
+    //  look for material, find in scene and set id
 
     CO_LOG_INFO("converting mesh");
 
