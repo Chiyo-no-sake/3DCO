@@ -4,6 +4,6 @@
 
 #include "OptimizationStep.h"
 
-void OptimizationStep::injectScene(coScene *scene) {
-    m_scene = scene;
+void OptimizationStep::injectMesh(coMesh *mesh) {
+    m_mesh = mesh;
 }

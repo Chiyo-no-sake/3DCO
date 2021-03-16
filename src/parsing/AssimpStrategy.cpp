@@ -7,9 +7,9 @@
 #include "glm/glm.hpp"
 #include "../log/Log.h"
 
-#define uint unsigned int
-
 const aiScene *parsingScene;
+
+coScene *parsed;
 
 coNode *parseNode(aiNode *aiNode);
 
@@ -17,7 +17,7 @@ void parseMaterials(coScene *targetScene);
 
 glm::mat4 convertMatrix(const aiMatrix4x4 &aiMat);
 
-coMeshData *parseMesh(uint meshIndex);
+coMeshData *parseMesh(unsigned int meshIndex);
 
 inline glm::vec3 convertColor(aiColor3D c) {
     return glm::vec3{c.r, c.g, c.b};
@@ -39,6 +39,7 @@ inline glm::mat4 convertMatrix(const aiMatrix4x4 &aiMat) {
 void AssimpStrategy::execute() {
     Assimp::Importer importer;
     m_parsed = new coScene();
+    parsed = m_parsed;
 
     CO_LOG_INFO("Starting to parse");
 
@@ -87,8 +88,7 @@ void parseLightData(coLight *targetNode, int lightIndex) {
             break;
 
         case aiLightSourceType::aiLightSource_SPOT:
-            //TODO cutoff should beb mAngleInnerCone
-            targetNode->m_cutoff = theirLight->mAngleOuterCone;
+            targetNode->m_cutoff = theirLight->mAngleInnerCone / 2;
             targetNode->m_direction = convertVec3(theirLight->mDirection);
             targetNode->m_position = convertVec3(theirLight->mPosition);
             targetNode->m_type = lightType::SPOT;
@@ -164,7 +164,7 @@ void parseMaterials(coScene *targetScene) {
 }
 
 int getLightIndexFor(aiNode *aiNode) {
-    for (int i = 0; i < parsingScene->mNumLights; i++) {
+    for (auto i = 0; i < parsingScene->mNumLights; i++) {
         if (parsingScene->mLights[i]->mName == aiNode->mName)
             return i;
     }
@@ -201,12 +201,15 @@ coNode *parseNode(aiNode *aiNode) {
             }
 
             node = (coNode *) mesh;
+
+            parsed->getMMeshes().push_back(mesh);
+
         }
     }
 
     // if node has not a type it's a dummy node
     if (node == nullptr) {
-        CO_LOG_INFO("node {} is dummy", aiNode->mName.C_Str());
+        CO_LOG_INFO("node {} is a dummy", aiNode->mName.C_Str());
         node = new coNode{};
     }
 
@@ -214,7 +217,7 @@ coNode *parseNode(aiNode *aiNode) {
     node->m_transform = convertMatrix(aiNode->mTransformation);
     node->m_numChildren = aiNode->mNumChildren;
 
-    CO_LOG_INFO("Node {} has {} childs", node->m_name, node->m_numChildren);
+    CO_LOG_INFO("Node {} has {} children", node->m_name, node->m_numChildren);
 
     for (unsigned int i = 0; i < aiNode->mNumChildren; i++) {
         CO_LOG_INFO("parsing child #{} of {}", i, node->m_name);
@@ -225,7 +228,7 @@ coNode *parseNode(aiNode *aiNode) {
     return node;
 }
 
-coMeshData *parseMesh(uint meshIndex) {
+coMeshData *parseMesh(unsigned int meshIndex) {
     // TODO
     //  1) look for bones
     //  2) look for material, find in scene and set id
@@ -234,14 +237,14 @@ coMeshData *parseMesh(uint meshIndex) {
 
     aiMesh *mesh = parsingScene->mMeshes[meshIndex];
 
-    uint *triangles;
+    unsigned int *triangles;
     glm::vec3 *vertices;
     glm::vec3 *normals;
     glm::vec3 *mapping;
     glm::vec3 *tangents;
     glm::vec3 *bitangents;
 
-    triangles = static_cast<unsigned int *>(malloc(mesh->mNumFaces * 3 * sizeof(uint)));
+    triangles = static_cast<unsigned int *>(malloc(mesh->mNumFaces * 3 * sizeof(unsigned int)));
     vertices = static_cast<glm::vec3 *>(malloc(mesh->mNumVertices * sizeof(glm::vec3)));
     normals = static_cast<glm::vec3 *>(malloc(mesh->mNumVertices * sizeof(glm::vec3)));
     mapping = static_cast<glm::vec3 *>(malloc(mesh->mNumVertices * sizeof(glm::vec3)));
@@ -264,7 +267,7 @@ coMeshData *parseMesh(uint meshIndex) {
     for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
         aiFace face = mesh->mFaces[i];
 
-        for (uint j = 0; j < face.mNumIndices; j++) {
+        for (unsigned int j = 0; j < face.mNumIndices; j++) {
             triangles[i * 3 + j] = face.mIndices[j];
             totalIndices++;
             CO_LOG_TRACE("parsed index: {}", triangles[i * 3 + j]);
@@ -306,6 +309,7 @@ coMeshData *parseMesh(uint meshIndex) {
     newMesh->setMIndices(triangles);
     newMesh->setMNormals(normals);
     newMesh->setMTextureCoordinates(mapping);
+
 
     CO_LOG_INFO("mesh converted");
 

@@ -5,10 +5,15 @@
 #include <log/Log.h>
 #include "OptimizationPipeline.h"
 
+OptimizationPipeline::OptimizationPipeline() = default;
+
 OptimizationPipeline::OptimizationPipeline(coScene *mScene) : m_scene(mScene) {}
 
+void OptimizationPipeline::setScene(coScene *mScene) {
+    m_scene = mScene;
+}
+
 void OptimizationPipeline::append(OptimizationStep *step) {
-    step->injectScene(m_scene);
     m_optimizations.push_back(step);
 }
 
@@ -20,8 +25,11 @@ void OptimizationPipeline::execute() {
 
     CO_LOG_INFO("Initiating optimization pipeline...");
 
-    for(auto &step : m_optimizations)
-        step->execute();
+    for(coMesh *mesh : m_scene->getMMeshes())
+        for(auto &step : m_optimizations){
+            step->injectMesh(mesh);
+            step->execute();
+    }
 
     CO_LOG_INFO("Optimization pipeline completed");
 

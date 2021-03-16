@@ -14,7 +14,6 @@ public:
     lightType m_type;
     glm::vec3 m_position;
     glm::vec3 m_direction;
-    std::string m_name;
 
     glm::vec3 m_ambient;
     glm::vec3 m_diffuse;

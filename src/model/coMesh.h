@@ -14,7 +14,9 @@ enum meshType {
 
 class coMesh: public coNode {
 public:
-    int m_numLods;
+
+    unsigned int m_numLods;
+
     [[nodiscard]] std::vector<coMeshData *> &getLODs();
 
     void setLODs(const std::vector<coMeshData *> &mMeshes);

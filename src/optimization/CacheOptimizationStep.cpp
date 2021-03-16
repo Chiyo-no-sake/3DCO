@@ -8,13 +8,18 @@
 
 void CacheOptimizationStep::execute() {
 
-//    coMesh *mesh;
-//    for(unsigned int i = 0; i < m_scene->m_rootNode->m_numLods; i++)
-//        mesh = m_scene->m_rootNode->getMMeshes()[i];
-
     CO_LOG_INFO("Initiating cache optimization step...");
 
-    //meshopt_optimizeVertexCache(mesh->getMIndices(), mesh->getMIndices(), mesh->m_numIndices,mesh->m_numVertices);
+    for (unsigned int i = 0; i < m_mesh->m_numLods; i++) {
+
+        coMeshData *currentLod = m_mesh->getLODs()[i];
+
+        meshopt_optimizeVertexCache(currentLod->getMIndices(),
+                                    currentLod->getMIndices(),
+                                    currentLod->m_numIndices,
+                                    currentLod->m_numVertices);
+
+    }
 
     CO_LOG_INFO("Cache optimization step completed");
 
