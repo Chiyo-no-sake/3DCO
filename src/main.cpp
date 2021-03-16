@@ -42,7 +42,5 @@ int main(int argc, char* argv[]){
 
     scene = pipeline.getResult();
 
-    CO_LOG_INFO("coScene name {}", scene->m_rootNode->m_name);
-
     //OVOExporter::exportTo(scene, "testOut.OVO");
 }
