@@ -5,7 +5,13 @@
 #include <log/Log.h>
 #include "OptimizationPipeline.h"
 
+OptimizationPipeline::OptimizationPipeline() = default;
+
 OptimizationPipeline::OptimizationPipeline(coScene *mScene) : m_scene(mScene) {}
+
+void OptimizationPipeline::setScene(coScene *mScene) {
+    m_scene = mScene;
+}
 
 void OptimizationPipeline::append(OptimizationStep *step) {
     m_optimizations.push_back(step);

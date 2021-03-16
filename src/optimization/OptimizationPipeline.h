@@ -19,11 +19,15 @@ private:
 
 public:
 
+    OptimizationPipeline();
+
     explicit OptimizationPipeline(coScene *mScene);
 
     void append(OptimizationStep *step);
 
     [[nodiscard]] coScene *getResult() const;
+
+    void setScene(coScene *mScene);
 
     void execute() override;
 
