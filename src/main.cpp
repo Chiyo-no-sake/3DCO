@@ -137,13 +137,10 @@ int main(int argc, char* argv[]){
         for (auto &step : flags->_steps)
             pipeline.append(step);
 
-<<<<<<< HEAD
-=======
         pipeline.execute();
 
     }
 
->>>>>>> 0da2b7ef4806ebce1dc0d87a60f383ce2ac7fe11
     //OVOExporter::exportTo(scene, "testOut.OVO");
 }
 
