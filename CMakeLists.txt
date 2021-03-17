@@ -27,6 +27,8 @@ add_subdirectory(vendor/spdlog EXCLUDE_FROM_ALL)
 add_subdirectory(vendor/meshopt EXCLUDE_FROM_ALL)
 add_subdirectory(vendor/args EXCLUDE_FROM_ALL)
 
+link_directories(vendor/vhacd/linux)
+
 # INCLUDING VENDOR DIRECTORIES
 
 include_directories(
@@ -36,13 +38,16 @@ include_directories(
 		vendor/glm
 		vendor/meshopt/src
 		vendor/args
+		vendor/vhacd/include
 		${CMAKE_BINARY_DIR}/vendor/assimp/include
 )
+
 
 # LINK ASSIMP LIBRARY (DYNAMIC)
 
 link_libraries(assimp)
 link_libraries(meshoptimizer)
+link_libraries(vhacd)
 
 # DEFINE DEFAULT PROJECT EXECUTABLE
 

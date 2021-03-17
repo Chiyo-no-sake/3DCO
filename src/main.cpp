@@ -8,6 +8,7 @@
 #include "parsing/AssimpStrategy.h"
 #include "ovosdk/OVOExporter.h"
 #include <args.hxx>
+#include <VHACD.h>
 
 #define FILENAME "cube.dae"
 
