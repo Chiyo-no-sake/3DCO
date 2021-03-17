@@ -1,16 +1,20 @@
 #pragma once
 
+#include <string>
+#include <stdio.h>
 // getting current directory
 #ifdef _WINDOWS
 #include <direct.h>
 #define GetCurrentDir _getcwd
 #define SEPARATOR "\\"
-#define TempDir getWinTempDirectory()
+#define EXE_POSTFIX ".exe"
+#define P_OPEN _popen
 #else
 #include <unistd.h>
 #define GetCurrentDir getcwd
 #define SEPARATOR "/"
-#define TempDir "/tmp/"
+#define EXE_POSTFIX ""
+#define P_OPEN popen
 #endif
 
 //std::string getWinTempDirectory(){
@@ -20,3 +24,5 @@
 //    free(buffer);
 //    return ret;
 //}
+
+int executeCommand(const std::string& cmd, bool verbose);

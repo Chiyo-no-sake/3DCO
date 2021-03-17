@@ -3,23 +3,6 @@
 #include <string>
 #include "glm/glm.hpp"
 
-/**
- * Model to save materials
- * TODO:
- *  OVO requires:
- *      Emissive color (rgb)
- *      Albedo color (rgb)
- *      Roughness value (0-1)
- *      Metalness value (0-1)
- *      Transparency value (0-1)
- *      optional data (solo per input pbr):
- *          * albedo map file name --> questa anche per phong
- *          * normal map file name --> " " " "
- *          * roughness map file name
- *          * metalness map file name
- *          * height map file name --> NO
- *
- */
 class coMaterial {
 public:
     std::string m_name;

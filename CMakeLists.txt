@@ -106,11 +106,11 @@ add_executable(
 		src/optimization/BufferCompressionStep.cpp
 		src/optimization/BufferCompressionStep.h
 
-		src/utils/files.h
+		src/utils/file_utils.h
 
 		src/ovosdk/OVOExporter.h
 		src/ovosdk/OVOExporter.cpp
-)
+		src/utils/file_utils.cpp src/parsing/material_utils.h src/parsing/material_utils.cpp)
 
 if (WIN32)
 	add_custom_command(TARGET 3DCO POST_BUILD

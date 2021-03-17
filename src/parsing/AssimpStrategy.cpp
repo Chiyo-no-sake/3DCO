@@ -5,7 +5,11 @@
 #include "assimp/postprocess.h"
 #include "assimp/scene.h"
 #include "../log/Log.h"
+#include "utils/file_utils.h"
 #include <FreeImage.h>
+#include "material_utils.h"
+#include <sstream>
+#include <assimp/pbrmaterial.h>
 
 #define uint unsigned int
 
@@ -174,14 +178,11 @@ coNode *parseNode(aiNode *aiNode) {
             CO_LOG_INFO("node {} is a mesh", aiNode->mName.C_Str());
             auto mesh = new coMesh();
             mesh->m_numLods = aiNode->mNumMeshes;
-            // node has meshes, add them to mesh list
 
             CO_LOG_INFO("found {} LODs", aiNode->mNumMeshes);
-
             for (unsigned int i = 0; i < aiNode->mNumMeshes; i++) {
                 mesh->getLODs().push_back(parseMesh(aiNode->mMeshes[i]));
             }
-
             node = (coNode *) mesh;
         }
     }
@@ -293,30 +294,6 @@ coMeshData *parseMesh(uint meshIndex) {
     return newMesh;
 }
 
-bool writeToTGA(const aiTexture* tex, std::string outPath){
-    FreeImage_Initialise();
-
-    FIBITMAP* bitmap = FreeImage_Allocate(tex->mWidth, tex->mHeight, 32);
-
-    for(int y=0; y<tex->mHeight; y++){
-        for(int x=0; x<tex->mWidth; x++){
-            aiTexel texel = tex->pcData[x+y];
-            RGBQUAD color;
-            color.rgbReserved = texel.a;
-            color.rgbRed = texel.r;
-            color.rgbGreen = texel.g;
-            color.rgbBlue = texel.b;
-
-            bool result = FreeImage_SetPixelColor(bitmap, x, y, &color);
-            if(!result) return false;
-        }
-    }
-
-    bool result = FreeImage_Save(FIF_TARGA, bitmap, outPath.c_str(), TARGA_DEFAULT);
-
-    FreeImage_DeInitialise();
-    return result;
-}
 
 void parseMaterials(coScene *targetScene) {
     for (unsigned int i = 0; i < parsingScene->mNumMaterials; i++) {
@@ -328,15 +305,22 @@ void parseMaterials(coScene *targetScene) {
 
         CO_LOG_INFO("Parsing material {}", material->m_name);
 
+        //TODO: glTF get directly pbr data
+
+        // albedo == ambient
+        // roughness ||--> shininess
+        // emission  ||--> 0,0,0
+        // opacity ||--> 1
+        // metalness ||--> 0
+
         aiColor3D srcAmbient = aiColor3D(.1, .1, .1);
         aiColor3D srcSpecular = aiColor3D(1, 1, 1);
         aiColor3D srcDiffuse = aiColor3D(.3, .3, .3);
         aiColor3D srcEmission = aiColor3D(0, 0, 0);
-
-        float shininess;
-        float opacity;
-
-        //TODO: glTF get directly pbr data
+        aiColor3D srcAlbedo = aiColor3D(.3, .3, .3);
+        float srcRoughness = 0;
+        float srcShininess;
+        float srcOpacity;
 
         // ########################### Getting material colors #########################################################
         if (AI_SUCCESS != srcMaterial->Get(AI_MATKEY_COLOR_AMBIENT, srcAmbient)) {
@@ -359,17 +343,17 @@ void parseMaterials(coScene *targetScene) {
         }
         CO_LOG_TRACE("Material emission set to: {}, {}, {}", srcEmission.r, srcEmission.g, srcEmission.b);
 
-        if (AI_SUCCESS != srcMaterial->Get(AI_MATKEY_SHININESS, shininess)) {
+        if (AI_SUCCESS != srcMaterial->Get(AI_MATKEY_SHININESS, srcShininess)) {
             CO_LOG_WARN("Material {} has no shininess value. Setting default", material->m_name);
-            shininess = 0.5;
+            srcShininess = 0.5;
         }
-        CO_LOG_TRACE("Material shininess set to: {}", shininess);
+        CO_LOG_TRACE("Material shininess set to: {}", srcShininess);
 
-        if (AI_SUCCESS != srcMaterial->Get(AI_MATKEY_OPACITY, opacity)) {
+        if (AI_SUCCESS != srcMaterial->Get(AI_MATKEY_OPACITY, srcOpacity)) {
             CO_LOG_WARN("Material {} has no opacity value. Setting default", material->m_name);
-            opacity = 1;
+            srcOpacity = 1;
         }
-        CO_LOG_TRACE("Material opacity set to: {}", opacity);
+        CO_LOG_TRACE("Material opacity set to: {}", srcOpacity);
         // ########################### Getting material colors #########################################################
 
 
@@ -384,8 +368,8 @@ void parseMaterials(coScene *targetScene) {
         auto albedo = 0.1f * ambient + 0.6f * diffuse + 0.3f * specular;
         material->m_albedo = albedo;
         material->m_emission = emission;
-        material->m_roughness = glm::max(glm::pow(1-shininess/128,2),0.01);
-        material->m_transparency = 1-opacity;
+        material->m_roughness = glm::max(glm::pow(1 - srcShininess / 128, 2), 0.01);
+        material->m_transparency = 1 - srcOpacity;
         //material->m_metalness = (specular.x/255 + specular.y/255 + specular.z/255)/3;
         material->m_metalness = 0.0f;
 
@@ -403,65 +387,18 @@ void parseMaterials(coScene *targetScene) {
         // ########################### Converting material colors ######################################################
 
         // ########################### Gathering textures ##############################################################
-        bool textureFound = false;
-        bool embedded = false;
-        aiString diffusePath;
-        std::string pathToConvert;
 
-        if(AI_SUCCESS == srcMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE, 0), diffusePath)){
-            textureFound = true;
-            CO_LOG_INFO("Found diffuse texture on material {}", material->m_name);
-        }else{
-            CO_LOG_TRACE("No diffuse texture found on material {}, trying base color", material->m_name);
-        }
+        std::string* diffuseTexturePath = tryGeDiffusePath(srcMaterial);
+        // std::string* opacityTexturePath = tryGetOpacityMap()
+        // std::string* normalTexturePath = tryGetNormalMap()
+        // std::string* metallicTexturePath = tryGetMetallicMap()
+        // std::string* roughnessTexturePath = tryGetRoughnessMap()
 
-        if(!textureFound) {
-            if (AI_SUCCESS == srcMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_BASE_COLOR, 0), diffusePath)) {
-                textureFound = true;
-                CO_LOG_INFO("Found base color texture on material {}", material->m_name);
-            } else {
-                CO_LOG_TRACE("No base color texture found on material {}, trying ambient", material->m_name);
-            }
-        }
-
-        if(!textureFound) {
-            if (AI_SUCCESS == srcMaterial->Get(AI_MATKEY_TEXTURE(aiTextureType_AMBIENT, 0), diffusePath)) {
-                textureFound = true;
-                CO_LOG_INFO("Found ambient texture on material {}", material->m_name);
-
-            } else {
-                CO_LOG_TRACE("No ambient texture found on material {}", material->m_name);
-            }
-        }
-
-        if(!textureFound) CO_LOG_INFO("No textures for material {}", material->m_name);
+        if(diffuseTexturePath == nullptr) CO_LOG_INFO("No diffuse texture for material {}", material->m_name);
         else {
-            // find and convert texture
-            const aiTexture *foundTex = parsingScene->GetEmbeddedTexture(diffusePath.C_Str());
-            if (foundTex == nullptr) {
-                CO_LOG_TRACE("Texture is external: {}", std::string(diffusePath.C_Str()));
-                pathToConvert = diffusePath.C_Str();
-            } else {
-                CO_LOG_TRACE("Texture is embedded");
-                if(foundTex->mHeight==0){
-                    CO_LOG_TRACE("Texture is in compressed format, size: {} bytes", foundTex->mWidth);
-                    // can write directly to file
-                    pathToConvert = std::string("texture_tmp.") + foundTex->achFormatHint;
-                    FILE* outTexture = fopen(pathToConvert.c_str(), "wb");
-                    fwrite(foundTex->pcData, 1, foundTex->mWidth, outTexture);
-                    fclose(outTexture);
-                }else{
-                    CO_LOG_TRACE("Texture is in uncompressed format, size: {}x{}", foundTex->mWidth, foundTex->mHeight);
-                    CO_LOG_TRACE("Using FreeImage to save texture");
-                    if(!writeToTGA(foundTex, pathToConvert+"tga")){
-                        CO_LOG_ERR("Cannot write temporary texture for conversion. Skipping.");
-                        continue;
-                    }
-                }
-                CO_LOG_TRACE("Wrote temporary texture file to {}", pathToConvert);
-
-                //TODO start conversion using img2dds
-            }
+            material->setAlbedoMap(convertTexture(parsingScene, *diffuseTexturePath, material->m_name, ALBEDO));
         }
+
+        delete diffuseTexturePath;
     }
 }
