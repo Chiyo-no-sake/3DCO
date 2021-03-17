@@ -4,7 +4,7 @@
 
 #include "coScene.h"
 
-const std::map<std::string, coMaterial*> &coScene::getMMaterials() const {
+std::map<std::string, coMaterial*> &coScene::getMMaterials() {
     return m_materials;
 }
 

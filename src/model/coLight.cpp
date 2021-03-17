@@ -1,13 +1,13 @@
 #include "coLight.h"
 #include "memory.h"
 
-chunk_type coLight::getType() {
+chunk_type coLight::getChunkType() {
     return LIGHT;
 }
 
 char *coLight::toChunk(unsigned int *outSize) {
     chunk_header header;
-    header.type = getType();
+    header.type = getChunkType();
 
     unsigned int nodeDataSize;
     char *nodeDataBuffer = getNodeChunkData(&nodeDataSize);

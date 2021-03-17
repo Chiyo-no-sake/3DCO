@@ -13,7 +13,7 @@ void coMesh::setLODs(const std::vector<coMeshData *> &mMeshes) {
     m_LODs = mMeshes;
 }
 
-chunk_type coMesh::getType() {
+chunk_type coMesh::getChunkType() {
     return MESH;
 }
 
@@ -31,7 +31,7 @@ char *coMesh::getSkinningDataBuff(unsigned int *outSize) const {
 
 char *coMesh::toChunk(unsigned int *outSize) {
     chunk_header header;
-    header.type = getType();
+    header.type = getChunkType();
 
     unsigned int nodeDataSize;
     char *nodeDataBuffer = getNodeChunkData(&nodeDataSize);
@@ -54,8 +54,8 @@ char *coMesh::toChunk(unsigned int *outSize) {
     unsigned int lodsNum = m_numLods;
 
     // array of chunks
-    char *lodsChunks[lodsNum];
-    unsigned int lodsChunkSizes[lodsNum];
+    char **lodsChunks = (char**)malloc(lodsNum*sizeof(nullptr));
+    auto *lodsChunkSizes = new unsigned int[lodsNum];
     for (int i = 0; i < lodsNum; i++) {
         lodsChunks[i] = m_LODs[i]->toChunk(&(lodsChunkSizes[i]));
     }

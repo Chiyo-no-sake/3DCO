@@ -10,7 +10,7 @@
 #include "parsing/AssimpStrategy.h"
 #include "ovosdk/OVOExporter.h"
 
-#define FILENAME "cube.dae"
+#define FILENAME "cube_with_uncompressed_embedded.fbx"
 
 #ifdef _WINDOWS
 #define ASSETSDIR "..\\..\\tests\\assets\\"
@@ -23,13 +23,12 @@ int main(int argc, char* argv[]){
     Log::getInstance()->setLevel(spdlog::level::trace);
 
     //IMPORTING
-
     FileParser fp{};
     coScene* scene;
     fp.setStrategy(new AssimpStrategy());
     scene = fp.loadFromFile(std::string(ASSETSDIR) + std::string(FILENAME));
 
-    if(scene== nullptr)
+    if(scene==nullptr)
         return 1;
     //OPTIMIZATION
 

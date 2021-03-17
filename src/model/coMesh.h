@@ -15,11 +15,13 @@ enum meshType {
 class coMesh: public coNode {
 public:
     int m_numLods;
+    std::string m_matName;
+
     [[nodiscard]] std::vector<coMeshData *> &getLODs();
 
     void setLODs(const std::vector<coMeshData *> &mMeshes);
 
-    chunk_type getType() override;
+    chunk_type getChunkType() override;
 
     char *toChunk(unsigned int *outSize) override;
 

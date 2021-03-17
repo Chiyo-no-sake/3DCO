@@ -12,17 +12,13 @@
  *      Roughness value (0-1)
  *      Metalness value (0-1)
  *      Transparency value (0-1)
- *      optional data:
- *          * albedo map file name
- *          * normal map file name
+ *      optional data (solo per input pbr):
+ *          * albedo map file name --> questa anche per phong
+ *          * normal map file name --> " " " "
  *          * roughness map file name
  *          * metalness map file name
- *          * height map file name
+ *          * height map file name --> NO
  *
- *      PBR to Blinn-Phong conversion:
- *          albedo = 0.2*ambient + 0.5*diffuse + 0.3*specular
- *          roughness = (- shine/128 - 1)^2
- *          metalness = mean(specular)/mean(white);
  */
 class coMaterial {
 public:
