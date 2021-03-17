@@ -27,8 +27,15 @@ add_subdirectory(vendor/spdlog EXCLUDE_FROM_ALL)
 add_subdirectory(vendor/meshopt EXCLUDE_FROM_ALL)
 add_subdirectory(vendor/args EXCLUDE_FROM_ALL)
 
-link_directories(vendor/vhacd/linux)
-
+if(WIN32 OR MSVC)
+	if(CMAKE_BUILD_TYPE EQUAL "DEBUG")
+		link_directories(vendor/vhacd/windows/Debug)
+	else()
+		link_directories(vendor/vhacd/windows/Release)
+	endif()
+else()
+	link_directories(vendor/vhacd/linux)
+endif()
 # INCLUDING VENDOR DIRECTORIES
 
 include_directories(
