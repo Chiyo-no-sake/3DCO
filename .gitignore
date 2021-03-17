@@ -6,7 +6,7 @@ x64/
 .idea/
 .vs/
 cmake-build-debug/
-lib/
+/lib/
 draco/
 release-build/
 debug-build/

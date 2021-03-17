@@ -43,14 +43,19 @@ include_directories(
 if(WIN32)
 	link_directories(vendor/FreeImage/win/lib)
 else()
-	link_directories(vendor/FreeImage/linux/lib)
+	link_directories(vendor/FreeImage/linux)
 endif()
 
 # LINK VENDOR LIBRARIES (DYNAMIC)
 
 link_libraries(assimp)
 link_libraries(meshoptimizer)
-link_libraries(FreeImage)
+
+if(WIN32)
+	link_libraries(FreeImage)
+else()
+	link_libraries(freeimage)
+endif()
 
 # DEFINE DEFAULT PROJECT EXECUTABLE
 
