@@ -3,6 +3,7 @@
 //
 
 #include "coMaterial.h"
+#include <memory.h>
 
 const std::string &coMaterial::getAlbedoMap() const {
     return m_albedoMap;
