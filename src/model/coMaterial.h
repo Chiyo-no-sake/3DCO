@@ -1,9 +1,10 @@
 #pragma once
 
 #include <string>
+#include <common/IChunkable.h>
 #include "glm/glm.hpp"
 
-class coMaterial {
+class coMaterial : public IChunkable{
 public:
     std::string m_name;
     glm::vec3 m_emission;
@@ -31,6 +32,10 @@ public:
     [[nodiscard]] const std::string &getHeightMap() const;
 
     void setHeightMap(const std::string &heightMap);
+
+    chunk_type getChunkType();
+
+    char *toChunk(unsigned int *outSize) override;
 
 private:
     bool m_hasAlbedoMap = false;

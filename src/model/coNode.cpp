@@ -73,7 +73,6 @@ char *coNode::getNodeChunkData(unsigned int * outSize) {
 
     strcpy(outBuff+offset, targetName.c_str());
 
-    // set out size
     *outSize = bytes;
     return outBuff;
 }
