@@ -130,7 +130,7 @@ user_flags *parseArguments(int argc, char *argv[]) {
             flags->_steps.push_back(new IndexingStep{});
             flags->_steps.push_back(new CacheOptimizationStep{});
             flags->_steps.push_back(new OverdrawOptimizationStep{});
-            //flags->_steps.push_back(new VertexFetchOptimizationStep{}); //--> causes vertex sbarellation
+            //flags->_steps.push_back(new VertexFetchOptimizationStep{}); //--> TODO: causes vertex sbarellation, vedi todo nella classe
         }
 
     } else flags->_doOptimize = 1;

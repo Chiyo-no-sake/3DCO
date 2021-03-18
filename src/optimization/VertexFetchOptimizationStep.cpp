@@ -6,6 +6,12 @@
 #include <meshoptimizer.h>
 #include "VertexFetchOptimizationStep.h"
 
+/*TODO:
+ * 1) optimizeVertexFetch non sembra accettare glm::vec3 come argomenti
+ * 2) nel caso li accetti, non credo che passare lo stesso array funzioni
+ *      per via delle modifiche "concorrenti" all'array
+*/
+
 void VertexFetchOptimizationStep::execute() {
 
     CO_LOG_INFO("Initiating vertex fetch optimization step...");
