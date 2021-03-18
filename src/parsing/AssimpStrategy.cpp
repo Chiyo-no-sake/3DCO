@@ -309,72 +309,13 @@ void parseMaterials(coScene *targetScene) {
 
         CO_LOG_INFO("Parsing material {}", material->m_name);
 
-        //TODO: glTF get directly pbr data
-
-        // albedo == ambient
-        // roughness ||--> shininess
-        // emission  ||--> 0,0,0
-        // opacity ||--> 1
-        // metalness ||--> 0
-
-        aiColor3D srcAmbient = aiColor3D(.1, .1, .1);
-        aiColor3D srcSpecular = aiColor3D(1, 1, 1);
-        aiColor3D srcDiffuse = aiColor3D(.3, .3, .3);
-        aiColor3D srcEmission = aiColor3D(0, 0, 0);
-        aiColor3D srcAlbedo = aiColor3D(.3, .3, .3);
-        float srcRoughness = 0;
-        float srcShininess;
-        float srcOpacity;
+        material->m_albedo = getAlbedoColor(srcMaterial);
+        material->m_emission = getEmissionColor(srcMaterial);
+        material->m_roughness = getRoughnessValue(srcMaterial);
+        material->m_metalness = getMetalnessValue(srcMaterial);
+        material->m_transparency = 1 - getOpacityValue(srcMaterial);
 
         // ########################### Getting material colors #########################################################
-        if (AI_SUCCESS != srcMaterial->Get(AI_MATKEY_COLOR_AMBIENT, srcAmbient)) {
-            CO_LOG_WARN("Material {} has no ambient color. Setting default", material->m_name);
-        }
-        CO_LOG_TRACE("Material ambient set to: {}, {}, {}", srcAmbient.r, srcAmbient.g, srcAmbient.b);
-
-        if (AI_SUCCESS != srcMaterial->Get(AI_MATKEY_COLOR_SPECULAR, srcSpecular)) {
-            CO_LOG_WARN("Material {} has no specular color. Setting default", material->m_name);
-        }
-        CO_LOG_TRACE("Material specular set to: {}, {}, {}", srcSpecular.r, srcSpecular.g, srcSpecular.b);
-
-        if (AI_SUCCESS != srcMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, srcDiffuse)) {
-            CO_LOG_WARN("Material {} has no diffuse color. Setting default", material->m_name);
-        }
-        CO_LOG_TRACE("Material diffuse set to: {}, {}, {}", srcDiffuse.r, srcDiffuse.g, srcDiffuse.b);
-
-        if (AI_SUCCESS != srcMaterial->Get(AI_MATKEY_COLOR_EMISSIVE, srcEmission)) {
-            CO_LOG_WARN("Material {} has no emissive color. Setting default", material->m_name);
-        }
-        CO_LOG_TRACE("Material emission set to: {}, {}, {}", srcEmission.r, srcEmission.g, srcEmission.b);
-
-        if (AI_SUCCESS != srcMaterial->Get(AI_MATKEY_SHININESS, srcShininess)) {
-            CO_LOG_WARN("Material {} has no shininess value. Setting default", material->m_name);
-            srcShininess = 0.5;
-        }
-        CO_LOG_TRACE("Material shininess set to: {}", srcShininess);
-
-        if (AI_SUCCESS != srcMaterial->Get(AI_MATKEY_OPACITY, srcOpacity)) {
-            CO_LOG_WARN("Material {} has no opacity value. Setting default", material->m_name);
-            srcOpacity = 1;
-        }
-        CO_LOG_TRACE("Material opacity set to: {}", srcOpacity);
-        // ########################### Getting material colors #########################################################
-
-
-        // ########################### Converting material colors ######################################################
-        auto ambient = convertColor(srcAmbient);
-        auto diffuse = convertColor(srcDiffuse);
-        auto specular = convertColor(srcSpecular);
-        auto emission = convertColor(srcEmission);
-
-        CO_LOG_TRACE("Converting material {} to PBR", material->m_name);
-
-        auto albedo = 0.1f * ambient + 0.6f * diffuse + 0.3f * specular;
-        material->m_albedo = albedo;
-        material->m_emission = emission;
-        material->m_roughness = glm::max(glm::pow(1 - srcShininess / 128, 2), 0.01);
-        material->m_transparency = 1 - srcOpacity;
-        material->m_metalness = 0.0f;
 
         CO_LOG_TRACE("Converted values:\n"
                      "\talbedo: {}, {}, {}\n"
@@ -391,17 +332,46 @@ void parseMaterials(coScene *targetScene) {
 
         // ########################### Gathering textures ##############################################################
 
-        std::string* diffuseTexturePath = tryGeDiffusePath(srcMaterial);
-        // std::string* opacityTexturePath = tryGetOpacityMap()
-        // std::string* normalTexturePath = tryGetNormalMap()
-        // std::string* metallicTexturePath = tryGetMetallicMap()
-        // std::string* roughnessTexturePath = tryGetRoughnessMap()
+        std::string* diffuseTexturePath = tryGetDiffusePath(srcMaterial);
+        std::string* opacityTexturePath = tryGetOpacityPath(srcMaterial);
+        std::string* normalTexturePath = tryGetNormalPath(srcMaterial);
+        std::string* metallicTexturePath = tryGetMetallicPath(srcMaterial);
+        std::string* roughnessTexturePath = tryGetRoughnessPath(srcMaterial);
 
-        if(diffuseTexturePath == nullptr) CO_LOG_INFO("No diffuse texture for material {}", material->m_name);
+        if(diffuseTexturePath == nullptr) CO_LOG_TRACE("No diffuse texture for material {}", material->m_name);
         else {
-            material->setAlbedoMap(convertTexture(parsingScene, *diffuseTexturePath, material->m_name, ALBEDO));
+            if(opacityTexturePath != nullptr) {
+                CO_LOG_INFO("Opacity map found, including in albedo");
+                material->setAlbedoMap(convertTexture(parsingScene, *diffuseTexturePath, material->m_name, ALBEDO, *opacityTexturePath));
+            }else {
+                material->setAlbedoMap(convertTexture(parsingScene, *diffuseTexturePath, material->m_name, ALBEDO));
+            }
         }
 
+        if(normalTexturePath == nullptr) CO_LOG_TRACE("No normal map for material {}", material->m_name);
+        else{
+            material->setNormalMap(convertTexture(parsingScene, *normalTexturePath, material->m_name, NORMAL));
+        }
+
+
+        //TODO
+//        if(metallicTexturePath == nullptr) CO_LOG_TRACE("No metallic map for material {}", material->m_name);
+//        else{
+//            material->setMetalnessMap(convertTexture(parsingScene, *metallicTexturePath, material->m_name, METAL));
+//        }
+        material->setMetalnessMap(std::string{"[none]"});
+
+        //TODO
+//        if(roughnessTexturePath == nullptr) CO_LOG_TRACE("No roughness map for material {}", material->m_name);
+//        else{
+//            material->setRoughnessMap(convertTexture(parsingScene, *roughnessTexturePath, material->m_name, ROUGH));
+//        }
+        material->setRoughnessMap(std::string{"[none]"});
+
+        delete normalTexturePath;
+        delete metallicTexturePath;
+        delete roughnessTexturePath;
+        delete opacityTexturePath;
         delete diffuseTexturePath;
     }
 }

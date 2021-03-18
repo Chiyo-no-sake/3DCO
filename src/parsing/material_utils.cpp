@@ -1,12 +1,13 @@
 #include "material_utils.h"
 
 #include <assimp/scene.h>
+#include <assimp/pbrmaterial.h>
 #include "assimp/texture.h"
 #include "log/Log.h"
 #include "FreeImage.h"
 #include "utils/file_utils.h"
 
-std::string* tryGeDiffusePath(aiMaterial* material){
+std::string* tryGetDiffusePath(aiMaterial* material){
     aiString diffusePath;
     bool textureFound = false;
 
@@ -37,6 +38,121 @@ std::string* tryGeDiffusePath(aiMaterial* material){
     }
 
     return textureFound ? new std::string(diffusePath.C_Str()) : nullptr;
+}
+
+std::string* tryGetNormalPath(aiMaterial* material){
+    aiString normalPath;
+    bool textureFound = false;
+
+    if(AI_SUCCESS == material->Get(AI_MATKEY_TEXTURE(aiTextureType_NORMALS, 0), normalPath)){
+        textureFound = true;
+        CO_LOG_INFO("Found normal texture on material {}", std::string(material->GetName().C_Str()));
+    }else{
+        CO_LOG_TRACE("No normal texture found on material {}", std::string(material->GetName().C_Str()));
+    }
+    return textureFound ? new std::string(normalPath.C_Str()) : nullptr;
+}
+
+std::string* tryGetMetallicPath(aiMaterial* material){
+    aiString metallicPath;
+    bool textureFound = false;
+
+    if(AI_SUCCESS == material->Get(AI_MATKEY_TEXTURE(aiTextureType_METALNESS, 0), metallicPath)){
+        textureFound = true;
+        CO_LOG_INFO("Found metalness texture on material {}", std::string(material->GetName().C_Str()));
+    }else{
+        CO_LOG_TRACE("No metalness texture found on material {}", std::string(material->GetName().C_Str()));
+    }
+    return textureFound ? new std::string(metallicPath.C_Str()) : nullptr;
+}
+
+std::string* tryGetRoughnessPath(aiMaterial* material){
+    aiString roughnessPath;
+    bool textureFound = false;
+
+    if(AI_SUCCESS == material->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE_ROUGHNESS, 0), roughnessPath)){
+        textureFound = true;
+        CO_LOG_INFO("Found roughness texture on material {}", std::string(material->GetName().C_Str()));
+    }else{
+        CO_LOG_TRACE("No roughness texture found on material {}", std::string(material->GetName().C_Str()));
+    }
+    return textureFound ? new std::string(roughnessPath.C_Str()) : nullptr;
+}
+
+std::string* tryGetOpacityPath(aiMaterial* material){
+    aiString opacityPath;
+    bool textureFound = false;
+
+    if(AI_SUCCESS == material->Get(AI_MATKEY_TEXTURE(aiTextureType_OPACITY, 0), opacityPath)){
+        textureFound = true;
+        CO_LOG_INFO("Found opacity texture on material {}", std::string(material->GetName().C_Str()));
+    }else{
+        CO_LOG_TRACE("No opacity texture found on material {}", std::string(material->GetName().C_Str()));
+    }
+    return textureFound ? new std::string(opacityPath.C_Str()) : nullptr;
+}
+
+glm::vec3 getAlbedoColor(aiMaterial* material){
+    aiColor3D color;
+
+    if (AI_SUCCESS != material->Get(AI_MATKEY_COLOR_DIFFUSE, color)) {
+        CO_LOG_WARN("Material {} has no albedo color. Setting default", std::string(material->GetName().C_Str()));
+        color = {.3,.3,.3};
+    }
+    CO_LOG_TRACE("Material diffuse set to: {}, {}, {}", color.r, color.g, color.b);
+    return {color.r, color.g, color.b};
+}
+
+glm::vec3 getEmissionColor(aiMaterial* material){
+    aiColor3D color;
+
+    if (AI_SUCCESS != material->Get(AI_MATKEY_COLOR_EMISSIVE, color)) {
+        CO_LOG_WARN("Material {} has no emissive color. Setting default", std::string(material->GetName().C_Str()));
+        color = {0,0,0};
+    }
+    CO_LOG_TRACE("Material emission set to: {}, {}, {}", color.r, color.g, color.b);
+    return {color.r, color.g, color.b};
+}
+
+float getOpacityValue(aiMaterial* material) {
+    float value;
+
+    if (AI_SUCCESS != material->Get(AI_MATKEY_OPACITY, value)) {
+        CO_LOG_WARN("Material {} has no opacity value. Setting default", std::string(material->GetName().C_Str()));
+        value = 1;
+    }
+
+    CO_LOG_TRACE("Material opacity set to: {}", value);
+    return value;
+}
+
+float getMetalnessValue(aiMaterial* material) {
+    float value;
+
+    if (AI_SUCCESS != material->Get(AI_MATKEY_GLTF_PBRMETALLICROUGHNESS_METALLIC_FACTOR, value)) {
+        CO_LOG_WARN("Material {} has no metalness value. Setting default", std::string(material->GetName().C_Str()));
+        value = 0;
+    }
+
+    CO_LOG_TRACE("Material metalness set to: {}", value);
+    return value;
+}
+
+float getRoughnessValue(aiMaterial* material){
+    float value;
+
+    if (AI_SUCCESS != material->Get(AI_MATKEY_GLTF_PBRMETALLICROUGHNESS_ROUGHNESS_FACTOR, value)) {
+        CO_LOG_WARN("Material {} has no roughness value. Converting from phong", std::string(material->GetName().C_Str()));
+        float shine;
+        if (AI_SUCCESS != material->Get(AI_MATKEY_SHININESS, shine)) {
+            CO_LOG_WARN("Material {} has no shininess value. Setting default roughness", std::string(material->GetName().C_Str()));
+            value = 0.001;
+        }
+        value = glm::max(glm::pow(1 - shine / 128, 2), 0.01);
+    }
+
+    CO_LOG_TRACE("Material roughness set to: {}", value);
+    return value;
 }
 
 bool writeToTGA(const aiTexture* tex, std::string outPath){
@@ -106,14 +222,35 @@ std::string convertTexture(const aiScene* parsingScene, const std::string& textu
     std::stringstream args{};
     std::string outPath = pathToConvert;
 
+    std::string typePostfix;
+
+    switch(type){
+        case ALBEDO:
+            typePostfix = "_albedo";
+            break;
+        case NORMAL:
+            typePostfix = "_normal";
+            break;
+        case METAL:
+            typePostfix = "_metal";
+            break;
+        case HEIGHT:
+            typePostfix = "_height";
+            break;
+        case ROUGH:
+            typePostfix = "_rough";
+            break;
+    }
+
     if(!external){
-        outPath = materialName + "_diffuse.dds";
+        outPath = materialName + typePostfix + ".dds";
     }else {
         outPath.replace(outPath.length() - 3, 3, "dds");
     }
     args << "img2dds" << EXE_POSTFIX;
 
-    if(type == ALBEDO)
+    // TODO chiedi al prof come metalness e roughness devono essere convertite in dds
+    if(type == ALBEDO) // || METAL || ROUGH
         args << " t ";
     else if(type == NORMAL)
         args << " n ";
@@ -143,4 +280,5 @@ std::string convertTexture(const aiScene* parsingScene, const std::string& textu
 
     return success ? outPath : "[none]";
 }
+
 
