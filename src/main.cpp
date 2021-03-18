@@ -130,7 +130,7 @@ user_flags *parseArguments(int argc, char *argv[]) {
             flags->_steps.push_back(new IndexingStep{});
             flags->_steps.push_back(new CacheOptimizationStep{});
             flags->_steps.push_back(new OverdrawOptimizationStep{});
-            flags->_steps.push_back(new VertexFetchOptimizationStep{});
+            //flags->_steps.push_back(new VertexFetchOptimizationStep{}); //--> causes vertex sbarellation
         }
 
     } else flags->_doOptimize = 1;
@@ -139,6 +139,8 @@ user_flags *parseArguments(int argc, char *argv[]) {
 
 }
 
+
+//TODO copy texture to output folder when written
 int main(int argc, char *argv[]) {
 
     // HANDLE PROGRAM ARGUMENTS

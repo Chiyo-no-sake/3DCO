@@ -29,9 +29,9 @@ void exportNodeRecursive(coNode *node, FILE *file) {
 }
 
 void exportMaterial(coMaterial *material, FILE *file) {
-    CO_LOG_TRACE("Exporting materials");
+    CO_LOG_TRACE("Exporting material {}", material->m_name);
     exportChunk(material, file);
-    CO_LOG_TRACE("Exported materials");
+    CO_LOG_TRACE("Exported material {}", material->m_name);
 }
 
 bool OVOExporter::exportTo(coScene *scene, const char *path) {
