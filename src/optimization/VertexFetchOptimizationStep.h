@@ -1,10 +1,4 @@
-//
-// Created by Simone Belingheri on 10/03/2021.
-//
-
-#ifndef INC_3DCO_VERTEXFETCHOPTIMIZATIONSTEP_H
-#define INC_3DCO_VERTEXFETCHOPTIMIZATIONSTEP_H
-
+#pragma once
 
 #include "OptimizationStep.h"
 
@@ -15,5 +9,3 @@ public:
 
 };
 
-
-#endif //INC_3DCO_VERTEXFETCHOPTIMIZATIONSTEP_H

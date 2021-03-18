@@ -6,7 +6,7 @@
 int executeCommand(const std::string &cmd, bool verbose) {
     std::string result;
 
-    auto pipe = P_OPEN(("./"+cmd).c_str(), "r"); // get rid of shared_ptr
+    auto pipe = P_OPEN((std::string(".") + SEPARATOR + cmd).c_str(), "r"); // get rid of shared_ptr
 
     if (!pipe) return 1;
 
@@ -17,5 +17,5 @@ int executeCommand(const std::string &cmd, bool verbose) {
                 putchar(c);
         }
 
-    return pclose(pipe);
+    return P_CLOSE(pipe);
 }

@@ -9,12 +9,14 @@
 #define SEPARATOR "\\"
 #define EXE_POSTFIX ".exe"
 #define P_OPEN _popen
+#define P_CLOSE _pclose
 #else
 #include <unistd.h>
 #define GetCurrentDir getcwd
 #define SEPARATOR "/"
 #define EXE_POSTFIX ""
 #define P_OPEN popen
+#define P_CLOSE pclose
 #endif
 
 //std::string getWinTempDirectory(){

@@ -54,7 +54,7 @@ char *coMesh::toChunk(unsigned int *outSize) {
     unsigned int lodsNum = m_numLods;
 
     // array of chunks
-    char **lodsChunks = (char**)malloc(lodsNum*sizeof(nullptr));
+    char **lodsChunks = (char **) malloc(lodsNum * sizeof(nullptr));
     auto *lodsChunkSizes = new unsigned int[lodsNum];
     for (int i = 0; i < lodsNum; i++) {
         lodsChunks[i] = m_LODs[i]->toChunk(&(lodsChunkSizes[i]));
@@ -100,7 +100,7 @@ char *coMesh::toChunk(unsigned int *outSize) {
     offset += sizeof(meshType);
 
     strcpy(chunk + offset, matName.c_str());
-    offset += matName.size()+1;
+    offset += matName.size() + 1;
 
     memcpy(chunk + offset, &meshRadius, sizeof(meshRadius));
     offset += sizeof(meshRadius);
@@ -143,12 +143,12 @@ char *coMesh::toChunk(unsigned int *outSize) {
 float coMesh::computeMeshRadius() const {
     float maxDist;
 
-    coMeshData* firstLod = m_LODs[0];
+    coMeshData *firstLod = m_LODs[0];
     maxDist = glm::length(firstLod->getMVertices()[0]);
 
-    for(int i=1; i<firstLod->m_numVertices; i++){
+    for (int i = 1; i < firstLod->m_numVertices; i++) {
         float dist = glm::length(firstLod->getMVertices()[i]);
-        if(dist > maxDist){
+        if (dist > maxDist) {
             maxDist = dist;
         }
     }
@@ -161,16 +161,16 @@ glm::vec3 coMesh::findBoundingBoxMin() const {
     float minY;
     float minZ;
 
-    glm::vec3* vertices = m_LODs[0]->getMVertices();
+    glm::vec3 *vertices = m_LODs[0]->getMVertices();
     minX = vertices[0].x;
     minY = vertices[0].y;
     minZ = vertices[0].z;
 
-    for(int i=1; i<m_LODs[0]->m_numVertices; i++){
-        glm::vec3& v = vertices[i];
-        if(v.x < minX) minX=v.x;
-        if(v.y < minY) minY=v.y;
-        if(v.z < minZ) minZ=v.z;
+    for (int i = 1; i < m_LODs[0]->m_numVertices; i++) {
+        glm::vec3 &v = vertices[i];
+        if (v.x < minX) minX = v.x;
+        if (v.y < minY) minY = v.y;
+        if (v.z < minZ) minZ = v.z;
     }
 
     return {minX, minY, minZ};
@@ -181,16 +181,16 @@ glm::vec3 coMesh::findBoundingBoxMax() const {
     float maxY;
     float maxZ;
 
-    glm::vec3* vertices = m_LODs[0]->getMVertices();
+    glm::vec3 *vertices = m_LODs[0]->getMVertices();
     maxX = vertices[0].x;
     maxY = vertices[0].y;
     maxZ = vertices[0].z;
 
-    for(int i=1; i<m_LODs[0]->m_numVertices; i++){
-        glm::vec3& v = vertices[i];
-        if(v.x>maxX) maxX=v.x;
-        if(v.y>maxY) maxY=v.y;
-        if(v.z>maxZ) maxZ=v.z;
+    for (int i = 1; i < m_LODs[0]->m_numVertices; i++) {
+        glm::vec3 &v = vertices[i];
+        if (v.x > maxX) maxX = v.x;
+        if (v.y > maxY) maxY = v.y;
+        if (v.z > maxZ) maxZ = v.z;
     }
 
     return {maxX, maxY, maxZ};
