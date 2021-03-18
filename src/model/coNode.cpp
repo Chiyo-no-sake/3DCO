@@ -28,13 +28,13 @@ coNode *coNode::findInChildren(std::string nodeName) {
     return nullptr;
 }
 
-chunk_type coNode::getType() {
+chunk_type coNode::getChunkType() {
     return NODE;
 }
 
 char *coNode::toChunk(unsigned int *outSize) {
     chunk_header header;
-    header.type = this->getType();
+    header.type = this->getChunkType();
 
     unsigned int nodeDataSize;
     char* nodeBuffer = getNodeChunkData(&nodeDataSize);

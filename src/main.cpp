@@ -9,8 +9,6 @@
 #include "ovosdk/OVOExporter.h"
 #include <args.hxx>
 
-#define FILENAME "cube.dae"
-
 #ifdef _WINDOWS
 #define ASSETSDIR "..\\..\\tests\\assets\\"
 #else
@@ -113,23 +111,18 @@ user_flags *parseArguments(int argc, char* argv[]){
 }
 
 int main(int argc, char* argv[]){
-
-    // HANDLE PROGRAM ARGUMENTS
-
     user_flags *flags = parseArguments(argc, argv);
 
     if(flags->_abort == 1)
         return 1;
 
     //IMPORT SCENE
-
     FileParser fp{};
     coScene* scene;
     fp.setStrategy(new AssimpStrategy());
-   // scene = fp.loadFromFile(std::string(ASSETSDIR) + std::string(FILENAME));
     scene = fp.loadFromFile(flags->_filePath);
 
-    if(scene== nullptr)
+    if(scene==nullptr)
         return 1;
 
     //OPTIMIZATION

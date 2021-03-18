@@ -1,7 +1,7 @@
 #include <log/Log.h>
 #include "FileParser.h"
 
-#include "utils/files.h"
+#include "utils/file_utils.h"
 
 
 FileParser::FileParser(ParsingStrategy* strategy) : m_strategy(strategy) {

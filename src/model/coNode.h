@@ -35,7 +35,7 @@ public:
 
     coNode *findInChildren(std::string nodeName);
 
-    virtual chunk_type getType();
+    virtual chunk_type getChunkType();
 
     char *toChunk(unsigned int *outSize) override;
 };

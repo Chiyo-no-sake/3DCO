@@ -4,8 +4,12 @@
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
 #include "assimp/scene.h"
-#include "glm/glm.hpp"
 #include "../log/Log.h"
+#include "utils/file_utils.h"
+#include <FreeImage.h>
+#include "material_utils.h"
+#include <sstream>
+#include <assimp/pbrmaterial.h>
 
 const aiScene *parsingScene;
 
@@ -19,7 +23,7 @@ glm::mat4 convertMatrix(const aiMatrix4x4 &aiMat);
 
 coMeshData *parseMesh(unsigned int meshIndex);
 
-inline glm::vec3 convertColor(aiColor3D c) {
+inline glm::vec3 convertColor(const aiColor3D& c) {
     return glm::vec3{c.r, c.g, c.b};
 }
 
@@ -49,6 +53,12 @@ void AssimpStrategy::execute() {
                                              aiProcess_JoinIdenticalVertices |
                                              aiProcess_GenSmoothNormals |
                                              aiProcess_FindInvalidData);
+
+    if(scene == nullptr) {
+        CO_LOG_ERR("Cannot not parse {}", m_filepath);
+        return;
+    }
+
     parsingScene = scene;
     CO_LOG_INFO("Finished parsing");
 
@@ -139,30 +149,6 @@ void parseLightData(coLight *targetNode, int lightIndex) {
     CO_LOG_TRACE("light volumetric lighting set to 0");
 }
 
-void parseMaterials(coScene *targetScene) {
-    for (unsigned int i = 0; i < parsingScene->mNumMaterials; i++) {
-        auto material = new coMaterial();
-        auto srcMaterial = parsingScene->mMaterials[i];
-
-        material->m_name = srcMaterial->GetName().C_Str();
-
-        // TODO:
-        //  1) search for maps
-        //  2) handle pbr data that is inaccessible from assimp
-        //  3) add material to scene
-
-        aiColor3D srcAmbient;
-
-        // get material albedo
-        if (AI_SUCCESS == srcMaterial->Get(AI_MATKEY_COLOR_AMBIENT, srcAmbient)) {
-            material->m_albedo = convertColor(srcAmbient) / 0.2f;
-        } else {
-            CO_LOG_WARN("Material {} has no ambient color", material->m_name);
-        }
-
-    }
-}
-
 int getLightIndexFor(aiNode *aiNode) {
     for (auto i = 0; i < parsingScene->mNumLights; i++) {
         if (parsingScene->mLights[i]->mName == aiNode->mName)
@@ -192,14 +178,11 @@ coNode *parseNode(aiNode *aiNode) {
             CO_LOG_INFO("node {} is a mesh", aiNode->mName.C_Str());
             auto mesh = new coMesh();
             mesh->m_numLods = aiNode->mNumMeshes;
-            // node has meshes, add them to mesh list
 
             CO_LOG_INFO("found {} LODs", aiNode->mNumMeshes);
-
             for (unsigned int i = 0; i < aiNode->mNumMeshes; i++) {
                 mesh->getLODs().push_back(parseMesh(aiNode->mMeshes[i]));
             }
-
             node = (coNode *) mesh;
 
             parsed->getMMeshes().push_back(mesh);
@@ -230,8 +213,7 @@ coNode *parseNode(aiNode *aiNode) {
 
 coMeshData *parseMesh(unsigned int meshIndex) {
     // TODO
-    //  1) look for bones
-    //  2) look for material, find in scene and set id
+    //  look for material, find in scene and set id
 
     CO_LOG_INFO("converting mesh");
 
@@ -316,3 +298,110 @@ coMeshData *parseMesh(unsigned int meshIndex) {
     return newMesh;
 }
 
+
+void parseMaterials(coScene *targetScene) {
+    for (unsigned int i = 0; i < parsingScene->mNumMaterials; i++) {
+        auto material = new coMaterial();
+        auto srcMaterial = parsingScene->mMaterials[i];
+
+        material->m_name = srcMaterial->GetName().C_Str();
+        targetScene->getMMaterials().emplace(material->m_name, material);
+
+        CO_LOG_INFO("Parsing material {}", material->m_name);
+
+        //TODO: glTF get directly pbr data
+
+        // albedo == ambient
+        // roughness ||--> shininess
+        // emission  ||--> 0,0,0
+        // opacity ||--> 1
+        // metalness ||--> 0
+
+        aiColor3D srcAmbient = aiColor3D(.1, .1, .1);
+        aiColor3D srcSpecular = aiColor3D(1, 1, 1);
+        aiColor3D srcDiffuse = aiColor3D(.3, .3, .3);
+        aiColor3D srcEmission = aiColor3D(0, 0, 0);
+        aiColor3D srcAlbedo = aiColor3D(.3, .3, .3);
+        float srcRoughness = 0;
+        float srcShininess;
+        float srcOpacity;
+
+        // ########################### Getting material colors #########################################################
+        if (AI_SUCCESS != srcMaterial->Get(AI_MATKEY_COLOR_AMBIENT, srcAmbient)) {
+            CO_LOG_WARN("Material {} has no ambient color. Setting default", material->m_name);
+        }
+        CO_LOG_TRACE("Material ambient set to: {}, {}, {}", srcAmbient.r, srcAmbient.g, srcAmbient.b);
+
+        if (AI_SUCCESS != srcMaterial->Get(AI_MATKEY_COLOR_SPECULAR, srcSpecular)) {
+            CO_LOG_WARN("Material {} has no specular color. Setting default", material->m_name);
+        }
+        CO_LOG_TRACE("Material specular set to: {}, {}, {}", srcSpecular.r, srcSpecular.g, srcSpecular.b);
+
+        if (AI_SUCCESS != srcMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, srcDiffuse)) {
+            CO_LOG_WARN("Material {} has no diffuse color. Setting default", material->m_name);
+        }
+        CO_LOG_TRACE("Material diffuse set to: {}, {}, {}", srcDiffuse.r, srcDiffuse.g, srcDiffuse.b);
+
+        if (AI_SUCCESS != srcMaterial->Get(AI_MATKEY_COLOR_EMISSIVE, srcEmission)) {
+            CO_LOG_WARN("Material {} has no emissive color. Setting default", material->m_name);
+        }
+        CO_LOG_TRACE("Material emission set to: {}, {}, {}", srcEmission.r, srcEmission.g, srcEmission.b);
+
+        if (AI_SUCCESS != srcMaterial->Get(AI_MATKEY_SHININESS, srcShininess)) {
+            CO_LOG_WARN("Material {} has no shininess value. Setting default", material->m_name);
+            srcShininess = 0.5;
+        }
+        CO_LOG_TRACE("Material shininess set to: {}", srcShininess);
+
+        if (AI_SUCCESS != srcMaterial->Get(AI_MATKEY_OPACITY, srcOpacity)) {
+            CO_LOG_WARN("Material {} has no opacity value. Setting default", material->m_name);
+            srcOpacity = 1;
+        }
+        CO_LOG_TRACE("Material opacity set to: {}", srcOpacity);
+        // ########################### Getting material colors #########################################################
+
+
+        // ########################### Converting material colors ######################################################
+        auto ambient = convertColor(srcAmbient);
+        auto diffuse = convertColor(srcDiffuse);
+        auto specular = convertColor(srcSpecular);
+        auto emission = convertColor(srcEmission);
+
+        CO_LOG_TRACE("Converting material {} to PBR", material->m_name);
+
+        auto albedo = 0.1f * ambient + 0.6f * diffuse + 0.3f * specular;
+        material->m_albedo = albedo;
+        material->m_emission = emission;
+        material->m_roughness = glm::max(glm::pow(1 - srcShininess / 128, 2), 0.01);
+        material->m_transparency = 1 - srcOpacity;
+        material->m_metalness = 0.0f;
+
+        CO_LOG_TRACE("Converted values:\n"
+                     "\talbedo: {}, {}, {}\n"
+                     "\temission: {}, {}, {}\n"
+                     "\troughness: {}\n"
+                     "\ttransparency: {}\n"
+                     "\tmetalness: {}",
+                     material->m_albedo.r, material->m_albedo.g, material->m_albedo.b,
+                     material->m_emission.r, material->m_emission.g, material->m_emission.b,
+                     material->m_roughness,
+                     material->m_transparency,
+                     material->m_metalness);
+        // ########################### Converting material colors ######################################################
+
+        // ########################### Gathering textures ##############################################################
+
+        std::string* diffuseTexturePath = tryGeDiffusePath(srcMaterial);
+        // std::string* opacityTexturePath = tryGetOpacityMap()
+        // std::string* normalTexturePath = tryGetNormalMap()
+        // std::string* metallicTexturePath = tryGetMetallicMap()
+        // std::string* roughnessTexturePath = tryGetRoughnessMap()
+
+        if(diffuseTexturePath == nullptr) CO_LOG_INFO("No diffuse texture for material {}", material->m_name);
+        else {
+            material->setAlbedoMap(convertTexture(parsingScene, *diffuseTexturePath, material->m_name, ALBEDO));
+        }
+
+        delete diffuseTexturePath;
+    }
+}

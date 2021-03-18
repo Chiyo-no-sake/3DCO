@@ -27,7 +27,7 @@ public:
     char m_volumetricLighting;
     char m_shadowCasting;
 
-    chunk_type getType() override;
+    chunk_type getChunkType() override;
 
     static std::string typeToString(lightType l){
         switch(l){

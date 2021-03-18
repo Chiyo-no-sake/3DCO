@@ -1,9 +1,4 @@
-//
-// Created by kalu on 3/10/21.
-//
-
-#ifndef INC_3DCO_COMESH_H
-#define INC_3DCO_COMESH_H
+#pragma once
 
 #include "coNode.h"
 #include "coMeshData.h"
@@ -14,14 +9,14 @@ enum meshType {
 
 class coMesh: public coNode {
 public:
-
     unsigned int m_numLods;
+    std::string m_matName;
 
     [[nodiscard]] std::vector<coMeshData *> &getLODs();
 
     void setLODs(const std::vector<coMeshData *> &mMeshes);
 
-    chunk_type getType() override;
+    chunk_type getChunkType() override;
 
     char *toChunk(unsigned int *outSize) override;
 
@@ -34,6 +29,3 @@ private:
     char* getPhysicsDataBuff(unsigned int* outSize) const;
     char* getSkinningDataBuff(unsigned int* outSize) const;
 };
-
-
-#endif //INC_3DCO_COMESH_H

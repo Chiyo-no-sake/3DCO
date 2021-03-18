@@ -15,7 +15,7 @@ private:
 public:
     coNode* m_rootNode;
 
-    [[nodiscard]] const std::map<std::string, coMaterial*> &getMMaterials() const;
+    [[nodiscard]] std::map<std::string, coMaterial*> &getMMaterials();
 
     void setMMaterials(const std::map<std::string, coMaterial*> &mMaterials);
 

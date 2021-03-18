@@ -6,10 +6,12 @@ x64/
 .idea/
 .vs/
 cmake-build-debug/
-lib/
+/lib/
 draco/
-Makefile
-draco.pc
+release-build/
+debug-build/
+Testing/
+.swp
 *.sln
 *.user
 *.vcxproj
@@ -18,12 +20,6 @@ draco.pc
 *.xml
 *.iml
 *.cbp
-<<<<<<< HEAD
-release-build/
-debug-build/
-=======
->>>>>>> afdc248be2adcbfe9834ec1193721f20631784e3
-Testing/
 CMakeCache.txt
-debug-build/
-debug-release/
+Makefile
+draco.pc
