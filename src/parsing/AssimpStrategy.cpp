@@ -370,7 +370,6 @@ void parseMaterials(coScene *targetScene) {
         material->m_emission = emission;
         material->m_roughness = glm::max(glm::pow(1 - srcShininess / 128, 2), 0.01);
         material->m_transparency = 1 - srcOpacity;
-        //material->m_metalness = (specular.x/255 + specular.y/255 + specular.z/255)/3;
         material->m_metalness = 0.0f;
 
         CO_LOG_TRACE("Converted values:\n"
