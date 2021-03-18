@@ -37,13 +37,20 @@ include_directories(
 		vendor/meshopt/src
 		vendor/args
 		vendor/FreeImage/include
+		vendor/vhacd/include
 )
 
-# ADDITIONAL LINK DIRECTORIES FOR NON BUILT-IN LIBRARIES (FREEIMAGE)
+# ADDITIONAL LINK DIRECTORIES FOR NON BUILT-IN LIBRARIES (FREEIMAGE, VHACD)
 
-if(WIN32)
+if(WIN32 OR MSVC)
+	if(CMAKE_BUILD_TYPE EQUAL "DEBUG")
+		link_directories(vendor/vhacd/windows/Debug)
+	else()
+		link_directories(vendor/vhacd/windows/Release)
+	endif()
 	link_directories(vendor/FreeImage/win/lib)
 else()
+	link_directories(vendor/vhacd/linux)
 	link_directories(vendor/FreeImage/linux)
 endif()
 
@@ -51,6 +58,7 @@ endif()
 
 link_libraries(assimp)
 link_libraries(meshoptimizer)
+link_libraries(vhacd)
 
 if(WIN32)
 	link_libraries(FreeImage)
