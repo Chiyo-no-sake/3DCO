@@ -3,7 +3,7 @@
 #include "utils/file_utils.h"
 #include "model/coLight.h"
 
-void writeVersion(FILE* file) {
+void writeVersion(FILE *file) {
     chunk_header header;
     header.type = chunk_type::OBJECT;
     header.size = sizeof(unsigned int);
@@ -12,20 +12,26 @@ void writeVersion(FILE* file) {
     fwrite(&currentVersion, sizeof(int), 1, file);
 }
 
-void exportChunk(IChunkable* chunkable, FILE* file){
+void exportChunk(IChunkable *chunkable, FILE *file) {
     unsigned int chunkSize;
-    char * chunk = chunkable->toChunk(&chunkSize);
+    char *chunk = chunkable->toChunk(&chunkSize);
     fwrite(chunk, chunkSize, 1, file);
 }
 
-void exportNodeRecursive(coNode* node, FILE* file) {
+void exportNodeRecursive(coNode *node, FILE *file) {
     CO_LOG_TRACE("Exporting node {}", node->m_name);
     exportChunk(node, file);
     CO_LOG_TRACE("Exported node {}", node->m_name);
 
-    for(auto& n: node->getMChildren()){
+    for (auto &n: node->getMChildren()) {
         exportNodeRecursive(n, file);
     }
+}
+
+void exportMaterial(coMaterial *material, FILE *file) {
+    CO_LOG_TRACE("Exporting materials");
+    exportChunk(material, file);
+    CO_LOG_TRACE("Exported materials");
 }
 
 bool OVOExporter::exportTo(coScene *scene, const char *path) {
@@ -45,6 +51,9 @@ bool OVOExporter::exportTo(coScene *scene, const char *path) {
     writeVersion(file);
 
     //export materials
+
+    for(auto &material : scene->getMMaterials())
+        exportMaterial(material.second, file);
 
     //export nodes
     exportNodeRecursive(scene->m_rootNode, file);
