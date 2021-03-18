@@ -61,6 +61,7 @@ char *coMaterial::toChunk(unsigned int *outSize) {
     unsigned int dataBytes = m_name.size() + 1 + 12 + 12 + 4 + 4 + 4;
     dataBytes +=  + m_albedoMap.size() + 1;
     dataBytes +=  + m_normalMap.size() + 1;
+    dataBytes +=  + m_heightMap.size() + 1;
     dataBytes +=  + m_roughnessMap.size() + 1;
     dataBytes +=  + m_metalnessMap.size() + 1;
 

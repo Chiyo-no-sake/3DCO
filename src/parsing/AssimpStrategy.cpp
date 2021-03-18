@@ -23,7 +23,7 @@ glm::mat4 convertMatrix(const aiMatrix4x4 &aiMat);
 
 coMeshData *parseMesh(unsigned int meshIndex);
 
-inline glm::vec3 convertColor(const aiColor3D& c) {
+inline glm::vec3 convertColor(const aiColor3D &c) {
     return glm::vec3{c.r, c.g, c.b};
 }
 
@@ -54,7 +54,7 @@ void AssimpStrategy::execute() {
                                              aiProcess_GenSmoothNormals |
                                              aiProcess_FindInvalidData);
 
-    if(scene == nullptr) {
+    if (scene == nullptr) {
         CO_LOG_ERR("Cannot not parse {}", m_filepath);
         return;
     }
@@ -332,27 +332,33 @@ void parseMaterials(coScene *targetScene) {
 
         // ########################### Gathering textures ##############################################################
 
-        std::string* diffuseTexturePath = tryGetDiffusePath(srcMaterial);
-        std::string* opacityTexturePath = tryGetOpacityPath(srcMaterial);
-        std::string* normalTexturePath = tryGetNormalPath(srcMaterial);
-        std::string* metallicTexturePath = tryGetMetallicPath(srcMaterial);
-        std::string* roughnessTexturePath = tryGetRoughnessPath(srcMaterial);
+        std::string *diffuseTexturePath = tryGetDiffusePath(srcMaterial);
+        std::string *opacityTexturePath = tryGetOpacityPath(srcMaterial);
+        std::string *normalTexturePath = tryGetNormalPath(srcMaterial);
+        std::string *metallicTexturePath = tryGetMetallicPath(srcMaterial);
+        std::string *roughnessTexturePath = tryGetRoughnessPath(srcMaterial);
 
-        if(diffuseTexturePath == nullptr) CO_LOG_TRACE("No diffuse texture for material {}", material->m_name);
-        else {
-            if(opacityTexturePath != nullptr) {
+        if (diffuseTexturePath == nullptr) {
+            CO_LOG_TRACE("No diffuse texture for material {}", material->m_name);
+            material->setNormalMap(std::string("[none]"));
+        } else {
+            if (opacityTexturePath != nullptr) {
                 CO_LOG_INFO("Opacity map found, including in albedo");
                 material->setAlbedoMap(convertTexture(parsingScene, *diffuseTexturePath, material->m_name, ALBEDO, *opacityTexturePath));
-            }else {
+            } else {
                 material->setAlbedoMap(convertTexture(parsingScene, *diffuseTexturePath, material->m_name, ALBEDO));
             }
         }
 
-        if(normalTexturePath == nullptr) CO_LOG_TRACE("No normal map for material {}", material->m_name);
-        else{
+        if (normalTexturePath == nullptr) {
+            CO_LOG_TRACE("No normal map for material {}", material->m_name);
+            material->setNormalMap(std::string("[none]"));
+        } else {
             material->setNormalMap(convertTexture(parsingScene, *normalTexturePath, material->m_name, NORMAL));
         }
 
+
+        material->setHeightMap(std::string("[none]"));
 
         //TODO
 //        if(metallicTexturePath == nullptr) CO_LOG_TRACE("No metallic map for material {}", material->m_name);
