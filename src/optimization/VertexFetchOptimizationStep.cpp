@@ -20,12 +20,16 @@ void VertexFetchOptimizationStep::execute() {
 
         coMeshData *currentLod = m_mesh->getLODs()[i];
 
-        meshopt_optimizeVertexFetch(currentLod->getMVertices(),
+        auto *bruh = (glm::vec3 *) malloc(sizeof(float) * currentLod->m_numIndices * 3);
+
+        meshopt_optimizeVertexFetch(bruh,
                                     currentLod->getMIndices(),
                                     currentLod->m_numIndices,
                                     currentLod->getMVertices(),
                                     currentLod->m_numVertices,
                                     sizeof(currentLod->getMVertices()[0]));
+
+        currentLod->setMVertices(bruh);
 
     }
 
