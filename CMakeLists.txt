@@ -118,7 +118,7 @@ add_executable(
 
 		src/ovosdk/OVOExporter.h
 		src/ovosdk/OVOExporter.cpp
-)
+		src/model/coHull.cpp src/model/coHull.h)
 
 if (WIN32)
 	add_custom_command(TARGET 3DCO POST_BUILD

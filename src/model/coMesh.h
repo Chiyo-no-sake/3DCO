@@ -2,6 +2,7 @@
 
 #include "coNode.h"
 #include "coMeshData.h"
+#include "coHull.h"
 
 enum meshType {
     DEFAULT = 0, NORMALMAPPED, TESSELLATED, M_UNDEF
@@ -22,6 +23,8 @@ public:
 
 private:
     std::vector<coMeshData *> m_LODs{};
+
+    coHull *m_hull;
 
     [[nodiscard]] glm::vec3 findBoundingBoxMin() const;
     [[nodiscard]] glm::vec3 findBoundingBoxMax() const;
