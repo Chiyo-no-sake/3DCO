@@ -127,7 +127,7 @@ user_flags *parseArguments(int argc, char *argv[]) {
                 flags->_steps.push_back(new VertexFetchOptimizationStep{});
 
         } else {
-            flags->_steps.push_back(new IndexingStep{});
+            flags->_steps.push_back(new IndexingStep{}); //--> TODO causes vertex sbarellation too
             flags->_steps.push_back(new CacheOptimizationStep{});
             flags->_steps.push_back(new OverdrawOptimizationStep{});
             flags->_steps.push_back(new VertexFetchOptimizationStep{}); //--> TODO: causes vertex sbarellation, vedi todo nella classe

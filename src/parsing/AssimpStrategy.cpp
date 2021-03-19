@@ -6,10 +6,7 @@
 #include "assimp/scene.h"
 #include "../log/Log.h"
 #include "utils/file_utils.h"
-#include <FreeImage.h>
 #include "material_utils.h"
-#include <sstream>
-#include <assimp/pbrmaterial.h>
 
 const aiScene *parsingScene;
 

@@ -37,10 +37,9 @@ char *coMesh::toChunk(unsigned int *outSize) {
     char *nodeDataBuffer = getNodeChunkData(&nodeDataSize);
 
     // ----------------- mesh data calculation --------------------------
-    // TODO maybe change
+    // TODO if material has normal map, it is NORMALMAPPED
     char meshType = meshType::DEFAULT;
-    // TODO include material name
-    std::string matName = "[none]";
+    std::string matName = m_matName;
 
     float meshRadius = computeMeshRadius();
     glm::vec3 meshBBoxMin = findBoundingBoxMin();
