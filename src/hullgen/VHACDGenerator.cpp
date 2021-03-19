@@ -50,7 +50,7 @@ void VHACDGenerator::compute(coScene *scene) {
 
         CO_LOG_TRACE("Computing convex hull for mesh {} ...", mesh->m_name);
 
-        if (!m_interface->Compute(vertices, verticesAsFloat, firstLod->getMIndices(), firstLod->m_numIndices / 3, m_params)) {
+        if (!m_interface->Compute(vertices, verticesAsFloat / 3, firstLod->getMIndices(), firstLod->m_numIndices / 3, m_params)) {
             CO_LOG_ERR("Convex Hull generation for mesh {} failed.", mesh->m_name);
         } else {
 
