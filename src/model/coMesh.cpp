@@ -195,3 +195,11 @@ glm::vec3 coMesh::findBoundingBoxMax() const {
 
     return {maxX, maxY, maxZ};
 }
+
+const std::vector<coHull *> &coMesh::getMHulls() const {
+    return m_hulls;
+}
+
+void coMesh::setMHulls(const std::vector<coHull *> &mHulls) {
+    m_hulls = mHulls;
+}

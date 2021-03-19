@@ -9,6 +9,7 @@
 #include "ovosdk/OVOExporter.h"
 #include <args.hxx>
 #include <VHACD.h>
+#include <hullgen/VHACDGenerator.h>
 
 #ifdef _WINDOWS
 #define ASSETSDIR "..\\..\\tests\\assets\\"
@@ -169,6 +170,12 @@ int main(int argc, char *argv[]) {
         pipeline.execute();
 
     }
+
+    //HULLGEN
+
+    VHACDGenerator::getInstance()->init();
+    VHACDGenerator::getInstance()->compute(scene);
+    VHACDGenerator::getInstance()->deinit();
 
     OVOExporter::exportTo(scene, "testOut.OVO");
 }

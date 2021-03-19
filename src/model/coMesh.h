@@ -17,6 +17,10 @@ public:
 
     void setLODs(const std::vector<coMeshData *> &mMeshes);
 
+    [[nodiscard]] const std::vector<coHull *> &getMHulls() const;
+
+    void setMHulls(const std::vector<coHull *> &mHulls);
+
     chunk_type getChunkType() override;
 
     char *toChunk(unsigned int *outSize) override;
@@ -24,7 +28,7 @@ public:
 private:
     std::vector<coMeshData *> m_LODs{};
 
-    coHull *m_hull;
+    std::vector<coHull *> m_hulls;
 
     [[nodiscard]] glm::vec3 findBoundingBoxMin() const;
     [[nodiscard]] glm::vec3 findBoundingBoxMax() const;

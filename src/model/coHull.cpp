@@ -1,21 +1,19 @@
-//
-// Created by Simone Belingheri on 18/03/2021.
-//
 
+#include <glm/detail/type_vec3.hpp>
 #include "coHull.h"
 
-const std::vector<glm::vec3 *> &coHull::getMHullVertices() const {
+glm::vec3 *coHull::getMHullVertices() const {
     return m_hullVertices;
 }
 
-void coHull::setMHullVertices(const std::vector<glm::vec3 *> &mHullVertices) {
+void coHull::setMHullVertices(glm::vec3 *mHullVertices) {
     m_hullVertices = mHullVertices;
 }
 
-const std::vector<unsigned int> &coHull::getMHullTriangles() const {
+unsigned int *coHull::getMHullTriangles() const {
     return m_hullTriangles;
 }
 
-void coHull::setMHullTriangles(const std::vector<unsigned int> &mHullTriangles) {
+void coHull::setMHullTriangles(unsigned int *mHullTriangles) {
     m_hullTriangles = mHullTriangles;
 }

@@ -118,7 +118,13 @@ add_executable(
 
 		src/ovosdk/OVOExporter.h
 		src/ovosdk/OVOExporter.cpp
-		src/model/coHull.cpp src/model/coHull.h src/hullgen/VHACDGenerator.cpp src/hullgen/VHACDGenerator.h)
+		src/model/coHull.cpp
+		src/model/coHull.h
+		src/hullgen/VHACDGenerator.cpp
+		src/hullgen/VHACDGenerator.h
+		src/log/VHACDLogCallback.h
+		src/log/VHACDLogger.cpp
+		src/log/VHACDLogger.h)
 
 if (WIN32)
 	add_custom_command(TARGET 3DCO POST_BUILD
