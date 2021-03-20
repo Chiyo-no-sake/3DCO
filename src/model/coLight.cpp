@@ -1,8 +1,21 @@
 #include "coLight.h"
 #include "memory.h"
 
+// intensity of light inside phong model at which the light applied in OVO will result 0
+float threshold = 0.001;
+
 chunk_type coLight::getChunkType() {
     return LIGHT;
+}
+
+static float calculateInfluence(float constant, float linear, float quadratic) {
+    if(linear == 0 && quadratic == 0){
+        return MAXFLOAT;
+    }
+
+    float d1 = (-linear + glm::sqrt(glm::pow(linear,2) - 4*quadratic*(constant-1/threshold)))/2*quadratic;
+    float d2 = (-linear + glm::sqrt(glm::pow(linear,2) - 4*quadratic*(constant-1/threshold)))/2*quadratic;
+    return glm::max(d1,d2);
 }
 
 char *coLight::toChunk(unsigned int *outSize) {
@@ -34,8 +47,7 @@ char *coLight::toChunk(unsigned int *outSize) {
     memcpy(chunk+offset, &m_diffuse, sizeof(m_diffuse));
     offset += sizeof(m_diffuse);
 
-    // TODO calculate influence
-    float influence = 0;
+    float influence = calculateInfluence(m_constantAttenuation, m_linearAttenuation, m_quadraticAttenuation);
     memcpy(chunk+offset, &influence, sizeof(influence));
     offset+=sizeof(influence);
 

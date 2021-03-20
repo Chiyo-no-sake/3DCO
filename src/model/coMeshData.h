@@ -16,7 +16,6 @@ private:
     glm::vec3 *m_bitangents;
     glm::vec3 *m_textureCoordinates;
     //    std::vector<coBone *> m_bones;
-    //    std::vector<coMaterial *> m_material;
 
     char * getVerticesDataBuffer(unsigned int* outSize);
 public:
@@ -30,9 +29,6 @@ public:
 
     //TODO bones
     //unsigned int m_numBones;
-
-    //TODO materials
-    std::string m_materialName;
 
     [[nodiscard]] glm::vec3 *getMVertices();
 
