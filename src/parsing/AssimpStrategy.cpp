@@ -6,10 +6,7 @@
 #include "assimp/scene.h"
 #include "../log/Log.h"
 #include "utils/file_utils.h"
-#include <FreeImage.h>
 #include "material_utils.h"
-#include <sstream>
-#include <assimp/pbrmaterial.h>
 
 const aiScene *parsingScene;
 
@@ -21,7 +18,7 @@ void parseMaterials(coScene *targetScene);
 
 glm::mat4 convertMatrix(const aiMatrix4x4 &aiMat);
 
-coMeshData *parseMesh(unsigned int meshIndex);
+coMeshData *parseMeshData(unsigned int meshIndex);
 
 inline glm::vec3 convertColor(const aiColor3D &c) {
     return glm::vec3{c.r, c.g, c.b};
@@ -158,6 +155,12 @@ int getLightIndexFor(aiNode *aiNode) {
     return -1;
 }
 
+std::string getMaterialNameFor(unsigned int meshIndex){
+    unsigned int matIndex = parsingScene->mMeshes[meshIndex]->mMaterialIndex;
+    std::string matName = parsingScene->mMaterials[matIndex]->GetName().C_Str();
+    return matName;
+}
+
 coNode *parseNode(aiNode *aiNode) {
     CO_LOG_INFO("converting {}", aiNode->mName.C_Str());
 
@@ -181,12 +184,15 @@ coNode *parseNode(aiNode *aiNode) {
 
             CO_LOG_INFO("found {} LODs", aiNode->mNumMeshes);
             for (unsigned int i = 0; i < aiNode->mNumMeshes; i++) {
-                mesh->getLODs().push_back(parseMesh(aiNode->mMeshes[i]));
+                mesh->getLODs().push_back(parseMeshData(aiNode->mMeshes[i]));
             }
+            mesh->m_matName = getMaterialNameFor(aiNode->mMeshes[0]);
+            CO_LOG_INFO("Found material for mesh {}, name: {}", mesh->m_name, mesh->m_matName);
+
             node = (coNode *) mesh;
 
-            parsed->getMMeshes().push_back(mesh);
 
+            parsed->getMMeshes().push_back(mesh);
         }
     }
 
@@ -211,10 +217,7 @@ coNode *parseNode(aiNode *aiNode) {
     return node;
 }
 
-coMeshData *parseMesh(unsigned int meshIndex) {
-    // TODO
-    //  look for material, find in scene and set id
-
+coMeshData *parseMeshData(unsigned int meshIndex) {
     CO_LOG_INFO("converting mesh");
 
     aiMesh *mesh = parsingScene->mMeshes[meshIndex];
@@ -261,7 +264,6 @@ coMeshData *parseMesh(unsigned int meshIndex) {
         vertices[i] = convertVec3(mesh->mVertices[i]);
         CO_LOG_TRACE("parsed vertex: {}, {}, {}", vertices[i].x, vertices[i].y, vertices[i].z);
 
-
         // parse normals
         normals[i] = convertVec3(mesh->mNormals[i]);
         CO_LOG_TRACE("parsed normal: {}, {}, {}", vertices[i].x, vertices[i].y, vertices[i].z);
@@ -291,7 +293,6 @@ coMeshData *parseMesh(unsigned int meshIndex) {
     newMesh->setMIndices(triangles);
     newMesh->setMNormals(normals);
     newMesh->setMTextureCoordinates(mapping);
-
 
     CO_LOG_INFO("mesh converted");
 

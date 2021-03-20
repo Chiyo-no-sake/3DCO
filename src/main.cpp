@@ -140,6 +140,8 @@ user_flags *parseArguments(int argc, char *argv[]) {
 
 }
 
+
+//TODO copy texture to output folder when written
 int main(int argc, char *argv[]) {
 
     // HANDLE PROGRAM ARGUMENTS
@@ -161,7 +163,7 @@ int main(int argc, char *argv[]) {
 
     //OPTIMIZATION
 
-    /*if (!flags->_doOptimize) {
+    if (!flags->_doOptimize) {
 
         OptimizationPipeline pipeline{scene};
         for (auto &step : flags->_steps)
@@ -169,7 +171,7 @@ int main(int argc, char *argv[]) {
 
         pipeline.execute();
 
-    }*/
+    }
 
     //HULLGEN
 

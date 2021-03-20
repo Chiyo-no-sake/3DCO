@@ -2,6 +2,7 @@
 
 #include <assimp/scene.h>
 #include <assimp/pbrmaterial.h>
+#include <sstream>
 #include "assimp/texture.h"
 #include "log/Log.h"
 #include "FreeImage.h"

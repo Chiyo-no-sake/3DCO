@@ -12,6 +12,8 @@ void OverdrawOptimizationStep::execute() {
 
     for (unsigned int i = 0; i < m_mesh->m_numLods; i++) {
 
+        CO_LOG_TRACE("Optimizing overdraw on LOD {}", i);
+
         coMeshData *currentLod = m_mesh->getLODs()[i];
 
         meshopt_optimizeOverdraw(currentLod->getMIndices(),
