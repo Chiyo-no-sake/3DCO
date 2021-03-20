@@ -19,10 +19,10 @@ void VHACDGenerator::init() {
 
     m_params = VHACD::IVHACD::Parameters{};
 
-    VHACDLogger logger = VHACDLogger("vhacdlog.txt");
-    VHACDLogCallback callback{};
-    m_params.m_logger = &logger;
-    m_params.m_callback = &callback;
+    //VHACDLogger logger = VHACDLogger("vhacdlog.txt");
+    //VHACDLogCallback callback{};
+    //m_params.m_logger = &logger;
+    //m_params.m_callback = &callback;
 
     m_interface = VHACD::CreateVHACD();
 

@@ -34,27 +34,27 @@ public:
     //TODO materials
     std::string m_materialName;
 
-    [[nodiscard]] glm::vec3 *&getMVertices();
+    [[nodiscard]] glm::vec3 *getMVertices();
 
     void setMVertices(glm::vec3 *&mVertices);
 
-    [[nodiscard]] unsigned int*&getMIndices();
+    [[nodiscard]] unsigned int*getMIndices();
 
     void setMIndices(unsigned int*&mIndices);
 
-    [[nodiscard]] glm::vec3 *&getMNormals();
+    [[nodiscard]] glm::vec3 *getMNormals();
 
     void setMNormals(glm::vec3 *&mNormals);
 
-    [[nodiscard]] glm::vec3 *&getMTangents();
+    [[nodiscard]] glm::vec3 *getMTangents();
 
     void setMTangents(glm::vec3 *&mTangents);
 
-    [[nodiscard]] glm::vec3 *&getMBitangents();
+    [[nodiscard]] glm::vec3 *getMBitangents();
 
     void setMBitangents(glm::vec3 *&mBitangents);
 
-    [[nodiscard]] glm::vec3 *&getMTextureCoordinates();
+    [[nodiscard]] glm::vec3 *getMTextureCoordinates();
 
     void setMTextureCoordinates(glm::vec3 *&mTextureCoordinates);
 

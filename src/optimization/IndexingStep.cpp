@@ -18,7 +18,7 @@ void IndexingStep::execute() {
         size_t vertexCount = meshopt_generateVertexRemap(&remap[0],
                                                          currentLod->getMIndices(),
                                                          currentLod->m_numIndices,
-                                                         &currentLod->getMVertices(),
+                                                         currentLod->getMVertices(),
                                                          currentLod->m_numIndices,
                                                          sizeof(currentLod->getMVertices()[0]));
 

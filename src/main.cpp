@@ -161,7 +161,7 @@ int main(int argc, char *argv[]) {
 
     //OPTIMIZATION
 
-    if (!flags->_doOptimize) {
+    /*if (!flags->_doOptimize) {
 
         OptimizationPipeline pipeline{scene};
         for (auto &step : flags->_steps)
@@ -169,7 +169,7 @@ int main(int argc, char *argv[]) {
 
         pipeline.execute();
 
-    }
+    }*/
 
     //HULLGEN
 
