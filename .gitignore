@@ -5,11 +5,12 @@ CMakeFiles/
 x64/
 .idea/
 .vs/
-cmake-build-debug/
+cmake-build-debug*/
+cmake-build-release*/
 /lib/
 draco/
-release-build/
-debug-build/
+release-build*/
+debug-build*/
 Testing/
 .swp
 *.sln
