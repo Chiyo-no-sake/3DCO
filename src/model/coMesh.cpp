@@ -34,6 +34,16 @@ chunk_type coMesh::getChunkType() {
                };
  */
 
+/**
+ * TODO:
+     * In OVOREADER the physic part has different paddings than in OVOVIEWER:
+     *
+     * IN DOCS (WORK WITH OVOVIEWER):
+     *      float angularDamping, nrHulls, 4B Padding, 2x VoidPtr
+     * OVOREADER only works with:
+     *      float angularDamping, voidPtr, nrHulls, 2x voidPtr, 4B Padding
+ */
+
 enum : char ///< Kind of physical objects
 {
     PHYS_UNDEFINED = 0,
@@ -57,9 +67,14 @@ enum : char ///< Kind of hull
 };
 
 char *coMesh::getPhysicsDataBuff(unsigned int *outSize) const {
-    // TODO 4x
+    /*TODO
+     * OVOVIEWER parse the file using the order objectType, ccd, crb, hullType.
+     * THE DOC SAYS to parse the file using the order objectType, hullType, ccd, crb.
+     */
+
+    //TODO x4 which one?
     char objectType = PHYS_DYNAMIC; // ||PHYS_STATIC ? || PHYS_KINEMATIC ?
-    char hullType = HULL_CONVEX;
+    char hullType = HULL_CUSTOM;
     char continuousCollDet = 0; // ?
     char collideWithRB = 0; // ?
     const glm::vec3& massCenter = this->m_centerOfMass;
@@ -88,7 +103,8 @@ char *coMesh::getPhysicsDataBuff(unsigned int *outSize) const {
                            sizeof(bounce) +
                            sizeof(dampLin) +
                            sizeof(dampAng) +
-                           sizeof(pVoid) +
+                           //ONLY FOR OVOREADER
+                           //sizeof(pVoid) +
                            sizeof(hullsNum) +
                            sizeof(pVoid) +
                            sizeof(pVoid) +
@@ -143,14 +159,16 @@ char *coMesh::getPhysicsDataBuff(unsigned int *outSize) const {
     memcpy(outChunk+offset, &dampAng, sizeof(dampAng));
     offset += sizeof(dampAng);
 
-    memcpy(outChunk+offset, &pVoid, sizeof(pVoid));
-    offset += sizeof(pVoid);
+    // ONLY FOR OVOREADER
+    //memcpy(outChunk+offset, &pVoid, sizeof(pVoid));
+    //offset += sizeof(pVoid);
 
     memcpy(outChunk+offset, &hullsNum, sizeof(hullsNum));
     offset += sizeof(hullsNum);
 
     memcpy(outChunk+offset, &pVoid, sizeof(pVoid));
     offset += sizeof(pVoid);
+
     memcpy(outChunk+offset, &pVoid, sizeof(pVoid));
     offset += sizeof(pVoid);
 
@@ -160,8 +178,7 @@ char *coMesh::getPhysicsDataBuff(unsigned int *outSize) const {
     for(int i=0; i<hullsNum; i++){
         unsigned int& numVertices = m_hulls[i]->m_numHullVertices;
         unsigned int& numTriangles = m_hulls[i]->m_numHullTriangles;
-        // TODO hull centroid
-        glm::vec3 hullCentroid{0};
+        glm::vec3& hullCentroid = m_hulls[i]->center;
         auto vertices = m_hulls[i]->getMHullVertices();
         auto triangles = m_hulls[i]->getMHullTriangles();
 

@@ -17,6 +17,7 @@ private:
 
 public:
 
+    glm::vec3 center;
     unsigned int m_numHullVertices;
     unsigned int m_numHullTriangles;
 
