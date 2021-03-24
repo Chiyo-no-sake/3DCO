@@ -18,7 +18,7 @@ Testing/
 *.vcxproj
 *.filters
 *.cmake
-*.xml
+
 *.iml
 *.cbp
 CMakeCache.txt
