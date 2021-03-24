@@ -196,8 +196,8 @@ coNode *parseNode(aiNode *aiNode) {
             mesh->m_bboxMin = mesh->findBoundingBoxMin();
             mesh->m_radius = mesh->computeMeshRadius();
 
-            CO_LOG_TRACE("Maximum bounding box: {} {} {}", mesh->m_bboxMax.x, mesh->m_bboxMax.y, mesh->m_bboxMax.z);
-            CO_LOG_TRACE("Minimum bounding box: {} {} {}", mesh->m_bboxMin.x, mesh->m_bboxMin.y, mesh->m_bboxMin.z);
+            CO_LOG_TRACE("Maximum bounding box: {}, {}, {}", mesh->m_bboxMax.x, mesh->m_bboxMax.y, mesh->m_bboxMax.z);
+            CO_LOG_TRACE("Minimum bounding box: {}, {}, {}", mesh->m_bboxMin.x, mesh->m_bboxMin.y, mesh->m_bboxMin.z);
             CO_LOG_TRACE("Mesh radius: {}", mesh->m_radius);
 
             XmlPropertiesParser *parser = XmlPropertiesParser::getInstance();
@@ -223,7 +223,7 @@ coNode *parseNode(aiNode *aiNode) {
             CO_LOG_TRACE("Angular damping: {} ", mesh->m_angularDamping);
 
             mesh->m_centerOfMass = glm::vec3{0.0f};
-            CO_LOG_TRACE("Center of mass: {} {} {}",
+            CO_LOG_TRACE("Center of mass: {}, {}, {}",
                          mesh->m_centerOfMass.x,
                          mesh->m_centerOfMass.y,
                          mesh->m_centerOfMass.z);

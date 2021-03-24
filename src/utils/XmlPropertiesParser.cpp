@@ -14,18 +14,17 @@ void XmlPropertiesParser::init() {
 
     std::ifstream input("../../tests/assets/physics-properties.xml");
 
-    std::string content;
-
     if (input) {
 
-        CO_LOG_INFO("Properties file opened succesfully");
+        CO_LOG_INFO("Properties file opened successfully");
 
-        std::stringstream os;
-        os << input.rdbuf();
-        content = os.str();
-        m_content = const_cast<char *>(content.c_str());
-
+        std::string str((std::istreambuf_iterator<char>(input)),
+                        std::istreambuf_iterator<char>());
+        m_content = new char[str.size()+1];
+        strcpy(m_content, str.c_str());
         m_document.parse<0>(m_content);
+
+        input.close();
 
     } else
         CO_LOG_ERR("Properties file could not be opened");
@@ -40,14 +39,14 @@ float XmlPropertiesParser::getProperty(const std::string &nodeName, const std::s
 
     if (node == nullptr) {
 
-        CO_LOG_WARN("Material {} is not a valid type. Default properties will be applied.", nodeName);
+        CO_LOG_WARN("Material {} has no valid type. Default properties will be applied.", nodeName);
         node = root->first_node("default");
     }
 
     if(node == nullptr){
 
-        CO_LOG_WARN("B R U H");
-
+        CO_LOG_ERR("Cannot find default material properties");
+        return 0;
     }
 
     rapidxml::xml_node<> *property = node->first_node(propertyName.c_str());
@@ -58,8 +57,6 @@ float XmlPropertiesParser::getProperty(const std::string &nodeName, const std::s
         return 0;
 
     }
-
-    CO_LOG_WARN("BBruh {}", property->name());
 
     return std::stof(property->value());
 
