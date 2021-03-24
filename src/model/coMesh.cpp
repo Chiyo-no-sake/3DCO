@@ -17,12 +17,51 @@ chunk_type coMesh::getChunkType() {
     return MESH;
 }
 
+
+/*
+ * FROM OVOREADER CODE:
+ *
+ *
+ *  struct PhysProps
+               {
+                  ...
+                  float angularDamping;
+                  void *physObj;            <--- 8 Byte padding, not 4!!
+                  unsigned int nrOfHulls;
+                  void *hull;               <--- 8 byte ptr
+                                            <--- 8 byte ptr2
+                  unsigned int _pad;        <--- NOW 4 byte padding
+               };
+ */
+
+enum : char ///< Kind of physical objects
+{
+    PHYS_UNDEFINED = 0,
+    PHYS_DYNAMIC = 1,
+    PHYS_KINEMATIC = 2,
+    PHYS_STATIC = 3,
+    PHYS_LAST
+};
+
+enum : char ///< Kind of hull
+{
+    HULL_UNDEFINED = 0,
+    HULL_SPHERE = 1,
+    HULL_BOX = 2,
+    HULL_CAPSULE = 3,
+    HULL_CONVEX = 4,
+    HULL_ORIGINAL = 5,
+    HULL_CUSTOM = 6,
+    HULL_CONCAVE = 7,
+    HULL_LAST
+};
+
 char *coMesh::getPhysicsDataBuff(unsigned int *outSize) const {
     // TODO 4x
-    char objectType = 0;
-    char hullType = 0;
-    char continuousCollDet = 0;
-    char collideWithRB = 0;
+    char objectType = PHYS_DYNAMIC; // ||PHYS_STATIC ? || PHYS_KINEMATIC ?
+    char hullType = HULL_CONVEX;
+    char continuousCollDet = 0; // ?
+    char collideWithRB = 0; // ?
     const glm::vec3& massCenter = this->m_centerOfMass;
     const float& mass = this->m_mass;
     const float& frictionStat = this->m_staticFriction;
@@ -30,9 +69,10 @@ char *coMesh::getPhysicsDataBuff(unsigned int *outSize) const {
     const float& bounce = this->m_bounciness;
     const float& dampLin = this->m_linearDamping;
     const float& dampAng = this->m_angularDamping;
+    // void ptr to pad
     const unsigned int hullsNum = this->m_hulls.size();
-    const int padding = 0;
-    const int* pVoid = nullptr;
+    const void* pVoid = nullptr;
+    const unsigned int padding = 0;
 
     // type + hulltype + ccd + crb + massCenter + mass + frictStat
     // + frictDyn + bounce + dampLin + dampAng + hullsNum
@@ -48,9 +88,12 @@ char *coMesh::getPhysicsDataBuff(unsigned int *outSize) const {
                            sizeof(bounce) +
                            sizeof(dampLin) +
                            sizeof(dampAng) +
+                           sizeof(pVoid) +
                            sizeof(hullsNum) +
-                           //sizeof(padding) +
-                           2*sizeof(pVoid);
+                           sizeof(pVoid) +
+                           sizeof(pVoid) +
+                           sizeof(padding);
+
 
     // + for each lod:
     for(int i=0; i<hullsNum; i++){
@@ -100,18 +143,19 @@ char *coMesh::getPhysicsDataBuff(unsigned int *outSize) const {
     memcpy(outChunk+offset, &dampAng, sizeof(dampAng));
     offset += sizeof(dampAng);
 
-    //memcpy(outChunk+offset, &padding, sizeof(padding));
-    //offset += sizeof(padding);
+    memcpy(outChunk+offset, &pVoid, sizeof(pVoid));
+    offset += sizeof(pVoid);
 
     memcpy(outChunk+offset, &hullsNum, sizeof(hullsNum));
     offset += sizeof(hullsNum);
 
-
+    memcpy(outChunk+offset, &pVoid, sizeof(pVoid));
+    offset += sizeof(pVoid);
     memcpy(outChunk+offset, &pVoid, sizeof(pVoid));
     offset += sizeof(pVoid);
 
-    memcpy(outChunk+offset, &pVoid, sizeof(pVoid));
-    offset += sizeof(pVoid);
+    memcpy(outChunk+offset, &padding, sizeof(padding));
+    offset += sizeof(padding);
 
     for(int i=0; i<hullsNum; i++){
         unsigned int& numVertices = m_hulls[i]->m_numHullVertices;
