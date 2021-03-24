@@ -10,6 +10,7 @@
 #include <args.hxx>
 #include <VHACD.h>
 #include <hullgen/VHACDGenerator.h>
+#include <utils/XmlPropertiesParser.h>
 
 #ifdef _WINDOWS
 #define ASSETSDIR "..\\..\\tests\\assets\\"
@@ -150,6 +151,9 @@ int main(int argc, char *argv[]) {
 
     if (flags->_abort == 1)
         return 1;
+
+    XmlPropertiesParser *propertiesParser = XmlPropertiesParser::getInstance();
+    propertiesParser->init();
 
     //IMPORT SCENE
     FileParser fp{};

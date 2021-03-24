@@ -125,7 +125,14 @@ add_executable(
 		src/hullgen/VHACDGenerator.cpp
 		src/hullgen/VHACDGenerator.h
 		src/log/VHACDLogCallback.h
-		src/log/VHACDLogger.h)
+		src/log/VHACDLogger.h
+		src/utils/XmlPropertiesParser.cpp
+		src/utils/XmlPropertiesParser.h
+
+		src/rapidxml/rapidxml.hpp
+		src/rapidxml/rapidxml_iterators.hpp
+		src/rapidxml/rapidxml_print.hpp
+		src/rapidxml/rapidxml_utils.hpp)
 
 if (WIN32)
 	add_custom_command(TARGET 3DCO POST_BUILD
