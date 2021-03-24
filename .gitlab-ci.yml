@@ -17,9 +17,3 @@ build:
       - lib/
       - vendor/assimp/bin/
       # depending on your build setup it's most likely a good idea to cache outputs to reduce the build time
-
-# run tests using the binary built before
-test:
-  stage: test
-  script:
-    - bin/Boost_Tests_run
