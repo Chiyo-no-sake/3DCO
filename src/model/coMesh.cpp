@@ -17,32 +17,14 @@ chunk_type coMesh::getChunkType() {
     return MESH;
 }
 
-
-/*
- * FROM OVOREADER CODE:
- *
- *
- *  struct PhysProps
-               {
-                  ...
-                  float angularDamping;
-                  void *physObj;            <--- 8 Byte padding, not 4!!
-                  unsigned int nrOfHulls;
-                  void *hull;               <--- 8 byte ptr
-                                            <--- 8 byte ptr2
-                  unsigned int _pad;        <--- NOW 4 byte padding
-               };
- */
-
-/**
- * TODO:
+/* TODO:
      * In OVOREADER the physic part has different paddings than in OVOVIEWER:
      *
      * IN DOCS (WORK WITH OVOVIEWER):
      *      float angularDamping, nrHulls, 4B Padding, 2x VoidPtr
      * OVOREADER only works with:
      *      float angularDamping, voidPtr, nrHulls, 2x voidPtr, 4B Padding
- */
+*/
 
 enum : char ///< Kind of physical objects
 {
@@ -84,7 +66,6 @@ char *coMesh::getPhysicsDataBuff(unsigned int *outSize) const {
     const float& bounce = this->m_bounciness;
     const float& dampLin = this->m_linearDamping;
     const float& dampAng = this->m_angularDamping;
-    // void ptr to pad
     const unsigned int hullsNum = this->m_hulls.size();
     const void* pVoid = nullptr;
     const unsigned int padding = 0;
