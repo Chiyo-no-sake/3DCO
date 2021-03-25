@@ -204,6 +204,21 @@ coNode *parseNode(aiNode *aiNode) {
 
             CO_LOG_INFO("Parsing physics properties");
 
+            std::string meshNamePostfix = aiNode->mName.C_Str();
+            meshNamePostfix = meshNamePostfix.substr(meshNamePostfix.find('.') + 1);
+
+            if(meshNamePostfix == "stat"){
+                mesh->m_physicsType = PHYS_STATIC;
+                mesh->m_hullType = HULL_UNDEFINED;
+            }
+            else if(meshNamePostfix == "dyn"){
+                mesh->m_physicsType = PHYS_DYNAMIC;
+                mesh->m_hullType = HULL_CUSTOM;
+            }
+            else
+                mesh->m_physicsType = PHYS_UNDEFINED;
+
+
             mesh->m_mass = parser->getProperty(mesh->m_matName, "density") * (4.f / 3.f * glm::pi<float>() * glm::pow(mesh->m_radius, 3));
             CO_LOG_TRACE("Mass: {} ", mesh->m_mass);
 
