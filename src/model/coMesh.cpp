@@ -184,7 +184,6 @@ char *coMesh::getPhysicsDataBuff(unsigned int *outSize) const {
 }
 
 char *coMesh::getSkinningDataBuff(unsigned int *outSize) const {
-    //TODO
     *outSize = 0;
     return nullptr;
 }

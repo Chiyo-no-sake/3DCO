@@ -92,8 +92,8 @@ add_executable(
 		src/parsing/ParsingStrategy.cpp
 		src/parsing/FileParser.cpp
 		src/parsing/FileParser.h
-		src/parsing/material_utils.h
-		src/parsing/material_utils.cpp
+		src/utils/material_utils.h
+		src/utils/material_utils.cpp
 
 		src/common/IExecutable.h
 		src/common/IChunkable.h
@@ -132,7 +132,7 @@ add_executable(
 		src/rapidxml/rapidxml.hpp
 		src/rapidxml/rapidxml_iterators.hpp
 		src/rapidxml/rapidxml_print.hpp
-		src/rapidxml/rapidxml_utils.hpp)
+		src/rapidxml/rapidxml_utils.hpp src/utils/mesh_utils.h src/utils/types_utils.h)
 
 if (WIN32)
 	add_custom_command(TARGET 3DCO POST_BUILD

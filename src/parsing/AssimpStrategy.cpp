@@ -8,7 +8,9 @@
 #include "assimp/scene.h"
 #include "../log/Log.h"
 #include "utils/file_utils.h"
-#include "material_utils.h"
+#include "utils/material_utils.h"
+#include "utils/mesh_utils.h"
+#include "utils/types_utils.h"
 
 const aiScene *parsingScene;
 
@@ -18,26 +20,7 @@ coNode *parseNode(aiNode *aiNode);
 
 void parseMaterials(coScene *targetScene);
 
-glm::mat4 convertMatrix(const aiMatrix4x4 &aiMat);
-
 coMeshData *parseMeshData(unsigned int meshIndex);
-
-inline glm::vec3 convertColor(const aiColor3D &c) {
-    return glm::vec3{c.r, c.g, c.b};
-}
-
-inline glm::vec3 convertVec3(aiVector3D v) {
-    return glm::vec3{v.x, v.y, v.z};
-}
-
-inline glm::mat4 convertMatrix(const aiMatrix4x4 &aiMat) {
-    return {
-            aiMat.a1, aiMat.b1, aiMat.c1, aiMat.d1,
-            aiMat.a2, aiMat.b2, aiMat.c2, aiMat.d2,
-            aiMat.a3, aiMat.b3, aiMat.c3, aiMat.d3,
-            aiMat.a4, aiMat.b4, aiMat.c4, aiMat.d4
-    };
-}
 
 void AssimpStrategy::execute() {
     Assimp::Importer importer;
@@ -204,7 +187,8 @@ coNode *parseNode(aiNode *aiNode) {
 
             CO_LOG_INFO("Parsing physics properties");
 
-            mesh->m_mass = parser->getProperty(mesh->m_matName, "density") * (4.f / 3.f * glm::pi<float>() * glm::pow(mesh->m_radius, 3));
+            float volume = meshVolume(mesh->getLODs()[0]);
+            mesh->m_mass = parser->getProperty(mesh->m_matName, "density") * volume;
             CO_LOG_TRACE("Mass: {} ", mesh->m_mass);
 
             mesh->m_bounciness = parser->getProperty(mesh->m_matName, "bounciness");
@@ -222,7 +206,7 @@ coNode *parseNode(aiNode *aiNode) {
             mesh->m_angularDamping = parser->getProperty(mesh->m_matName, "damping-angular");
             CO_LOG_TRACE("Angular damping: {} ", mesh->m_angularDamping);
 
-            mesh->m_centerOfMass = glm::vec3{0.0f};
+            mesh->m_centerOfMass = verticesMean(mesh->getLODs()[0]);
             CO_LOG_TRACE("Center of mass: {}, {}, {}",
                          mesh->m_centerOfMass.x,
                          mesh->m_centerOfMass.y,
