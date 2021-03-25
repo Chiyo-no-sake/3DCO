@@ -48,7 +48,7 @@ void VHACDGenerator::compute(coScene *scene) {
 
         }
 
-        CO_LOG_TRACE("Computing convex hull for mesh {} ...", mesh->m_name);
+        CO_LOG_INFO("Computing convex hull for mesh {} ...", mesh->m_name);
 
         if (!m_interface->Compute(vertices, verticesAsFloat / 3, firstLod->getMIndices(), firstLod->m_numIndices / 3, m_params)) {
             CO_LOG_ERR("Convex Hull generation for mesh {} failed.", mesh->m_name);
@@ -62,30 +62,44 @@ void VHACDGenerator::compute(coScene *scene) {
 
                 m_interface->GetConvexHull(j, convexHull);
 
-                CO_LOG_TRACE("Convex Hull #{} generated", j);
+                CO_LOG_INFO("Convex Hull #{} generated", j);
 
-                auto *hullVertices = (glm::vec3 *)malloc(sizeof(glm::vec3) * convexHull.m_nPoints / 3);
+                hull->center = {convexHull.m_center[0], convexHull.m_center[1], convexHull.m_center[2]};
+                CO_LOG_TRACE("Hull centroid: {}, {}, {}", hull->center.x, hull->center.y, hull->center.z);
+
+                auto *hullVertices = (glm::vec3 *)malloc(sizeof(glm::vec3) * convexHull.m_nPoints);
                 auto *hullTriangles = (unsigned int *)malloc(sizeof(unsigned int) * convexHull.m_nTriangles * 3);
 
-                for(unsigned int p = 0; p < convexHull.m_nPoints / 3; p++){
+                CO_LOG_TRACE("Hull vertices number: {}", convexHull.m_nPoints);
+
+                for(unsigned int p = 0; p < convexHull.m_nPoints; p++){
 
                     hullVertices[p].x = convexHull.m_points[p * 3];
                     hullVertices[p].y = convexHull.m_points[p * 3 + 1];
                     hullVertices[p].z = convexHull.m_points[p * 3 + 2];
 
+                    CO_LOG_TRACE("Vertex {} : {}, {} , {}", p, hullVertices[p].x, hullVertices[p].y, hullVertices[p].z);
                 }
 
-                for(unsigned int t = 0; t < convexHull.m_nTriangles * 3; t++)
-                    hullTriangles[t] = convexHull.m_points[t];
+                CO_LOG_TRACE("Hull triangles number: {}", convexHull.m_nTriangles);
+
+                for(unsigned int t = 0; t < convexHull.m_nTriangles; t++) {
+                    hullTriangles[t*3] = convexHull.m_triangles[t*3];
+                    hullTriangles[t*3+1] = convexHull.m_triangles[t*3+1];
+                    hullTriangles[t*3+2] = convexHull.m_triangles[t*3+2];
+                    CO_LOG_TRACE("Index {}: {}, {}, {}", t, hullTriangles[t*3], hullTriangles[t*3+1], hullTriangles[t*3+2]);
+                }
 
                 hull->setMHullVertices(hullVertices);
                 hull->setMHullTriangles(hullTriangles);
+                hull->m_numHullTriangles = convexHull.m_nTriangles;
+                hull->m_numHullVertices = convexHull.m_nPoints;
 
                 hulls.push_back(hull);
 
             }
 
-            CO_LOG_TRACE("Hulls generated for mesh {}", mesh->m_name);
+            CO_LOG_INFO("Hulls generated for mesh {}", mesh->m_name);
             mesh->setMHulls(hulls);
 
             delete[] vertices;
