@@ -43,10 +43,10 @@ include_directories(
 # ADDITIONAL LINK DIRECTORIES FOR NON BUILT-IN LIBRARIES (FREEIMAGE, VHACD)
 
 if(WIN32 OR MSVC)
-	if(CMAKE_BUILD_TYPE EQUAL "DEBUG")
+	if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
 		link_directories(vendor/vhacd/windows/Debug)
-	else()
-		link_directories(vendor/vhacd/windows/Release)
+    else()
+        link_directories(vendor/vhacd/windows/Release)
 	endif()
 	link_directories(vendor/FreeImage/win/lib)
 else()
@@ -125,7 +125,14 @@ add_executable(
 		src/hullgen/VHACDGenerator.cpp
 		src/hullgen/VHACDGenerator.h
 		src/log/VHACDLogCallback.h
-		src/log/VHACDLogger.h)
+		src/log/VHACDLogger.h
+		src/utils/XmlPropertiesParser.cpp
+		src/utils/XmlPropertiesParser.h
+
+		src/rapidxml/rapidxml.hpp
+		src/rapidxml/rapidxml_iterators.hpp
+		src/rapidxml/rapidxml_print.hpp
+		src/rapidxml/rapidxml_utils.hpp)
 
 if (WIN32)
 	add_custom_command(TARGET 3DCO POST_BUILD

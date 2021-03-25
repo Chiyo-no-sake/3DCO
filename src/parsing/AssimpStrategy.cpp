@@ -1,5 +1,7 @@
 
 #include <model/coLight.h>
+#include <utils/XmlPropertiesParser.h>
+#include <glm/ext/scalar_constants.hpp>
 #include "AssimpStrategy.h"
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
@@ -155,7 +157,7 @@ int getLightIndexFor(aiNode *aiNode) {
     return -1;
 }
 
-std::string getMaterialNameFor(unsigned int meshIndex){
+std::string getMaterialNameFor(unsigned int meshIndex) {
     unsigned int matIndex = parsingScene->mMeshes[meshIndex]->mMaterialIndex;
     std::string matName = parsingScene->mMaterials[matIndex]->GetName().C_Str();
     return matName;
@@ -186,11 +188,47 @@ coNode *parseNode(aiNode *aiNode) {
             for (unsigned int i = 0; i < aiNode->mNumMeshes; i++) {
                 mesh->getLODs().push_back(parseMeshData(aiNode->mMeshes[i]));
             }
+
             mesh->m_matName = getMaterialNameFor(aiNode->mMeshes[0]);
             CO_LOG_INFO("Found material for mesh {}, name: {}", mesh->m_name, mesh->m_matName);
 
-            node = (coNode *) mesh;
+            mesh->m_bboxMax = mesh->findBoundingBoxMax();
+            mesh->m_bboxMin = mesh->findBoundingBoxMin();
+            mesh->m_radius = mesh->computeMeshRadius();
 
+            CO_LOG_TRACE("Maximum bounding box: {}, {}, {}", mesh->m_bboxMax.x, mesh->m_bboxMax.y, mesh->m_bboxMax.z);
+            CO_LOG_TRACE("Minimum bounding box: {}, {}, {}", mesh->m_bboxMin.x, mesh->m_bboxMin.y, mesh->m_bboxMin.z);
+            CO_LOG_TRACE("Mesh radius: {}", mesh->m_radius);
+
+            XmlPropertiesParser *parser = XmlPropertiesParser::getInstance();
+
+            CO_LOG_INFO("Parsing physics properties");
+
+            mesh->m_mass = parser->getProperty(mesh->m_matName, "density") * (4.f / 3.f * glm::pi<float>() * glm::pow(mesh->m_radius, 3));
+            CO_LOG_TRACE("Mass: {} ", mesh->m_mass);
+
+            mesh->m_bounciness = parser->getProperty(mesh->m_matName, "bounciness");
+            CO_LOG_TRACE("Bounciness: {} ", mesh->m_bounciness);
+
+            mesh->m_staticFriction = parser->getProperty(mesh->m_matName, "friction-static");
+            CO_LOG_TRACE("Static friction: {} ", mesh->m_staticFriction);
+
+            mesh->m_dynamicFriction = parser->getProperty(mesh->m_matName, "friction-dynamic");
+            CO_LOG_TRACE("Dynamic friction: {} ", mesh->m_dynamicFriction);
+
+            mesh->m_linearDamping = parser->getProperty(mesh->m_matName, "damping-linear");
+            CO_LOG_TRACE("Linear damping: {} ", mesh->m_linearDamping);
+
+            mesh->m_angularDamping = parser->getProperty(mesh->m_matName, "damping-angular");
+            CO_LOG_TRACE("Angular damping: {} ", mesh->m_angularDamping);
+
+            mesh->m_centerOfMass = glm::vec3{0.0f};
+            CO_LOG_TRACE("Center of mass: {}, {}, {}",
+                         mesh->m_centerOfMass.x,
+                         mesh->m_centerOfMass.y,
+                         mesh->m_centerOfMass.z);
+
+            node = (coNode *) mesh;
 
             parsed->getMMeshes().push_back(mesh);
         }

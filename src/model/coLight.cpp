@@ -8,13 +8,14 @@ chunk_type coLight::getChunkType() {
     return LIGHT;
 }
 
-static float calculateInfluence(float constant, float linear, float quadratic) {
+static float calculateInfluenceRadius(float constant, float linear, float quadratic) {
+    //TODO max float causes problems with ovoviewer
     if(linear == 0 && quadratic == 0){
-        return MAXFLOAT;
+        return 1.0f/threshold;
     }
 
     float d1 = (-linear + glm::sqrt(glm::pow(linear,2) - 4*quadratic*(constant-1/threshold)))/2*quadratic;
-    float d2 = (-linear + glm::sqrt(glm::pow(linear,2) - 4*quadratic*(constant-1/threshold)))/2*quadratic;
+    float d2 = (-linear - glm::sqrt(glm::pow(linear,2) - 4*quadratic*(constant-1/threshold)))/2*quadratic;
     return glm::max(d1,d2);
 }
 
@@ -47,7 +48,7 @@ char *coLight::toChunk(unsigned int *outSize) {
     memcpy(chunk+offset, &m_diffuse, sizeof(m_diffuse));
     offset += sizeof(m_diffuse);
 
-    float influence = calculateInfluence(m_constantAttenuation, m_linearAttenuation, m_quadraticAttenuation);
+    float influence = calculateInfluenceRadius(m_constantAttenuation, m_linearAttenuation, m_quadraticAttenuation);
     memcpy(chunk+offset, &influence, sizeof(influence));
     offset+=sizeof(influence);
 

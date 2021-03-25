@@ -41,9 +41,6 @@ char *coMesh::toChunk(unsigned int *outSize) {
     char meshType = meshType::DEFAULT;
     std::string matName = m_matName;
 
-    float meshRadius = computeMeshRadius();
-    glm::vec3 meshBBoxMin = findBoundingBoxMin();
-    glm::vec3 meshBBoxMax = findBoundingBoxMax();
     unsigned char physicsIncluded = 0;
 
     //physics properties
@@ -69,7 +66,7 @@ char *coMesh::toChunk(unsigned int *outSize) {
     // node data + mesh type + matname + terminator + mehsrad + meshbboxmin
     // meshbboxmax + physics flag + physics data + lodsNum
     header.size = nodeDataSize + sizeof(meshType) +
-                  matName.size() + 1 + sizeof(meshRadius) + sizeof(meshBBoxMax) + sizeof(meshBBoxMin) +
+                  matName.size() + 1 + sizeof(m_radius) + sizeof(m_bboxMax) + sizeof(m_bboxMin) +
                   sizeof(physicsIncluded) + physicsDataSize +
                   sizeof(unsigned int);
 
@@ -101,14 +98,14 @@ char *coMesh::toChunk(unsigned int *outSize) {
     strcpy(chunk + offset, matName.c_str());
     offset += matName.size() + 1;
 
-    memcpy(chunk + offset, &meshRadius, sizeof(meshRadius));
-    offset += sizeof(meshRadius);
+    memcpy(chunk + offset, &m_radius, sizeof(m_radius));
+    offset += sizeof(m_radius);
 
-    memcpy(chunk + offset, &meshBBoxMin, sizeof(meshBBoxMin));
-    offset += sizeof(meshBBoxMin);
+    memcpy(chunk + offset, &m_bboxMin, sizeof(m_bboxMin));
+    offset += sizeof(m_bboxMin);
 
-    memcpy(chunk + offset, &meshBBoxMax, sizeof(meshBBoxMax));
-    offset += sizeof(meshBBoxMax);
+    memcpy(chunk + offset, &m_bboxMax, sizeof(m_bboxMax));
+    offset += sizeof(m_bboxMax);
 
     memcpy(chunk + offset, &physicsIncluded, sizeof(physicsIncluded));
     offset += sizeof(physicsIncluded);
