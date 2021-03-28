@@ -30,11 +30,11 @@ void VHACDGenerator::init() {
 
 void VHACDGenerator::compute(coScene *scene) {
 
-    std::vector<coHull *> hulls{};
-
     CO_LOG_INFO("Starting convex hull generation");
 
     for (coMesh *mesh : scene->getMMeshes()) {
+
+        std::vector<coHull *> hulls{};
 
         if(mesh->m_physicsType == PHYS_DYNAMIC){
 
@@ -105,6 +105,7 @@ void VHACDGenerator::compute(coScene *scene) {
                 mesh->setMHulls(hulls);
 
                 delete[] vertices;
+
             }
 
         }else CO_LOG_INFO("Mesh {} is not dynamic. No hulls will be generated", mesh->m_name);
