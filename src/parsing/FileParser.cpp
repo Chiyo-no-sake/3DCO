@@ -16,11 +16,13 @@ void FileParser::setStrategy(ParsingStrategy* strategy) {
     this->m_strategy = strategy;
 }
 
+// TODO handle absolute path passed
 coScene* FileParser::loadFromFile(const std::string& fileName) {
     char buffer[FILENAME_MAX];
     GetCurrentDir(buffer, FILENAME_MAX);
     std::string current_dir{buffer};
-    current_dir = current_dir + SEPARATOR + fileName;
+    //current_dir = current_dir + SEPARATOR + fileName;
+    current_dir = fileName;
 
     CO_LOG_INFO("trying to open file {}", current_dir);
     FILE* in = fopen(current_dir.c_str(), "rb");

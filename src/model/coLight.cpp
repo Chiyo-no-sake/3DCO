@@ -9,7 +9,6 @@ chunk_type coLight::getChunkType() {
 }
 
 static float calculateInfluenceRadius(float constant, float linear, float quadratic) {
-    //TODO max float causes problems with ovoviewer
     if(linear == 0 && quadratic == 0){
         return 1.0f/threshold;
     }

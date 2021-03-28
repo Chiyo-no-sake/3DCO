@@ -261,7 +261,7 @@ std::string convertTexture(const aiScene *parsingScene, const std::string &textu
         args << " t ";
     else if (type == NORMAL)
         args << " n ";
-    else if (type == HEIGHT)
+    else if (type == HEIGHT || type == METAL || type == ROUGH)
         args << " h ";
 
     if (opacity != "none")

@@ -27,14 +27,15 @@ void AssimpStrategy::execute() {
     m_parsed = new coScene();
     parsed = m_parsed;
 
-    CO_LOG_INFO("Starting to parse");
+    CO_LOG_INFO("Initiated scene parsing with Assimp...");
 
     const aiScene *scene = importer.ReadFile(m_filepath,
                                              aiProcess_CalcTangentSpace |
                                              aiProcess_Triangulate |
                                              aiProcess_JoinIdenticalVertices |
                                              aiProcess_GenSmoothNormals |
-                                             aiProcess_FindInvalidData);
+                                             aiProcess_FindInvalidData |
+                                             aiProcess_GenUVCoords);
 
     if (scene == nullptr) {
         CO_LOG_ERR("Cannot not parse {}", m_filepath);
@@ -265,6 +266,9 @@ coMeshData *parseMeshData(unsigned int meshIndex) {
     glm::vec3 *mapping;
     glm::vec3 *tangents;
     glm::vec3 *bitangents;
+    bool hasTexCoords = true;
+    bool hasTangents = true;
+    bool hasBitangents = true;
 
     triangles = static_cast<unsigned int *>(malloc(mesh->mNumFaces * 3 * sizeof(unsigned int)));
     vertices = static_cast<glm::vec3 *>(malloc(mesh->mNumVertices * sizeof(glm::vec3)));
@@ -272,6 +276,7 @@ coMeshData *parseMeshData(unsigned int meshIndex) {
     mapping = static_cast<glm::vec3 *>(malloc(mesh->mNumVertices * sizeof(glm::vec3)));
     tangents = static_cast<glm::vec3 *>(malloc(mesh->mNumVertices * sizeof(glm::vec3)));
     bitangents = static_cast<glm::vec3 *>(malloc(mesh->mNumVertices * sizeof(glm::vec3)));
+
 
     CO_LOG_INFO("num triangles: {}", mesh->mNumFaces);
     CO_LOG_INFO("num vertices: {}", mesh->mNumVertices);
@@ -282,6 +287,25 @@ coMeshData *parseMeshData(unsigned int meshIndex) {
 
     if (mesh->mNumVertices == 0) {
         CO_LOG_WARN("Mesh has no vertices");
+    }
+
+    if(mesh->mTextureCoords[0] == nullptr){
+        CO_LOG_WARN("Mesh has no texture coordinates. Did you forget UV unwrapping?");
+        mapping = nullptr;
+        hasTexCoords = false;
+    }
+
+    if(mesh->mTangents == nullptr){
+        CO_LOG_WARN("Mesh has no tangents data. Did you forget UV unwrapping?");
+        tangents = nullptr;
+        hasTangents = false;
+
+    }
+
+    if(mesh->mBitangents == nullptr){
+        CO_LOG_WARN("Mesh has no bitangets data. Did you forget UV unwrapping?");
+        bitangents = nullptr;
+        hasBitangents = false;
     }
 
     unsigned int totalIndices = 0;
@@ -305,18 +329,22 @@ coMeshData *parseMeshData(unsigned int meshIndex) {
         normals[i] = convertVec3(mesh->mNormals[i]);
         CO_LOG_TRACE("parsed normal: {}, {}, {}", vertices[i].x, vertices[i].y, vertices[i].z);
 
-        // parse uvs
-        mapping[i] = convertVec3(mesh->mTextureCoords[0][i]);
-        CO_LOG_TRACE("parsed uv: {}, {}", mapping[i].x, mapping[i].y);
+        if(hasTexCoords) {
+            mapping[i] = convertVec3(mesh->mTextureCoords[0][i]);
+            CO_LOG_TRACE("parsed uv: {}, {}", mapping[i].x, mapping[i].y);
+        }
 
         // parse tangents
-        tangents[i] = convertVec3(mesh->mTangents[i]);
-        CO_LOG_TRACE("parsed tan: {}, {}", tangents[i].x, tangents[i].y);
+        if(hasTangents) {
+            tangents[i] = convertVec3(mesh->mTangents[i]);
+            CO_LOG_TRACE("parsed tan: {}, {}", tangents[i].x, tangents[i].y);
+        }
 
         // parse bitangents
-        bitangents[i] = convertVec3(mesh->mBitangents[i]);
-        CO_LOG_TRACE("parsed bi-tan: {}, {}", bitangents[i].x, bitangents[i].y);
-
+        if(hasBitangents) {
+            bitangents[i] = convertVec3(mesh->mBitangents[i]);
+            CO_LOG_TRACE("parsed bi-tan: {}, {}", bitangents[i].x, bitangents[i].y);
+        }
     }
 
     auto newMesh = new coMeshData();
@@ -397,18 +425,18 @@ void parseMaterials(coScene *targetScene) {
 
         material->setHeightMap(std::string("[none]"));
 
-        //TODO
-//        if(metallicTexturePath == nullptr) CO_LOG_TRACE("No metallic map for material {}", material->m_name);
-//        else{
-//            material->setMetalnessMap(convertTexture(parsingScene, *metallicTexturePath, material->m_name, METAL));
-//        }
+
+        if(metallicTexturePath == nullptr) CO_LOG_TRACE("No metallic map for material {}", material->m_name);
+        else{
+            material->setMetalnessMap(convertTexture(parsingScene, *metallicTexturePath, material->m_name, METAL));
+        }
         material->setMetalnessMap(std::string{"[none]"});
 
-        //TODO
-//        if(roughnessTexturePath == nullptr) CO_LOG_TRACE("No roughness map for material {}", material->m_name);
-//        else{
-//            material->setRoughnessMap(convertTexture(parsingScene, *roughnessTexturePath, material->m_name, ROUGH));
-//        }
+
+        if(roughnessTexturePath == nullptr) CO_LOG_TRACE("No roughness map for material {}", material->m_name);
+        else{
+            material->setRoughnessMap(convertTexture(parsingScene, *roughnessTexturePath, material->m_name, ROUGH));
+        }
         material->setRoughnessMap(std::string{"[none]"});
 
         delete normalTexturePath;
