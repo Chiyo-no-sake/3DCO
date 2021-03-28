@@ -192,13 +192,13 @@ coNode *parseNode(aiNode *aiNode) {
             mesh->m_mass = parser->getProperty(mesh->m_matName, "density") * volume;
 
             std::string meshNamePostfix = aiNode->mName.C_Str();
-            meshNamePostfix = meshNamePostfix.substr(meshNamePostfix.find('.') + 1);
+            meshNamePostfix = meshNamePostfix.substr(meshNamePostfix.size()-4);
 
-            if(meshNamePostfix == "stat"){
+            if(meshNamePostfix == ".stc"){
                 mesh->m_physicsType = PHYS_STATIC;
                 mesh->m_hullType = HULL_UNDEFINED;
             }
-            else if(meshNamePostfix == "dyn"){
+            else if(meshNamePostfix == ".dyn"){
                 mesh->m_physicsType = PHYS_DYNAMIC;
                 mesh->m_hullType = HULL_CUSTOM;
             }
@@ -405,7 +405,7 @@ void parseMaterials(coScene *targetScene) {
 
         if (diffuseTexturePath == nullptr) {
             CO_LOG_TRACE("No diffuse texture for material {}", material->m_name);
-            material->setNormalMap(std::string("[none]"));
+            material->setAlbedoMap(std::string("[none]"));
         } else {
             if (opacityTexturePath != nullptr) {
                 CO_LOG_INFO("Opacity map found, including in albedo");
