@@ -54,5 +54,11 @@ public:
 
     void setMTextureCoordinates(glm::vec3 *mTextureCoordinates);
 
+    [[nodiscard]] bool hasTextureCoordinates() const;
+
+    [[nodiscard]] bool hasTangents() const;
+
+    [[nodiscard]] bool hasBitangents() const;
+
     char * toChunk(unsigned int *outSize) override;
 };

@@ -83,11 +83,11 @@ char *coMeshData::getVerticesDataBuffer(unsigned int *outSize) {
         memcpy(chunk + offset, (void *) &packedNormal, sizeof(unsigned int));
         offset += sizeof(unsigned int);
 
-        unsigned int packedUV = glm::packHalf2x16(m_textureCoordinates[i]);
+        unsigned int packedUV = glm::packHalf2x16((hasTextureCoordinates()) ? m_textureCoordinates[i] : glm::vec3{0.0f});
         memcpy(chunk + offset, (void *) &packedUV, sizeof(unsigned int));
         offset += sizeof(unsigned int);
 
-        unsigned int packedTan = glm::packSnorm3x10_1x2(glm::vec4{m_tangents[i], 0});
+        unsigned int packedTan = glm::packSnorm3x10_1x2((hasTangents()) ? glm::vec4{m_tangents[i], 0} : glm::vec4{0.0f});
         memcpy(chunk + offset, (void *) &packedTan, sizeof(unsigned int));
         offset += sizeof(unsigned int);
     }
@@ -108,6 +108,18 @@ char *coMeshData::toChunk(unsigned int *outSize) {
 
     delete[] lodDataBuffer;
     return chunk;
+}
+
+bool coMeshData::hasTextureCoordinates() const{
+    return m_textureCoordinates != nullptr;
+}
+
+bool coMeshData::hasTangents() const {
+    return m_tangents != nullptr;
+}
+
+bool coMeshData::hasBitangents() const {
+    return m_bitangents != nullptr;
 }
 
 

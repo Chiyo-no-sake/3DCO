@@ -303,7 +303,7 @@ coMeshData *parseMeshData(unsigned int meshIndex) {
     }
 
     if(mesh->mBitangents == nullptr){
-        CO_LOG_WARN("Mesh has no bitangets data. Did you forget UV unwrapping?");
+        CO_LOG_WARN("Mesh has no bitangents data. Did you forget UV unwrapping?");
         bitangents = nullptr;
         hasBitangents = false;
     }

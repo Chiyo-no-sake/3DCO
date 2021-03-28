@@ -28,9 +28,9 @@ void IndexingStep::execute() {
         for(int j=0; j<currentLod->m_numVertices; j++){
             meshVerticesData[j].vertex = currentLod->getMVertices()[j];
             meshVerticesData[j].normal = currentLod->getMNormals()[j];
-            meshVerticesData[j].uv = currentLod->getMTextureCoordinates()[j];
-            meshVerticesData[j].tan = currentLod->getMTangents()[j];
-            meshVerticesData[j].bitan = currentLod->getMBitangents()[j];
+            meshVerticesData[j].uv = (currentLod->hasTextureCoordinates()) ? currentLod->getMTextureCoordinates()[j] : glm::vec3{0.0f};
+            meshVerticesData[j].tan = (currentLod->hasTangents()) ? currentLod->getMTangents()[j] : glm::vec3{0.0f};
+            meshVerticesData[j].bitan = (currentLod->hasBitangents()) ? currentLod->getMBitangents()[j] : glm::vec3{0.0f};
         }
 
         std::vector<unsigned int> remap(currentLod->m_numVertices);
@@ -64,9 +64,15 @@ void IndexingStep::execute() {
         for(int j=0;j<vertexCount;j++){
             currentLod->getMVertices()[j] = newVertices[j].vertex;
             currentLod->getMNormals()[j] = newVertices[j].normal;
+
+            if(currentLod->hasTangents())
             currentLod->getMTangents()[j] = newVertices[j].tan;
+
+            if(currentLod->hasBitangents())
             currentLod->getMBitangents()[j] = newVertices[j].bitan;
-            currentLod->getMTextureCoordinates()[j] = newVertices[j].uv;
+
+            if(currentLod->hasTextureCoordinates())
+                currentLod->getMTextureCoordinates()[j] = newVertices[j].uv;
         }
 
         delete[] currentLod->getMIndices();
