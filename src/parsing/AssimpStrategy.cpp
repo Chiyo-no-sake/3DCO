@@ -33,9 +33,10 @@ void AssimpStrategy::execute() {
                                              aiProcess_CalcTangentSpace |
                                              aiProcess_Triangulate |
                                              aiProcess_JoinIdenticalVertices |
-                                             aiProcess_GenSmoothNormals |
-                                             aiProcess_FindInvalidData |
-                                             aiProcess_GenUVCoords);
+                                             aiProcess_FindInvalidData);
+
+    parsed->m_directory = getDirectoryFor(m_filepath);
+    CO_LOG_TRACE("Scene directory: {}", parsed->m_directory);
 
     if (scene == nullptr) {
         CO_LOG_ERR("Cannot not parse {}", m_filepath);

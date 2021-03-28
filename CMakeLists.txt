@@ -150,5 +150,9 @@ else()
 			copy_if_different ${CMAKE_HOME_DIRECTORY}/vendor/img2dds $<TARGET_FILE_DIR:3DCO>)
 endif()
 
+add_custom_command(TARGET 3DCO POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E
+		copy_if_different ${CMAKE_HOME_DIRECTORY}/tests/assets/physics-properties.xml $<TARGET_FILE_DIR:3DCO>)
+
 
 

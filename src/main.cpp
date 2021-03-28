@@ -23,6 +23,7 @@ struct user_flags {
     int _abort = 0;
     int _doOptimize = 1;
     std::string _filePath;
+    std::string _outPath;
     std::vector<OptimizationStep *> _steps{};
     //hullgen
 
@@ -45,6 +46,13 @@ user_flags *parseArguments(int argc, char *argv[]) {
             "verbose",
             "If a value from 0 to 3 is given, the granularity of the logging module changes. 0 is errors only, 3 is all logs. The default is 2.",
             {'v', "verbose"}
+    );
+
+    args::ValueFlag<std::string> outPathFlag(
+            parser,
+            "output file",
+            "If specified the file will be written to this path. If not it will be written to a file with the same name as input with .ovo extension",
+            {'o', "output"}
     );
 
     //OPTIMIZATION ARGUMENTS
@@ -90,6 +98,13 @@ user_flags *parseArguments(int argc, char *argv[]) {
     }
 
     flags->_filePath = path.Get();
+
+    if(outPathFlag){
+        flags->_outPath = outPathFlag.Get();
+    }else{
+        int pIndex = flags->_filePath.find_last_of('.');
+        flags->_outPath = flags->_filePath.substr(0, pIndex+1) + "OVO";
+    }
 
     if (verboseFlag) {
 
@@ -162,7 +177,7 @@ int main(int argc, char *argv[]) {
 
     scene = fp.loadFromFile(flags->_filePath);
 
-    if(scene==nullptr)
+    if (scene == nullptr)
         return 1;
 
     //OPTIMIZATION
@@ -183,7 +198,7 @@ int main(int argc, char *argv[]) {
     VHACDGenerator::getInstance()->compute(scene);
     VHACDGenerator::getInstance()->deinit();
 
-    OVOExporter::exportTo(scene, "testOut.OVO");
+    OVOExporter::exportTo(scene, flags->_outPath.c_str());
 }
 
 

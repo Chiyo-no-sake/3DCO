@@ -9,6 +9,8 @@ chunk_type coLight::getChunkType() {
 }
 
 static float calculateInfluenceRadius(float constant, float linear, float quadratic) {
+    return 100;
+
     if(linear == 0 && quadratic == 0){
         return 1.0f/threshold;
     }

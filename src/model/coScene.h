@@ -13,6 +13,7 @@ private:
     std::vector<coMesh *>m_meshes;
 
 public:
+    std::string m_directory;
     coNode* m_rootNode;
 
     [[nodiscard]] std::map<std::string, coMaterial*> &getMMaterials();

@@ -3,6 +3,16 @@
 //
 #include "file_utils.h"
 
+std::string getDirectoryFor(const std::string &path) {
+    int cutIndex = path.find_last_of(SEPARATOR);
+
+    if (cutIndex == std::string::npos) {
+        return "";
+    }
+
+    return path.substr(0, cutIndex + 1);
+}
+
 int executeCommand(const std::string &cmd, bool verbose) {
     std::string result;
 

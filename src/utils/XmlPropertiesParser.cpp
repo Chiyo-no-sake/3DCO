@@ -12,7 +12,7 @@ XmlPropertiesParser *XmlPropertiesParser::getInstance() {
 
 void XmlPropertiesParser::init() {
 
-    std::ifstream input("../../tests/assets/physics-properties.xml");
+    std::ifstream input("physics-properties.xml");
 
     if (input) {
 

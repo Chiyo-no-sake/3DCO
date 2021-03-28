@@ -16,7 +16,8 @@ std::string *tryGetDiffusePath(aiMaterial *material) {
         textureFound = true;
         CO_LOG_INFO("Found diffuse texture on material {}", std::string(material->GetName().C_Str()));
     } else {
-        CO_LOG_TRACE("No diffuse texture found on material {}, trying base color", std::string(material->GetName().C_Str()));
+        CO_LOG_TRACE("No diffuse texture found on material {}, trying base color",
+                     std::string(material->GetName().C_Str()));
     }
 
     if (!textureFound) {
@@ -24,7 +25,8 @@ std::string *tryGetDiffusePath(aiMaterial *material) {
             textureFound = true;
             CO_LOG_INFO("Found base color texture on material {}", std::string(material->GetName().C_Str()));
         } else {
-            CO_LOG_TRACE("No base color texture found on material {}, trying ambient", std::string(material->GetName().C_Str()));
+            CO_LOG_TRACE("No base color texture found on material {}, trying ambient",
+                         std::string(material->GetName().C_Str()));
         }
     }
 
@@ -143,10 +145,12 @@ float getRoughnessValue(aiMaterial *material) {
     float value;
 
     if (AI_SUCCESS != material->Get(AI_MATKEY_GLTF_PBRMETALLICROUGHNESS_ROUGHNESS_FACTOR, value)) {
-        CO_LOG_WARN("Material {} has no roughness value. Converting from phong", std::string(material->GetName().C_Str()));
+        CO_LOG_WARN("Material {} has no roughness value. Converting from phong",
+                    std::string(material->GetName().C_Str()));
         float shine;
         if (AI_SUCCESS != material->Get(AI_MATKEY_SHININESS, shine)) {
-            CO_LOG_WARN("Material {} has no shininess value. Setting default roughness", std::string(material->GetName().C_Str()));
+            CO_LOG_WARN("Material {} has no shininess value. Setting default roughness",
+                        std::string(material->GetName().C_Str()));
             value = 0.001;
         }
         value = glm::max(glm::pow(1 - shine / 128, 2), 0.01);
@@ -191,6 +195,9 @@ std::string convertTexture(const aiScene *parsingScene, const std::string &textu
     if (foundTex == nullptr) {
         CO_LOG_TRACE("Texture is external: {}", texturePath);
         pathToConvert = texturePath;
+        // attacca prima di texturePath il percorso a parsing scene fino all'ultimo /;
+        // parsingScene = ../../tests/assets/simpleFPXScene.fbx --> ../../tests/assets/{texturePath};
+        // pathToConvert = directory + texturePath;
         external = true;
     } else {
         CO_LOG_TRACE("Texture is embedded");
@@ -268,6 +275,8 @@ std::string convertTexture(const aiScene *parsingScene, const std::string &textu
         args << " -o " << opacity << " ";
 
     args << pathToConvert << " " << outPath;
+
+    CO_LOG_TRACE("Calling with: {}", args.str());
 
     int ret = executeCommand(args.str(), true);
     if (ret == 0) {

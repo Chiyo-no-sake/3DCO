@@ -19,12 +19,6 @@
 #define P_CLOSE pclose
 #endif
 
-//std::string getWinTempDirectory(){
-//    char *buffer = (char*)malloc(MAX_PATH);
-//    GetTempPathA(MAX_PATH, buffer);
-//    std::string ret{buffer};
-//    free(buffer);
-//    return ret;
-//}
-
 int executeCommand(const std::string& cmd, bool verbose);
+
+std::string getDirectoryFor(const std::string& path);
