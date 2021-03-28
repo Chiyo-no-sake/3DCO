@@ -4,8 +4,31 @@
 #include "coMeshData.h"
 #include "coHull.h"
 
-enum meshType {
+enum mesh_type {
     DEFAULT = 0, NORMALMAPPED, TESSELLATED, M_UNDEF
+};
+
+
+enum physics_type : char ///< Kind of physical objects
+{
+    PHYS_UNDEFINED = 0,
+    PHYS_DYNAMIC = 1,
+    PHYS_KINEMATIC = 2,
+    PHYS_STATIC = 3,
+    PHYS_LAST
+};
+
+enum hull_type : char ///< Kind of hull
+{
+    HULL_UNDEFINED = 0,
+    HULL_SPHERE = 1,
+    HULL_BOX = 2,
+    HULL_CAPSULE = 3,
+    HULL_CONVEX = 4,
+    HULL_ORIGINAL = 5,
+    HULL_CUSTOM = 6,
+    HULL_CONCAVE = 7,
+    HULL_LAST
 };
 
 class coMesh: public coNode {
@@ -26,6 +49,10 @@ public:
     glm::vec3 m_bboxMin;
 
     float m_radius;
+
+    physics_type m_physicsType;
+
+    hull_type m_hullType;
 
     [[nodiscard]] std::vector<coMeshData *> &getLODs();
 

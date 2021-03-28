@@ -189,6 +189,21 @@ coNode *parseNode(aiNode *aiNode) {
 
             float volume = meshVolume(mesh->getLODs()[0]);
             mesh->m_mass = parser->getProperty(mesh->m_matName, "density") * volume;
+
+            std::string meshNamePostfix = aiNode->mName.C_Str();
+            meshNamePostfix = meshNamePostfix.substr(meshNamePostfix.find('.') + 1);
+
+            if(meshNamePostfix == "stat"){
+                mesh->m_physicsType = PHYS_STATIC;
+                mesh->m_hullType = HULL_UNDEFINED;
+            }
+            else if(meshNamePostfix == "dyn"){
+                mesh->m_physicsType = PHYS_DYNAMIC;
+                mesh->m_hullType = HULL_CUSTOM;
+            }
+            else
+                mesh->m_physicsType = PHYS_UNDEFINED;
+
             CO_LOG_TRACE("Mass: {} ", mesh->m_mass);
 
             mesh->m_bounciness = parser->getProperty(mesh->m_matName, "bounciness");
