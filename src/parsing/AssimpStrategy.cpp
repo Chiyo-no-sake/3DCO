@@ -129,8 +129,8 @@ void parseLightData(coLight *targetNode, int lightIndex) {
     targetNode->m_shadowCasting = 1;
     targetNode->m_volumetricLighting = 0;
 
-    CO_LOG_TRACE("light shadow casting set to 1");
-    CO_LOG_TRACE("light volumetric lighting set to 0");
+    CO_LOG_TRACE("light shadow casting set to {}", targetNode->m_shadowCasting);
+    CO_LOG_TRACE("light volumetric lighting set to {}", targetNode->m_volumetricLighting);
 }
 
 int getLightIndexFor(aiNode *aiNode) {
@@ -427,18 +427,22 @@ void parseMaterials(coScene *targetScene) {
         material->setHeightMap(std::string("[none]"));
 
 
-        if(metallicTexturePath == nullptr) CO_LOG_TRACE("No metallic map for material {}", material->m_name);
+        if(metallicTexturePath == nullptr){
+            CO_LOG_TRACE("No metallic map for material {}", material->m_name);
+            material->setMetalnessMap(std::string{"[none]"});
+        }
         else{
             material->setMetalnessMap(convertTexture(parsingScene, *metallicTexturePath, material->m_name, METAL));
         }
-        material->setMetalnessMap(std::string{"[none]"});
 
 
-        if(roughnessTexturePath == nullptr) CO_LOG_TRACE("No roughness map for material {}", material->m_name);
+        if(roughnessTexturePath == nullptr){
+            CO_LOG_TRACE("No roughness map for material {}", material->m_name);
+            material->setRoughnessMap(std::string{"[none]"});
+        }
         else{
             material->setRoughnessMap(convertTexture(parsingScene, *roughnessTexturePath, material->m_name, ROUGH));
         }
-        material->setRoughnessMap(std::string{"[none]"});
 
         delete normalTexturePath;
         delete metallicTexturePath;

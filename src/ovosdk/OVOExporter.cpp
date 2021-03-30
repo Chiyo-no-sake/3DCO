@@ -35,9 +35,9 @@ void exportMaterial(coMaterial *material, FILE *file) {
 }
 
 bool OVOExporter::exportTo(coScene *scene, const char *path) {
-    char buffer[FILENAME_MAX];
-    GetCurrentDir(buffer, FILENAME_MAX);
-    auto finalPath = std::string(buffer) + SEPARATOR + path;
+    //char buffer[FILENAME_MAX];
+    //GetCurrentDir(buffer, FILENAME_MAX);
+    auto finalPath = std::string(path); //+ SEPARATOR + path;
 
     FILE *file = fopen(finalPath.c_str(), "wb");
 

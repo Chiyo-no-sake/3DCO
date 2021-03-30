@@ -1,7 +1,3 @@
-//
-// Created by Simone Belingheri on 10/03/2021.
-//
-
 #include <log/Log.h>
 #include "OptimizationPipeline.h"
 

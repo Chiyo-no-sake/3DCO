@@ -60,7 +60,7 @@ std::string *tryGetMetallicPath(aiMaterial *material) {
     aiString metallicPath;
     bool textureFound = false;
 
-    if (AI_SUCCESS == material->Get(AI_MATKEY_TEXTURE(aiTextureType_METALNESS, 0), metallicPath)) {
+    if (AI_SUCCESS == material->GetTexture(AI_MATKEY_GLTF_PBRMETALLICROUGHNESS_METALLICROUGHNESS_TEXTURE, &metallicPath)) {
         textureFound = true;
         CO_LOG_INFO("Found metalness texture on material {}", std::string(material->GetName().C_Str()));
     } else {
@@ -73,7 +73,7 @@ std::string *tryGetRoughnessPath(aiMaterial *material) {
     aiString roughnessPath;
     bool textureFound = false;
 
-    if (AI_SUCCESS == material->Get(AI_MATKEY_TEXTURE(aiTextureType_DIFFUSE_ROUGHNESS, 0), roughnessPath)) {
+    if (AI_SUCCESS == material->GetTexture(AI_MATKEY_GLTF_PBRMETALLICROUGHNESS_METALLICROUGHNESS_TEXTURE, &roughnessPath)) {
         textureFound = true;
         CO_LOG_INFO("Found roughness texture on material {}", std::string(material->GetName().C_Str()));
     } else {

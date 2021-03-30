@@ -17,28 +17,14 @@ chunk_type coMesh::getChunkType() {
     return MESH;
 }
 
-/* TODO:
-     * In OVOREADER the physic part has different paddings than in OVOVIEWER:
-     *
-     * IN DOCS (WORK WITH OVOVIEWER):
-     *      float angularDamping, nrHulls, 4B Padding, 2x VoidPtr
-     * OVOREADER only works with:
-     *      float angularDamping, voidPtr, nrHulls, 2x voidPtr, 4B Padding
-*/
-
 char *coMesh::getPhysicsDataBuff(unsigned int *outSize) const {
-    /*TODO
-     * OVOVIEWER parse the file using the order objectType, ccd, crb, hull_type.
-     * THE DOC SAYS to parse the file using the order objectType, hull_type, ccd, crb.
-     */
 
-    //TODO x4 which one?
     if(m_physicsType != PHYS_UNDEFINED){
 
-        char objectType = m_physicsType; // ||PHYS_STATIC ? || PHYS_KINEMATIC ?
+        char objectType = m_physicsType;
         char hullType = m_hullType;
-        char continuousCollDet = 0; // ?
-        char collideWithRB = 0; // ?
+        char continuousCollDet = 0;
+        char collideWithRB = 1;
         const glm::vec3& massCenter = this->m_centerOfMass;
         const float& mass = this->m_mass;
         const float& frictionStat = this->m_staticFriction;
@@ -64,8 +50,6 @@ char *coMesh::getPhysicsDataBuff(unsigned int *outSize) const {
                                  sizeof(bounce) +
                                  sizeof(dampLin) +
                                  sizeof(dampAng) +
-                                 //ONLY FOR OVOREADER
-                                 //sizeof(pVoid) +
                                  sizeof(hullsNum) +
                                  sizeof(pVoid) +
                                  sizeof(pVoid) +
@@ -119,10 +103,6 @@ char *coMesh::getPhysicsDataBuff(unsigned int *outSize) const {
 
         memcpy(outChunk+offset, &dampAng, sizeof(dampAng));
         offset += sizeof(dampAng);
-
-        // ONLY FOR OVOREADER
-        //memcpy(outChunk+offset, &pVoid, sizeof(pVoid));
-        //offset += sizeof(pVoid);
 
         memcpy(outChunk+offset, &hullsNum, sizeof(hullsNum));
         offset += sizeof(hullsNum);
