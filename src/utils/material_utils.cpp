@@ -232,6 +232,7 @@ std::string convertTexture(const aiScene *parsingScene, const std::string &textu
 
     std::stringstream args{};
     std::string outPath = pathToConvert;
+    std::string outName;
 
     std::string typePostfix;
 
@@ -255,10 +256,12 @@ std::string convertTexture(const aiScene *parsingScene, const std::string &textu
 
     if (!external) {
         outPath = outDir + materialName + typePostfix + ".dds";
+        outName = materialName + typePostfix + ".dds";
     } else {
         int pIndex = outPath.find_last_of('.');
         outPath = outPath.substr(0, pIndex+1);
         outPath += "dds";
+        outName = outPath;
     }
     args << "img2dds" << EXE_POSTFIX;
 
@@ -292,7 +295,7 @@ std::string convertTexture(const aiScene *parsingScene, const std::string &textu
             CO_LOG_WARN("Can't delete tmp file {}", pathToConvert);
     }
 
-    return success ? outPath : "[none]";
+    return success ? outName : "[none]";
 }
 
 

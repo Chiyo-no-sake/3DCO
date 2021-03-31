@@ -382,7 +382,7 @@ void parseMaterials(coScene *targetScene) {
         material->m_emission = getEmissionColor(srcMaterial);
         material->m_roughness = getRoughnessValue(srcMaterial);
         material->m_metalness = getMetalnessValue(srcMaterial);
-        material->m_transparency = 1 - getOpacityValue(srcMaterial);
+        material->m_transparency = getOpacityValue(srcMaterial);
 
         // ########################### Getting material colors #########################################################
 
@@ -418,7 +418,6 @@ void parseMaterials(coScene *targetScene) {
             } else {
                 material->setAlbedoMap(convertTexture(parsingScene, *diffuseTexturePath, material->m_name, ALBEDO,parsed->m_directory));
             }
-            material->m_albedo = {0.5f,0.5f,0.5f};
         }
 
         if (normalTexturePath == nullptr) {
