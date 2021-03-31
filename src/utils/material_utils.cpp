@@ -186,7 +186,7 @@ bool writeToTGA(const aiTexture *tex, std::string outPath) {
 }
 
 std::string convertTexture(const aiScene *parsingScene, const std::string &texturePath, const std::string &materialName,
-                           textureType type, const std::string &opacity) {
+                           textureType type, const std::string& outDir, const std::string &opacity) {
     std::string pathToConvert;
     const aiTexture *foundTex = parsingScene->GetEmbeddedTexture(texturePath.c_str());
     bool external = false;
@@ -195,17 +195,14 @@ std::string convertTexture(const aiScene *parsingScene, const std::string &textu
     if (foundTex == nullptr) {
         CO_LOG_TRACE("Texture is external: {}", texturePath);
         pathToConvert = texturePath;
-        // attacca prima di texturePath il percorso a parsing scene fino all'ultimo /;
-        // parsingScene = ../../tests/assets/simpleFPXScene.fbx --> ../../tests/assets/{texturePath};
-        // pathToConvert = directory + texturePath;
         external = true;
     } else {
         CO_LOG_TRACE("Texture is embedded");
-        if (foundTex->mHeight == 0) {
+        pathToConvert = outDir + std::string("texture_tmp.") + foundTex->achFormatHint;
 
+        if (foundTex->mHeight == 0) {
             CO_LOG_TRACE("Texture is in compressed format, size: {} bytes", foundTex->mWidth);
 
-            pathToConvert = std::string("texture_tmp.") + foundTex->achFormatHint;
             FILE *outTexture = fopen(pathToConvert.c_str(), "wb");
 
             if (outTexture == nullptr) {
@@ -257,14 +254,15 @@ std::string convertTexture(const aiScene *parsingScene, const std::string &textu
     }
 
     if (!external) {
-        outPath = materialName + typePostfix + ".dds";
+        outPath = outDir + materialName + typePostfix + ".dds";
     } else {
-        outPath.replace(outPath.length() - 3, 3, "dds");
+        int pIndex = outPath.find_last_of('.');
+        outPath = outPath.substr(0, pIndex+1);
+        outPath += "dds";
     }
     args << "img2dds" << EXE_POSTFIX;
 
-    // TODO chiedi al prof come metalness e roughness devono essere convertite in dds
-    if (type == ALBEDO) // || METAL || ROUGH
+    if (type == ALBEDO)
         args << " t ";
     else if (type == NORMAL)
         args << " n ";
@@ -276,7 +274,7 @@ std::string convertTexture(const aiScene *parsingScene, const std::string &textu
 
     args << pathToConvert << " " << outPath;
 
-    CO_LOG_TRACE("Calling with: {}", args.str());
+    CO_LOG_TRACE("Calling: {}", args.str());
 
     int ret = executeCommand(args.str(), true);
     if (ret == 0) {

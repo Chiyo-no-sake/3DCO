@@ -29,4 +29,4 @@ float getMetalnessValue(aiMaterial* material);
 float getRoughnessValue(aiMaterial* material);
 
 std::string convertTexture(const aiScene* parsingScene, const std::string& texturePath, const std::string& materialName,
-                    textureType type,const std::string& opacity = "none");
+                    textureType type,const std::string& outDir,const std::string& opacity = "none");

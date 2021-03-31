@@ -177,6 +177,11 @@ coNode *parseNode(aiNode *aiNode) {
             mesh->m_matName = getMaterialNameFor(aiNode->mMeshes[0]);
             CO_LOG_INFO("Found material for mesh {}, name: {}", mesh->m_name, mesh->m_matName);
 
+            mesh->m_meshType =
+                    parsed->getMMaterials()[mesh->m_matName]->getNormalMap() == "[none]" ?
+                    DEFAULT :
+                    NORMALMAPPED;
+
             mesh->m_bboxMax = mesh->findBoundingBoxMax();
             mesh->m_bboxMin = mesh->findBoundingBoxMin();
             mesh->m_radius = mesh->computeMeshRadius();
@@ -193,17 +198,15 @@ coNode *parseNode(aiNode *aiNode) {
             mesh->m_mass = parser->getProperty(mesh->m_matName, "density") * volume;
 
             std::string meshNamePostfix = aiNode->mName.C_Str();
-            meshNamePostfix = meshNamePostfix.substr(meshNamePostfix.size()-4);
+            meshNamePostfix = meshNamePostfix.substr(meshNamePostfix.size() - 4);
 
-            if(meshNamePostfix == ".stc"){
+            if (meshNamePostfix == ".stc") {
                 mesh->m_physicsType = PHYS_STATIC;
                 mesh->m_hullType = HULL_UNDEFINED;
-            }
-            else if(meshNamePostfix == ".dyn"){
+            } else if (meshNamePostfix == ".dyn") {
                 mesh->m_physicsType = PHYS_DYNAMIC;
                 mesh->m_hullType = HULL_CUSTOM;
-            }
-            else
+            } else
                 mesh->m_physicsType = PHYS_UNDEFINED;
 
             CO_LOG_TRACE("Mass: {} ", mesh->m_mass);
@@ -290,20 +293,20 @@ coMeshData *parseMeshData(unsigned int meshIndex) {
         CO_LOG_WARN("Mesh has no vertices");
     }
 
-    if(mesh->mTextureCoords[0] == nullptr){
+    if (mesh->mTextureCoords[0] == nullptr) {
         CO_LOG_WARN("Mesh has no texture coordinates. Did you forget UV unwrapping?");
         mapping = nullptr;
         hasTexCoords = false;
     }
 
-    if(mesh->mTangents == nullptr){
+    if (mesh->mTangents == nullptr) {
         CO_LOG_WARN("Mesh has no tangents data. Did you forget UV unwrapping?");
         tangents = nullptr;
         hasTangents = false;
 
     }
 
-    if(mesh->mBitangents == nullptr){
+    if (mesh->mBitangents == nullptr) {
         CO_LOG_WARN("Mesh has no bitangents data. Did you forget UV unwrapping?");
         bitangents = nullptr;
         hasBitangents = false;
@@ -330,19 +333,19 @@ coMeshData *parseMeshData(unsigned int meshIndex) {
         normals[i] = convertVec3(mesh->mNormals[i]);
         CO_LOG_TRACE("parsed normal: {}, {}, {}", vertices[i].x, vertices[i].y, vertices[i].z);
 
-        if(hasTexCoords) {
+        if (hasTexCoords) {
             mapping[i] = convertVec3(mesh->mTextureCoords[0][i]);
             CO_LOG_TRACE("parsed uv: {}, {}", mapping[i].x, mapping[i].y);
         }
 
         // parse tangents
-        if(hasTangents) {
+        if (hasTangents) {
             tangents[i] = convertVec3(mesh->mTangents[i]);
             CO_LOG_TRACE("parsed tan: {}, {}", tangents[i].x, tangents[i].y);
         }
 
         // parse bitangents
-        if(hasBitangents) {
+        if (hasBitangents) {
             bitangents[i] = convertVec3(mesh->mBitangents[i]);
             CO_LOG_TRACE("parsed bi-tan: {}, {}", bitangents[i].x, bitangents[i].y);
         }
@@ -410,38 +413,38 @@ void parseMaterials(coScene *targetScene) {
         } else {
             if (opacityTexturePath != nullptr) {
                 CO_LOG_INFO("Opacity map found, including in albedo");
-                material->setAlbedoMap(convertTexture(parsingScene, *diffuseTexturePath, material->m_name, ALBEDO, *opacityTexturePath));
+                material->setAlbedoMap(convertTexture(parsingScene, *diffuseTexturePath, material->m_name, ALBEDO,parsed->m_directory,
+                                                      *opacityTexturePath));
             } else {
-                material->setAlbedoMap(convertTexture(parsingScene, *diffuseTexturePath, material->m_name, ALBEDO));
+                material->setAlbedoMap(convertTexture(parsingScene, *diffuseTexturePath, material->m_name, ALBEDO,parsed->m_directory));
             }
+            material->m_albedo = {0.5f,0.5f,0.5f};
         }
 
         if (normalTexturePath == nullptr) {
             CO_LOG_TRACE("No normal map for material {}", material->m_name);
             material->setNormalMap(std::string("[none]"));
         } else {
-            material->setNormalMap(convertTexture(parsingScene, *normalTexturePath, material->m_name, NORMAL));
+            material->setNormalMap(convertTexture(parsingScene, *normalTexturePath, material->m_name, NORMAL,parsed->m_directory));
         }
 
 
         material->setHeightMap(std::string("[none]"));
 
 
-        if(metallicTexturePath == nullptr){
+        if (metallicTexturePath == nullptr) {
             CO_LOG_TRACE("No metallic map for material {}", material->m_name);
             material->setMetalnessMap(std::string{"[none]"});
-        }
-        else{
-            material->setMetalnessMap(convertTexture(parsingScene, *metallicTexturePath, material->m_name, METAL));
+        } else {
+            material->setMetalnessMap(convertTexture(parsingScene, *metallicTexturePath, material->m_name, METAL,parsed->m_directory));
         }
 
 
-        if(roughnessTexturePath == nullptr){
+        if (roughnessTexturePath == nullptr) {
             CO_LOG_TRACE("No roughness map for material {}", material->m_name);
             material->setRoughnessMap(std::string{"[none]"});
-        }
-        else{
-            material->setRoughnessMap(convertTexture(parsingScene, *roughnessTexturePath, material->m_name, ROUGH));
+        } else {
+            material->setRoughnessMap(convertTexture(parsingScene, *roughnessTexturePath, material->m_name, ROUGH,parsed->m_directory));
         }
 
         delete normalTexturePath;

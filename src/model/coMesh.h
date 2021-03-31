@@ -52,6 +52,8 @@ public:
 
     physics_type m_physicsType;
 
+    mesh_type m_meshType;
+
     hull_type m_hullType;
 
     [[nodiscard]] std::vector<coMeshData *> &getLODs();

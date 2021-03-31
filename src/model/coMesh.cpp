@@ -164,7 +164,7 @@ char *coMesh::toChunk(unsigned int *outSize) {
     // TODO if material has normal map, it is NORMALMAPPED
     std::string matName = m_matName;
 
-    char meshType = m_physicsType;
+    char meshType = m_meshType;
 
     unsigned char physicsIncluded = (m_physicsType == PHYS_UNDEFINED) ? 0 : m_physicsType;
 
