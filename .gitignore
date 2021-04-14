@@ -24,3 +24,5 @@ Testing/
 CMakeCache.txt
 Makefile
 draco.pc
+
+.vscode/
