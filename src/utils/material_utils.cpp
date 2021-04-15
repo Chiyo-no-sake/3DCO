@@ -7,6 +7,7 @@
 #include "log/Log.h"
 #include "FreeImage.h"
 #include "utils/file_utils.h"
+#include <filesystem>
 
 std::string *tryGetDiffusePath(aiMaterial *material) {
     aiString diffusePath;
@@ -191,10 +192,17 @@ std::string convertTexture(const aiScene *parsingScene, const std::string &textu
     const aiTexture *foundTex = parsingScene->GetEmbeddedTexture(texturePath.c_str());
     bool external = false;
     bool tmp_used = false;
+    bool relative = false;
 
     if (foundTex == nullptr) {
         CO_LOG_TRACE("Texture is external: {}", texturePath);
-        pathToConvert = texturePath;
+        if(std::filesystem::path(texturePath).is_relative()){
+            pathToConvert = outDir + SEPARATOR + texturePath;
+            relative = true;
+        }else{
+            pathToConvert = texturePath;
+        }
+
         external = true;
     } else {
         CO_LOG_TRACE("Texture is embedded");
@@ -228,6 +236,7 @@ std::string convertTexture(const aiScene *parsingScene, const std::string &textu
     }
 
     CO_LOG_INFO("Initiating texture conversion with img2dds");
+    CO_LOG_INFO("Texture path: {}", pathToConvert);
     bool success = true;
 
     std::stringstream args{};
@@ -281,7 +290,11 @@ std::string convertTexture(const aiScene *parsingScene, const std::string &textu
 
     int ret = executeCommand(args.str(), true);
     if (ret == 0) {
-        CO_LOG_INFO("Texture successfully converted to dds: {}", outPath);
+        if(relative){
+            std::string::size_type i = outName.find(outDir+SEPARATOR);
+            outName.erase(i, (outDir+SEPARATOR).length());
+        }
+        CO_LOG_INFO("Texture successfully converted to dds. Writing in file: {}", outName);
         success = true;
     } else {
         CO_LOG_ERR("Error converting texture with img2dds. Skipping.");

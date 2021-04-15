@@ -11,6 +11,8 @@ import os
 baseDir = join('tests', 'assets')
 formatsDirs = ['dae', 'fbx', 'gltf', 'obj']
 
+winSize = [1024, 768]
+
 def findOvoViewerWindow():
   allwindows = pygetwindow.getAllTitles()
   for w in allwindows:
@@ -20,11 +22,6 @@ def findOvoViewerWindow():
   return None
 
 def takeScreenshot(window, outFile):
-  x2,y2 = pyautogui.size()
-  x2,y2=int(str(x2)),int(str(y2))
-  x3 = x2 // 2
-  y3 = y2 // 2
-  window.resizeTo(x3,y3)
   # top-left
   window.moveTo(0, 0)
   window.activate()
@@ -32,8 +29,8 @@ def takeScreenshot(window, outFile):
   p = pyautogui.screenshot()
   p.save("tmp.png")
   im = PIL.Image.open('tmp.png')
-  im_crop = im.crop((0, 0, x3, y3))
-  im_crop.save(outFile + ".png", quality=100)
+  im_crop = im.crop((0, 0, winSize[0], winSize[1]))
+  im_crop.save(outFile + "_OVO.png", quality=100)
   os.remove("tmp.png")
 
 def main():
@@ -65,10 +62,13 @@ def main():
         continue
 
       filePath = join(path, file)
-      command = executableFile + " " + "-v2 " + join('..','..',filePath)
+      command = executableFile + " " + "-v3 " + join('..','..',filePath)
+
+      errFile = open(join(path, file.replace('.', '_') + '_ERR.log'), 'w')
+      outFile = open(join(path, file.replace('.', '_') + '_OUT.log'), 'w')
       print("Running " + command)
 
-      converterProcess = subprocess.Popen(args = command, cwd = executablePath)
+      converterProcess = subprocess.Popen(args = command, cwd = executablePath, stdout = outFile, stderr = errFile)
       exitCode = converterProcess.wait()
       
       if(exitCode != 0):
@@ -83,25 +83,29 @@ def main():
       print("Executing: " + command + " " + targetOVO)
 
       viewerProcess = subprocess.Popen([command, targetOVO], cwd = join('tests', 'vendor'))
-      time.sleep(3)
+      try:
+        time.sleep(3)
 
-      # get window and take screenshot
-      ovoWindow = findOvoViewerWindow()
-      if(ovoWindow == None):
-        print("Ovoviewer crashed")
-        continue
-      
-      if not os.path.exists(join('tests', 'screenshots')):
-        os.makedirs(join('tests', 'screenshots'))
+        # get window and take screenshot
+        ovoWindow = findOvoViewerWindow()
+        if(ovoWindow == None):
+          print("Ovoviewer crashed")
+          continue
+        
+        if not os.path.exists(join('tests', 'screenshots')):
+          os.makedirs(join('tests', 'screenshots'))
 
-      takeScreenshot(ovoWindow, join('tests', 'screenshots', file.replace(f, "OVO")))
+        takeScreenshot(ovoWindow, join('tests', 'screenshots', file.replace('.', "_")))
 
-      if(viewerProcess.poll() == None):
+        if(viewerProcess.poll() == None):
+          viewerProcess.terminate()
+        elif(viewerProcess.poll() != 0):
+          print("Ovoviewer crashed")
+        
+        print("Ovoviewer read correctly the file " + targetOVO)
+
+      except:
         viewerProcess.terminate()
-      elif(viewerProcess.poll() != 0):
-        print("Ovoviewer crashed")
-      
-      print("Ovoviewer read correctly the file " + targetOVO)
       
 
 if __name__ == "__main__":
