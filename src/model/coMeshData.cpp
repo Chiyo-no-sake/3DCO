@@ -30,11 +30,11 @@ void coMeshData::setMNormals(glm::vec3 *mNormals) {
     m_normals = mNormals;
 }
 
-glm::vec3 *coMeshData::getMTangents() {
+glm::vec4 * coMeshData::getMTangents() {
     return m_tangents;
 }
 
-void coMeshData::setMTangents(glm::vec3 *mTangents) {
+void coMeshData::setMTangents(glm::vec4 *mTangents) {
     m_tangents = mTangents;
 }
 
@@ -87,7 +87,7 @@ char *coMeshData::getVerticesDataBuffer(unsigned int *outSize) {
         memcpy(chunk + offset, (void *) &packedUV, sizeof(unsigned int));
         offset += sizeof(unsigned int);
 
-        unsigned int packedTan = glm::packSnorm3x10_1x2((hasTangents()) ? glm::vec4{m_tangents[i], 0} : glm::vec4{0.0f});
+        unsigned int packedTan = glm::packSnorm3x10_1x2((hasTangents()) ? m_tangents[i] : glm::vec4{0.0f});
         memcpy(chunk + offset, (void *) &packedTan, sizeof(unsigned int));
         offset += sizeof(unsigned int);
     }

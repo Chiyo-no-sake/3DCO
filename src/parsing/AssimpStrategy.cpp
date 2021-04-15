@@ -259,6 +259,10 @@ coNode *parseNode(aiNode *aiNode) {
     return node;
 }
 
+glm::vec3 operator %(glm::vec3& v1, glm::vec3& v2){
+    return glm::vec3{v1.x*v2.x, v1.y*v2.y, v1.z*v2.z};
+}
+
 coMeshData *parseMeshData(unsigned int meshIndex) {
     CO_LOG_INFO("converting mesh");
 
@@ -268,7 +272,7 @@ coMeshData *parseMeshData(unsigned int meshIndex) {
     glm::vec3 *vertices;
     glm::vec3 *normals;
     glm::vec3 *mapping;
-    glm::vec3 *tangents;
+    glm::vec4 *tangents;
     glm::vec3 *bitangents;
     bool hasTexCoords = true;
     bool hasTangents = true;
@@ -278,7 +282,7 @@ coMeshData *parseMeshData(unsigned int meshIndex) {
     vertices = static_cast<glm::vec3 *>(malloc(mesh->mNumVertices * sizeof(glm::vec3)));
     normals = static_cast<glm::vec3 *>(malloc(mesh->mNumVertices * sizeof(glm::vec3)));
     mapping = static_cast<glm::vec3 *>(malloc(mesh->mNumVertices * sizeof(glm::vec3)));
-    tangents = static_cast<glm::vec3 *>(malloc(mesh->mNumVertices * sizeof(glm::vec3)));
+    tangents = static_cast<glm::vec4 *>(malloc(mesh->mNumVertices * sizeof(glm::vec4)));
     bitangents = static_cast<glm::vec3 *>(malloc(mesh->mNumVertices * sizeof(glm::vec3)));
 
 
@@ -340,14 +344,22 @@ coMeshData *parseMeshData(unsigned int meshIndex) {
 
         // parse tangents
         if (hasTangents) {
-            tangents[i] = convertVec3(mesh->mTangents[i]);
-            CO_LOG_TRACE("parsed tan: {}, {}", tangents[i].x, tangents[i].y);
+            tangents[i] = {convertVec3(mesh->mTangents[i]), 0};
         }
 
         // parse bitangents
         if (hasBitangents) {
-            bitangents[i] = convertVec3(mesh->mBitangents[i]);
-            CO_LOG_TRACE("parsed bi-tan: {}, {}", bitangents[i].x, bitangents[i].y);
+            glm::vec3 bitangent = convertVec3(mesh->mBitangents[i]);
+            bitangent = glm::normalize(bitangent);
+
+            if (glm::dot(glm::cross(normals[i], {tangents[i].x, tangents[i].y, tangents[i].z}), bitangent) > 0.0)
+                tangents[i].w = 1.0f;
+            else
+                tangents[i].w = -1.0f;
+
+            bitangents[i] = bitangent;
+            CO_LOG_TRACE("parsed bi-tan: {}, {}, {}", bitangents[i].x, bitangents[i].y, bitangents[i].z);
+            CO_LOG_TRACE("parsed tan: {}, {}, {}, {}", tangents[i].x, tangents[i].y, tangents[i].z, tangents[i].w);
         }
     }
 

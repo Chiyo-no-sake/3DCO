@@ -12,7 +12,7 @@ private:
 
     glm::vec3 *m_normals;
 
-    glm::vec3 *m_tangents;
+    glm::vec4 *m_tangents;
     glm::vec3 *m_bitangents;
     glm::vec3 *m_textureCoordinates;
     //    std::vector<coBone *> m_bones;
@@ -42,9 +42,9 @@ public:
 
     void setMNormals(glm::vec3 *mNormals);
 
-    [[nodiscard]] glm::vec3 *getMTangents();
+    [[nodiscard]] glm::vec4 * getMTangents();
 
-    void setMTangents(glm::vec3 *mTangents);
+    void setMTangents(glm::vec4 *mTangents);
 
     [[nodiscard]] glm::vec3 *getMBitangents();
 

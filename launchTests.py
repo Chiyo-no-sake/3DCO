@@ -56,6 +56,14 @@ def main():
       if(file.endswith("OVO")):
         continue
 
+      toConvert = False
+      for ext in formatsDirs:
+        if(file.endswith(ext)):
+          toConvert = True
+      
+      if(not toConvert):
+        continue
+
       filePath = join(path, file)
       command = executableFile + " " + "-v2 " + join('..','..',filePath)
       print("Running " + command)

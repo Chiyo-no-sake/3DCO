@@ -10,7 +10,7 @@ struct vertexData {
     glm::vec3 vertex;
     glm::vec3 normal;
     glm::vec3 uv;
-    glm::vec3 tan;
+    glm::vec4 tan;
     glm::vec3 bitan;
 };
 
@@ -29,7 +29,7 @@ void IndexingStep::execute() {
             meshVerticesData[j].vertex = currentLod->getMVertices()[j];
             meshVerticesData[j].normal = currentLod->getMNormals()[j];
             meshVerticesData[j].uv = (currentLod->hasTextureCoordinates()) ? currentLod->getMTextureCoordinates()[j] : glm::vec3{0.0f};
-            meshVerticesData[j].tan = (currentLod->hasTangents()) ? currentLod->getMTangents()[j] : glm::vec3{0.0f};
+            meshVerticesData[j].tan = (currentLod->hasTangents()) ? currentLod->getMTangents()[j] : glm::vec4{0.0f};
             meshVerticesData[j].bitan = (currentLod->hasBitangents()) ? currentLod->getMBitangents()[j] : glm::vec3{0.0f};
         }
 
