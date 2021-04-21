@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <overvision>
 	<windowtitle>Overvision window</windowtitle>
-	<windowsizex>1024</windowsizex>
-	<windowsizey>768</windowsizey>
+	<windowsizex>1820</windowsizex>
+	<windowsizey>980</windowsizey>
 	<shadowmapsize>1024</shadowmapsize>
 	<nrofaasamples>4</nrofaasamples>
 	<displayid>0</displayid>

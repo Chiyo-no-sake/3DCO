@@ -11,7 +11,7 @@ import os
 baseDir = join('tests', 'assets')
 formatsDirs = ['dae', 'fbx', 'gltf', 'obj']
 
-winSize = [1024, 768]
+winSize = [1820, 980]
 
 def findOvoViewerWindow():
   allwindows = pygetwindow.getAllTitles()
@@ -84,7 +84,7 @@ def main():
 
       viewerProcess = subprocess.Popen([command, targetOVO], cwd = join('tests', 'vendor'))
       try:
-        time.sleep(3)
+        time.sleep(5)
 
         # get window and take screenshot
         ovoWindow = findOvoViewerWindow()
