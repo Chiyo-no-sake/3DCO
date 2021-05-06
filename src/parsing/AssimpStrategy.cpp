@@ -198,7 +198,8 @@ coNode *parseNode(aiNode *aiNode) {
             mesh->m_mass = parser->getProperty(mesh->m_matName, "density") * volume;
 
             std::string meshNamePostfix = aiNode->mName.C_Str();
-            meshNamePostfix = meshNamePostfix.substr(meshNamePostfix.size() - 4);
+            if(meshNamePostfix.size() >= 4)
+                meshNamePostfix = meshNamePostfix.substr(meshNamePostfix.size() - 4);
 
             if (meshNamePostfix == ".stc") {
                 mesh->m_physicsType = PHYS_STATIC;
