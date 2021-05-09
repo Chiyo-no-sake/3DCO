@@ -41,5 +41,8 @@ git submodule update --init --recursive
 Build project 'Boost_Tests_run' to build tests, '3DCO' to build the tool.
 * Executables are built to bin directory.
 
+##### OR
+Download the project pre-configured for visual studio in the releases tab, and then build it.
+
 ## Usage
 TODO TODO TODO
