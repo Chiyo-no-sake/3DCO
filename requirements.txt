@@ -1,0 +1,4 @@
+Pillow
+Image
+pyautogui
+pygetwindow

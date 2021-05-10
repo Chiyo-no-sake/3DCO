@@ -1,0 +1,7 @@
+Following use cases have not been tested because of rare, difficult to recreate, behaviour.
+They need to be considered for testing before release.
+
+* File formats with embedded textures that are different from FBX
+	(can cause problem since they do not return aiTexture when requested)
+
+* File formats with embedded uncompressed textures that needs to be written by FreeImage 

@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.10)
 
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_HOME_DIRECTORY}/lib)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_HOME_DIRECTORY}/lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_HOME_DIRECTORY}/bin)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_HOME_DIRECTORY}/lib/$<CONFIG>)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_HOME_DIRECTORY}/lib/$<CONFIG>)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_HOME_DIRECTORY}/bin/$<CONFIG>)
 
 # DEFAULT PROJECT CONFIGURATION
 
@@ -15,48 +17,142 @@ set(ASSIMP_BUILD_DRACO OFF CACHE BOOL "..." FORCE)
 
 # BUILDING VENDOR LIBRARIES
 
-add_subdirectory(vendor/assimp)
-add_subdirectory(vendor/spdlog)
+SET(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "Assimp not builds tools" FORCE)
+SET(ASSIMP_BUILD_TESTS OFF CACHE BOOL "Assimp not build tests" FORCE)
+SET(ASSIMP_INSTALL OFF CACHE BOOL "Assimp not installs" FORCE)
+SET(ASSIMP_INJECT_DEBUG_POSTFIX OFF CACHE BOOL "Assimp no inject debug postfix" FORCE)
+
+add_subdirectory(vendor/assimp EXCLUDE_FROM_ALL)
+add_subdirectory(vendor/spdlog EXCLUDE_FROM_ALL)
+add_subdirectory(vendor/meshopt EXCLUDE_FROM_ALL)
+add_subdirectory(vendor/args EXCLUDE_FROM_ALL)
 
 # INCLUDING VENDOR DIRECTORIES
 
 include_directories(
+		src
 		vendor/spdlog/include
 		vendor/assimp/include
 		vendor/glm
-		${CMAKE_BINARY_DIR}/vendor/assimp/include
+		vendor/meshopt/src
+		vendor/args
+		vendor/FreeImage/include
+		vendor/vhacd/include
 )
 
-# LINK ASSIMP LIBRARY (DYNAMIC)
+# ADDITIONAL LINK DIRECTORIES FOR NON BUILT-IN LIBRARIES (FREEIMAGE, VHACD)
+
+if(WIN32 OR MSVC)
+	if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
+		link_directories(vendor/vhacd/windows/Debug)
+    else()
+        link_directories(vendor/vhacd/windows/Release)
+	endif()
+	link_directories(vendor/FreeImage/win/lib)
+else()
+	set(CMAKE_CXX_FLAGS " -pthread -fopenmp ")
+	link_directories(vendor/vhacd/linux)
+	link_directories(vendor/FreeImage/linux)
+endif()
+
+# LINK VENDOR LIBRARIES (DYNAMIC)
 
 link_libraries(assimp)
+link_libraries(meshoptimizer)
+link_libraries(vhacd)
+
+if(WIN32)
+	link_libraries(FreeImage)
+else()
+	link_libraries(freeimage)
+endif()
 
 # DEFINE DEFAULT PROJECT EXECUTABLE
 
-add_executable(3DCO src/main.cpp src/lib.h src/model/coObject.cpp src/model/coObject.h src/model/coNode.cpp src/model/coNode.h src/model/coMesh.cpp src/model/coMesh.h)
+add_executable(
+		3DCO
+		src/main.cpp
+
+		src/model/coNode.cpp
+		src/model/coNode.h
+		src/model/coMeshData.cpp
+		src/model/coMeshData.h
+		src/model/coLight.cpp
+		src/model/coLight.h
+		src/model/coScene.cpp
+		src/model/coScene.h
+		src/model/coMaterial.cpp
+		src/model/coMaterial.h
+		src/model/coMesh.cpp
+		src/model/coMesh.h
+
+		src/parsing/AssimpStrategy.cpp
+		src/parsing/AssimpStrategy.h
+		src/parsing/ParsingStrategy.h
+		src/parsing/ParsingStrategy.cpp
+		src/parsing/FileParser.cpp
+		src/parsing/FileParser.h
+		src/utils/material_utils.h
+		src/utils/material_utils.cpp
+
+		src/common/IExecutable.h
+		src/common/IChunkable.h
+
+		src/log/Log.h
+		src/log/Log.cpp
+
+		src/optimization/OptimizationPipeline.cpp
+		src/optimization/OptimizationPipeline.h
+		src/optimization/OptimizationStep.cpp
+		src/optimization/OptimizationStep.h
+		src/optimization/IndexingStep.cpp
+		src/optimization/IndexingStep.h
+		src/optimization/CacheOptimizationStep.cpp
+		src/optimization/CacheOptimizationStep.h
+		src/optimization/OverdrawOptimizationStep.cpp
+		src/optimization/OverdrawOptimizationStep.h
+		src/optimization/VertexFetchOptimizationStep.cpp
+		src/optimization/VertexFetchOptimizationStep.h
+
+		src/utils/file_utils.h
+		src/utils/file_utils.cpp
+
+		src/ovosdk/OVOExporter.h
+		src/ovosdk/OVOExporter.cpp
+
+		src/model/coHull.cpp
+		src/model/coHull.h
+		src/hullgen/VHACDGenerator.cpp
+		src/hullgen/VHACDGenerator.h
+		src/log/VHACDLogCallback.h
+		src/log/VHACDLogger.h
+		src/utils/XmlPropertiesParser.cpp
+		src/utils/XmlPropertiesParser.h
+
+		src/rapidxml/rapidxml.hpp
+		src/rapidxml/rapidxml_iterators.hpp
+		src/rapidxml/rapidxml_print.hpp
+		src/rapidxml/rapidxml_utils.hpp src/utils/mesh_utils.h src/utils/types_utils.h)
 
 if (WIN32)
 	add_custom_command(TARGET 3DCO POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E 
-		copy_if_different ${CMAKE_BINARY_DIR}/vendor/assimp/bin/$<CONFIG>/assimp-vc142-mtd.dll $<TARGET_FILE_DIR:3DCO>)
-endif()
-
-# TEST CONFIGURATION
-
-find_package(Boost)
-
-if(Boost_FOUND)
-	
-	message("Building Tests in tests folder")
-	add_executable(Boost_Tests_run tests/boost_test.cpp)
-
-	set_target_properties(Boost_Tests_run PROPERTIES LINKER_LANGUAGE CXX)
-	target_include_directories(Boost_Tests_run PUBLIC ${Boost_INCLUDE_DIRS} src)
-	target_link_libraries(Boost_Tests_run ${Boost_LIBRARIES})
+		COMMAND ${CMAKE_COMMAND} -E
+		copy_if_different $<TARGET_FILE:assimp> $<TARGET_FILE_DIR:3DCO>)
+	add_custom_command(TARGET 3DCO POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E
+			copy_if_different ${CMAKE_HOME_DIRECTORY}/vendor/FreeImage/win/lib/FreeImage.dll $<TARGET_FILE_DIR:3DCO>)
+	add_custom_command(TARGET 3DCO POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E
+			copy_if_different ${CMAKE_HOME_DIRECTORY}/vendor/img2dds.exe $<TARGET_FILE_DIR:3DCO>)
 else()
-	message("Boost not installed, not building tests")
-
+	add_custom_command(TARGET 3DCO POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E
+			copy_if_different ${CMAKE_HOME_DIRECTORY}/vendor/img2dds $<TARGET_FILE_DIR:3DCO>)
 endif()
+
+add_custom_command(TARGET 3DCO POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E
+		copy_if_different ${CMAKE_HOME_DIRECTORY}/tests/assets/physics-properties.xml $<TARGET_FILE_DIR:3DCO>)
 
 
 

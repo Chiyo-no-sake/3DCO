@@ -1,0 +1,32 @@
+   Config loaded:
+      window title  . . :  Overvision window
+      window size x . . :  1820
+      window size y . . :  980
+      shadowmap size  . :  1024
+      display ID  . . . :  0
+      fullscreen flag . :  0
+      phys. world scale :  1.00
+      MSAA samples  . . :  4
+   Using GLM v0.9.9.0
+   Using GLFW v3.2.1
+1 display(s) found:
+   0) Generic PnP Monitor
+OpenGL properties:
+   Vendor . . . :  NVIDIA Corporation
+   Driver . . . :  GeForce GTX 1070/PCIe/SSE2
+   Version  . . :  4.5.0 NVIDIA 460.89 [4.5]
+   GLSL . . . . :  4.50 NVIDIA
+   Extensions . :  390
+   No error . . :  disabled
+   Block size . :  65536
+   Max blocks . :  14
+   Max uniforms :  1024
+   Using GLEW v2.1.0
+   Ready for OpenGL 4.5 core
+   Init OpenGL...
+   Bin. formats :  1
+   Max. MSAA    :  32
+   Init other modules...
+   Init pipelines...
+[>] OverVision 3D Graphics Engine v0.8r is up
+[<] OverVision 3D Graphics Engine v0.8r is down

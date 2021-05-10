@@ -4,3 +4,9 @@
 [submodule "vendor/assimp"]
 	path = vendor/assimp
 	url = https://github.com/assimp/assimp
+[submodule "vendor/meshopt"]
+	path = vendor/meshopt
+	url = https://github.com/zeux/meshoptimizer.git
+[submodule "vendor/args"]
+	path = vendor/args
+	url = https://github.com/taywee/args.git

@@ -1,0 +1,23 @@
+.dae files does not support curves, so they miss the ground.
+
+while parsing .dae and .obj file with assimp, it creates dummy childs to perform transformations,
+this breaks the inner working of physics generation, since it's based on node names.
+
+
+The light intensity is different for each format parsed, because assimp returns it that way.
+radius is ignored. Power seems to decide color for the light, 
+in a strange format that is not the color.
+
+(from blender 20W, specular 1, radius .5):
+
+* gltf lot brighter:
+		a{20,20,20} 	d{20,20,20} 	s{20,20,20}, 	clq= 0 0 1 
+
+* dae lot brighter:
+		a{0,0,0} 	d{20,20,20} 	s{20,20,20}, 	clq= 1 0 0
+
+* fbx lot dimmer:
+		a{0,0,0} 	d{20,20,20} 	s{20,20,20}, 	clq= 0 0 3.2*10^(-7)
+
+
+* obj DOES NOT SUPPORT LIGHTS

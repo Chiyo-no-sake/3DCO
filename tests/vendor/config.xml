@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<overvision>
+	<windowtitle>Overvision window</windowtitle>
+	<windowsizex>1820</windowsizex>
+	<windowsizey>980</windowsizey>
+	<shadowmapsize>1024</shadowmapsize>
+	<nrofaasamples>4</nrofaasamples>
+	<displayid>0</displayid>
+	<physworldscale>1.0</physworldscale>  
+  
+  <!-- 0 = false, 1 = true -->
+	<fullscreenflag>0</fullscreenflag>  
+</overvision>

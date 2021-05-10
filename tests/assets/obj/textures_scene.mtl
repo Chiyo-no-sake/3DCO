@@ -1,0 +1,108 @@
+# Blender MTL File: 'textures_scene.blend'
+# Material Count: 9
+
+newmtl Material
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+
+newmtl Material.001
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:\\Users\\lpasi\\OneDrive\\Desktop\\scenes\\textures\\Metal_Grill_021_basecolor.jpg
+map_Ns C:\\Users\\lpasi\\OneDrive\\Desktop\\scenes\\textures\\Metal_Grill_021_roughness.jpg
+refl C:\\Users\\lpasi\\OneDrive\\Desktop\\scenes\\textures\\Metal_Grill_021_metallic.jpg
+
+newmtl bricks
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:\\Users\\lpasi\\OneDrive\\Desktop\\scenes\\textures\\brickwall.jpg
+
+newmtl leather
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:\\Users\\lpasi\\OneDrive\\Desktop\\scenes\\textures\\Leather_Armor_002_basecolor.jpg
+map_Ns C:\\Users\\lpasi\\OneDrive\\Desktop\\scenes\\textures\\Leather_Armor_002_roughness.jpg
+
+newmtl metal_ruggine
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:\\Users\\lpasi\\OneDrive\\Desktop\\scenes\\textures\\iron-rusted4-basecolor.png
+map_Ns C:\\Users\\lpasi\\OneDrive\\Desktop\\scenes\\textures\\iron-rusted4-roughness.png
+refl C:\\Users\\lpasi\\OneDrive\\Desktop\\scenes\\textures\\iron-rusted4-metalness.png
+
+newmtl paper
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:\\Users\\lpasi\\OneDrive\\Desktop\\scenes\\textures\\Paper_Wrinkled_001_basecolor.jpg
+map_Ns C:\\Users\\lpasi\\OneDrive\\Desktop\\scenes\\textures\\Paper_Wrinkled_001_roughness.jpg
+
+newmtl red_bricks
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:\\Users\\lpasi\\OneDrive\\Desktop\\scenes\\textures\\Stylized_Bricks_001_basecolor.jpg
+map_Ns C:\\Users\\lpasi\\OneDrive\\Desktop\\scenes\\textures\\Stylized_Bricks_001_roughness.jpg
+
+newmtl rock
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:\\Users\\lpasi\\OneDrive\\Desktop\\scenes\\textures\\rock.jpg
+
+newmtl wood1
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:\\Users\\lpasi\\OneDrive\\Desktop\\scenes\\textures\\Wood_Wall_003_basecolor.jpg
+map_Ns C:\\Users\\lpasi\\OneDrive\\Desktop\\scenes\\textures\\Wood_Wall_003_roughness.jpg
