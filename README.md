@@ -1,5 +1,14 @@
 # 3DCO - 3D format Converter and Optimizer
-TODO TODO TODO
+3DCO is a command line tool that is able to convert nearly any file format into .OVO, the 3d file format used in OverVision Engine (http://www.peternier.com/projects/overvision/overvision.php).
+This tool performs material, light, texture and coordinate system conversion as well as Approximate Convex Decomposition for the hull generation and various mesh optimizations.
+
+Mesh optimizations are made with the meshopt library: https://github.com/zeux/meshoptimizer
+File parsing is made with Assimp: https://www.assimp.org/
+Approximate Hull Decomposition has been achieved with V-HACD library: https://github.com/kmammou/v-hacd
+And lastly, spdlog for logging: https://github.com/gabime/spdlog
+
+
+![pbr_scene_collage (1)](https://user-images.githubusercontent.com/20605899/117716718-3a0f4c00-b1da-11eb-8c70-62bf947b5dad.jpg)
 
 ## Getting 3DCO
 
@@ -45,4 +54,7 @@ Build project 'Boost_Tests_run' to build tests, '3DCO' to build the tool.
 Download the project pre-configured for visual studio in the releases tab, and then build it.
 
 ## Usage
-TODO TODO TODO
+
+Typical use case: <code>./3DCO myfile.fbx</code>
+
+Run with <code>-h</code> to get an overview of the features and how to use them.
